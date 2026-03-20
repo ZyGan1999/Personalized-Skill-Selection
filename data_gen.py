@@ -30,6 +30,38 @@ DOMAINS: Dict[str, List[str]] = {
     "entertainment":  ["Netflix", "Bilibili", "Youku", "iQiyi"],
 }
 
+# Flat list of all tools across all domains (used when agents see the full tool pool)
+ALL_TOOLS: List[str] = [t for tools in DOMAINS.values() for t in tools]
+
+# Short natural-language descriptions for each tool (metadata fed to LLM)
+TOOL_METADATA: Dict[str, str] = {
+    # Financial
+    "Tonghua Shun":        "Chinese A-share stock data platform; real-time quotes, sector analysis, and CSI index charts.",
+    "East Money":          "Chinese retail investor portal; mutual fund rankings, stock discussion boards, and fund screener.",
+    "Bloomberg":           "Global financial data terminal; macro indicators, bond yields, FX rates, and institutional research.",
+    "Yahoo Finance":       "English-language finance portal; international stock quotes, earnings calendars, and ETF comparisons.",
+    # Food delivery
+    "Meituan":             "Dominant Chinese food-delivery super-app; wide restaurant coverage, Meituan Points loyalty rewards.",
+    "Ele.me":              "Alibaba-owned food delivery platform; deep Alipay and 88VIP integration, frequent cashback coupons.",
+    "Taobao Delivery":     "Taobao/Alibaba food-delivery service; best for users with Taobao 88VIP membership discounts.",
+    "WeChat MiniProgram":  "Food ordering via WeChat mini-programs; supports WeChat Pay red packets and corporate canteen orders.",
+    # Navigation
+    "Amap":                "Alibaba navigation app; best real-time traffic and road-closure updates for China road trips.",
+    "Baidu Maps":          "Baidu navigation app; strong transit scheduling, indoor mall maps, and bus route planning.",
+    "DiDi":                "China's leading ride-hailing service; on-demand taxis, Express, and carpooling options.",
+    "CaoCao":              "New-energy-vehicle ride-hailing platform; corporate accounts, off-peak discounts, eco-friendly fleet.",
+    # Shopping
+    "Taobao":              "China's largest C2C/B2C marketplace; widest product variety, manufacturer flagship stores, customisation.",
+    "JD.com":              "Chinese B2C retailer; authentic electronics, same-day/next-day delivery, official brand warranties.",
+    "Pinduoduo":           "Social-commerce platform; lowest prices via group buying, daily government subsidies on everyday goods.",
+    "Amazon":              "Global e-commerce platform; imported goods, Prime two-day delivery, international brand selection.",
+    # Entertainment
+    "Netflix":             "Global SVOD streaming service; Netflix original series and films, ad-free international content.",
+    "Bilibili":            "Chinese video platform popular for anime, fan-subs, live streaming, and creator-uploaded content.",
+    "Youku":               "Alibaba-owned streaming platform; exclusive Chinese drama and variety show broadcast rights.",
+    "iQiyi":               "Baidu-owned streaming platform; premium VIP content, exclusive domestic drama premieres.",
+}
+
 # ---------------------------------------------------------------------------
 # Standard query templates (15 per domain, domain-specific but tool-agnostic)
 # ---------------------------------------------------------------------------

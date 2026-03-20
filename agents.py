@@ -25,6 +25,7 @@ from collections import defaultdict, deque
 from typing import Dict, List
 
 from bandits import LinUCBBandit
+from data_gen import TOOL_METADATA
 
 # ---------------------------------------------------------------------------
 # LLM client — lazy import so the module loads without LLM dependencies
@@ -179,11 +180,14 @@ class ZeroShotAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        tools_str = ", ".join(tools)
+        tools_block = "\n".join(
+            f"  - {t}: {TOOL_METADATA.get(t, '')}" for t in tools
+        )
         prompt = (
-            f"Select the best tool for the user query. "
-            f"Tools: {tools_str}. Query: \"{query}\". "
-            f"Reply with only the tool name."
+            f"Select the best tool for the user query.\n"
+            f"Available tools:\n{tools_block}\n"
+            f"Query: \"{query}\"\n"
+            f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
         response = _llm_call(prompt, self.model)
         return _extract_tool(response, tools)
@@ -219,13 +223,16 @@ class InContextMemoryAgent(_AgentBase):
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
         history = list(self._memory[(user_id, domain)])
-        tools_str = ", ".join(tools)
-
+        tools_block = "\n".join(
+            f"  - {t}: {TOOL_METADATA.get(t, '')}" for t in tools
+        )
         history_str = ", ".join(history) if history else "none"
         prompt = (
-            f"Select the best tool for the user query. "
-            f"Tools: {tools_str}. User's recent history: {history_str}. "
-            f"Query: \"{query}\". Reply with only the tool name."
+            f"Select the best tool for the user query.\n"
+            f"Available tools:\n{tools_block}\n"
+            f"User's recent successful selections: {history_str}.\n"
+            f"Query: \"{query}\"\n"
+            f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
         response = _llm_call(prompt, self.model)
         return _extract_tool(response, tools)
@@ -275,12 +282,12 @@ class PureBanditAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        return self.bandit.select(user_id, domain, query, tools)
+        return self.bandit.select(user_id, query, tools)
 
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
     ) -> None:
-        self.bandit.update(user_id, domain, query, selected_tool, reward)
+        self.bandit.update(user_id, query, selected_tool, reward)
 
     def get_learned_distribution(
         self,
@@ -290,7 +297,7 @@ class PureBanditAgent(_AgentBase):
         sample_queries: List[str],
     ) -> Dict[str, float]:
         return self.bandit.learned_preference_distribution(
-            user_id, domain, tools, sample_queries
+            user_id, tools, sample_queries
         )
 
 
@@ -324,19 +331,20 @@ class BanditPriorCoTAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        # Step 1: compute statistical prior from bandit
-        probs = self.bandit.probabilities(user_id, domain, query, tools)
-        prior_str = "\n".join(
-            f"  - {tool}: {prob:.2%}"
-            for tool, prob in sorted(probs.items(), key=lambda x: -x[1])
-        )
-        tools_str = ", ".join(tools)
+        # Step 1: compute statistical prior from bandit (over all tools)
+        probs = self.bandit.probabilities(user_id, query, tools)
 
-        # Step 2: build prompt that exposes prior and encourages override on OOD
+        # Step 2: build tool list with descriptions and prior probabilities
+        tools_block = "\n".join(
+            f"  - {tool} (prior {probs[tool]:.1%}): {TOOL_METADATA.get(tool, '')}"
+            for tool in sorted(tools, key=lambda t: -probs[t])
+        )
+
+        # Step 3: build prompt that exposes prior and encourages override on OOD
         prompt = (
-            f"Select the best tool for the user query. "
-            f"Available tools: {tools_str}.\n"
-            f"User history priors: {prior_str}.\n"
+            f"Select the best tool for the user query.\n"
+            f"Available tools (sorted by learned user preference, highest first):\n"
+            f"{tools_block}\n"
             f"Query: \"{query}\"\n"
             f"Rules: if the query explicitly names a tool, use that tool. "
             f"Otherwise, prefer the tool with the highest prior probability.\n"
@@ -349,7 +357,7 @@ class BanditPriorCoTAgent(_AgentBase):
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
     ) -> None:
-        self.bandit.update(user_id, domain, query, selected_tool, reward)
+        self.bandit.update(user_id, query, selected_tool, reward)
 
     def get_learned_distribution(
         self,
@@ -359,7 +367,7 @@ class BanditPriorCoTAgent(_AgentBase):
         sample_queries: List[str],
     ) -> Dict[str, float]:
         return self.bandit.learned_preference_distribution(
-            user_id, domain, tools, sample_queries
+            user_id, tools, sample_queries
         )
 
 
@@ -390,12 +398,12 @@ def build_agents(model: str = DEFAULT_MODEL, include_random: bool = True) -> Lis
 
 
 if __name__ == "__main__":
-    from data_gen import DOMAINS, generate_users
+    from data_gen import ALL_TOOLS, generate_users
 
     users = generate_users(n_users=1)
     u = users[0]
     domain = "food_delivery"
-    tools = DOMAINS[domain]
+    tools = ALL_TOOLS  # full pool: all 20 tools across all domains
     query = "Order some milk tea"
 
     agents = build_agents()
