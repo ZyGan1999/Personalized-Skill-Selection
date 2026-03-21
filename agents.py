@@ -72,7 +72,7 @@ def _llm_call(prompt: str, model: str) -> str:
     last_exc: Exception = RuntimeError("no attempts made")
     for attempt in range(5):
         try:
-            resp = requests.post(url, headers=headers, json=payload, timeout=60)
+            resp = requests.post(url, headers=headers, json=payload, timeout=120)
             if resp.status_code >= 500:
                 raise requests.exceptions.HTTPError(
                     f"{resp.status_code} Server Error — body: {resp.text[:300]}",
@@ -82,7 +82,8 @@ def _llm_call(prompt: str, model: str) -> str:
             return resp.json()["choices"][0]["message"]["content"].strip()
         except (requests.exceptions.Timeout,
                 requests.exceptions.ConnectionError,
-                requests.exceptions.HTTPError) as e:
+                requests.exceptions.HTTPError,
+                requests.exceptions.ChunkedEncodingError) as e:
             last_exc = e
             is_upstream = "do_request_failed" in str(e) or "upstream" in str(e)
             wait = 15 if is_upstream else min(2 ** attempt, 30)
