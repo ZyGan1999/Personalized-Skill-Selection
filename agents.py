@@ -336,23 +336,47 @@ class BanditPriorCoTAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        # Two-stage decision: Bandit pre-filters → LLM refines
-        # Stage 1: Bandit scores all 20 tools
+        # Two-stage decision: LLM infers domain → Bandit pre-filters → LLM refines
+        # Stage 1: LLM infers which domain this query belongs to
+        domain_list = ", ".join(DOMAINS.keys())
+        domain_prompt = (
+            f"Classify this query into one domain.\n"
+            f"Domains: {domain_list}\n"
+            f"Query: \"{query}\"\n"
+            f"Reply with only JSON: {{\"domain\": \"<domain name>\"}}"
+        )
+        domain_response = _llm_call(domain_prompt, self.model)
+
+        # Parse inferred domain
+        inferred_domain = domain  # fallback to ground truth
+        try:
+            domain_data = json.loads(domain_response)
+            candidate_domain = domain_data.get("domain", "")
+            if candidate_domain in DOMAINS:
+                inferred_domain = candidate_domain
+        except (json.JSONDecodeError, AttributeError):
+            # Try substring match
+            for d in DOMAINS:
+                if d in domain_response.lower():
+                    inferred_domain = d
+                    break
+
+        # Stage 2: Bandit scores all 20 tools
         all_scores = {}
         for d, d_tools in DOMAINS.items():
             d_probs = self.bandit.probabilities(user_id, d, query, d_tools)
             all_scores.update(d_probs)
 
-        # Guarantee: always include all tools from the query's true domain
-        domain_tools = DOMAINS[domain]
-        candidates = set(domain_tools)  # start with 4 guaranteed tools
+        # Use inferred domain to build candidate set
+        domain_tools = DOMAINS[inferred_domain]
+        candidates = set(domain_tools)  # 4 tools from inferred domain
 
-        # Add top-scoring tools from other domains to reach ~6-8 total
+        # Add top-4 from other domains
         other_tools = [t for t in all_scores if t not in domain_tools]
         other_sorted = sorted(other_tools, key=lambda t: all_scores[t], reverse=True)
-        candidates.update(other_sorted[:4])  # add top-4 from other domains
+        candidates.update(other_sorted[:4])
 
-        # Stage 2: LLM chooses from candidates with semantic reasoning
+        # Stage 3: LLM chooses from candidates
         candidates_sorted = sorted(candidates, key=lambda t: all_scores[t], reverse=True)
         tools_block = "\n".join(
             f"  - {t} ({all_scores[t]:.0%}): {TOOL_METADATA[t]}"
