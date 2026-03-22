@@ -167,8 +167,10 @@ def main() -> None:
         plot_cumulative_regret_ci,
         plot_ood_robustness,
         plot_per_domain_accuracy,
+        plot_preference_alignment,
         plot_preference_recovery,
         plot_rolling_accuracy_ci,
+        plot_domain_classification_accuracy,
         print_summary,
         significance_test,
     )
@@ -181,6 +183,8 @@ def main() -> None:
     plot_ood_robustness(multi)
     plot_preference_recovery(recovery, multi.agent_names)
     plot_per_domain_accuracy(multi)
+    plot_preference_alignment(multi)
+    plot_domain_classification_accuracy(multi)
 
     print_summary(multi)
 

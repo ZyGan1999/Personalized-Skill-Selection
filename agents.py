@@ -333,10 +333,16 @@ class BanditPriorCoTAgent(_AgentBase):
         self.model = model
         self.bandit = LinUCBBandit(alpha=alpha)
 
+    def __init__(self, model: str = DEFAULT_MODEL, alpha: float = 1.0):
+        self.model = model
+        self.bandit = LinUCBBandit(alpha=alpha)
+        # Track domain classification accuracy
+        self.domain_predictions = []  # list of (true_domain, inferred_domain) tuples
+
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        # Two-stage decision: LLM infers domain → Bandit pre-filters → LLM refines
+        # Two-stage decision: LLM infers domain → Bandit + LLM refines
         # Stage 1: LLM infers which domain this query belongs to
         domain_list = ", ".join(DOMAINS.keys())
         domain_prompt = (
@@ -361,38 +367,29 @@ class BanditPriorCoTAgent(_AgentBase):
                     inferred_domain = d
                     break
 
-        # Stage 2: Bandit scores all 20 tools
-        all_scores = {}
-        for d, d_tools in DOMAINS.items():
-            d_probs = self.bandit.probabilities(user_id, d, query, d_tools)
-            all_scores.update(d_probs)
+        # Record domain prediction for accuracy tracking
+        self.domain_predictions.append((domain, inferred_domain))
 
-        # Use inferred domain to build candidate set
+        # Stage 2: Get bandit priors for inferred domain (4 tools only)
         domain_tools = DOMAINS[inferred_domain]
-        candidates = set(domain_tools)  # 4 tools from inferred domain
+        probs = self.bandit.probabilities(user_id, inferred_domain, query, domain_tools)
 
-        # Add top-4 from other domains
-        other_tools = [t for t in all_scores if t not in domain_tools]
-        other_sorted = sorted(other_tools, key=lambda t: all_scores[t], reverse=True)
-        candidates.update(other_sorted[:4])
-
-        # Stage 3: LLM chooses from candidates
-        candidates_sorted = sorted(candidates, key=lambda t: all_scores[t], reverse=True)
+        # Stage 3: LLM chooses from the 4 domain tools
         tools_block = "\n".join(
-            f"  - {t} ({all_scores[t]:.0%}): {TOOL_METADATA[t]}"
-            for t in candidates_sorted
+            f"  - {t} ({probs[t]:.0%}): {TOOL_METADATA[t]}"
+            for t in sorted(domain_tools, key=lambda x: -probs[x])
         )
 
         prompt = (
             f"Select the best tool for this query.\n"
-            f"Candidate tools (with learned preference %):\n{tools_block}\n\n"
+            f"Available tools (with learned preference %):\n{tools_block}\n\n"
             f"Query: \"{query}\"\n\n"
             f"If the query explicitly names a tool, use it. Otherwise, balance semantic fit and preference.\n"
             f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
 
         response = _llm_call(prompt, self.model)
-        return _extract_tool(response, list(candidates))
+        return _extract_tool(response, domain_tools)
 
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float

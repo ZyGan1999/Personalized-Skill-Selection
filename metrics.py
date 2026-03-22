@@ -56,12 +56,21 @@ def _ensure_images_dir() -> None:
 
 def _save(fig: plt.Figure, filename: str) -> str:
     _ensure_images_dir()
-    path = os.path.join(IMAGES_DIR, filename)
+    base = os.path.splitext(filename)[0]
+
+    # Save PDF
+    pdf_path = os.path.join(IMAGES_DIR, f"{base}.pdf")
     fig.tight_layout()
-    fig.savefig(path)
+    fig.savefig(pdf_path)
+    print(f"[metrics] Saved: {pdf_path}")
+
+    # Save PNG
+    png_path = os.path.join(IMAGES_DIR, f"{base}.png")
+    fig.savefig(png_path, dpi=150)
+    print(f"[metrics] Saved: {png_path}")
+
     plt.close(fig)
-    print(f"[metrics] Saved: {path}")
-    return path
+    return pdf_path
 
 
 # Colour palette (consistent across all plots)
@@ -383,6 +392,162 @@ def plot_per_domain_accuracy(
             text_color = "black" if val < 0.6 else "white"
             ax.text(j, i, f"{val:.2f}", ha="center", va="center",
                     fontsize=9, color=text_color, fontweight="bold")
+
+    return _save(fig, filename)
+
+
+# ---------------------------------------------------------------------------
+# Plot 6: Domain Classification Accuracy (for Bandit+CoT with domain inference)
+# ---------------------------------------------------------------------------
+
+
+def plot_domain_classification_accuracy(
+    multi: MultiSeedResult,
+    filename: str = "domain_classification_accuracy.pdf",
+) -> str:
+    """
+    Bar chart showing domain classification accuracy for agents that infer domain.
+    Only applicable to Bandit+CoT agent with domain_predictions tracking.
+    """
+    agent_accuracies = {}
+
+    for sr in multi.seed_results:
+        for agent in sr.trained_agents:
+            if hasattr(agent, 'domain_predictions') and agent.domain_predictions:
+                correct = sum(1 for true_d, pred_d in agent.domain_predictions if true_d == pred_d)
+                total = len(agent.domain_predictions)
+                acc = correct / total if total > 0 else 0.0
+                if agent.name not in agent_accuracies:
+                    agent_accuracies[agent.name] = []
+                agent_accuracies[agent.name].append(acc)
+
+    if not agent_accuracies:
+        return ""  # No agents with domain prediction tracking
+
+    # Compute mean and std across seeds
+    agent_names = list(agent_accuracies.keys())
+    means = [np.mean(agent_accuracies[name]) for name in agent_names]
+    stds = [np.std(agent_accuracies[name]) for name in agent_names]
+
+    x = np.arange(len(agent_names))
+    fig, ax = plt.subplots(figsize=(6, 4))
+    bars = ax.bar(x, means, yerr=stds, capsize=5, color='steelblue',
+                   edgecolor='black', linewidth=0.8)
+
+    for bar, m in zip(bars, means):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
+                f"{m:.1%}", ha="center", va="bottom", fontsize=11, fontweight="bold")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(agent_names, fontsize=10)
+    ax.set_ylim(0, 1.15)
+    ax.set_ylabel("Domain Classification Accuracy", fontsize=12)
+    ax.set_title("LLM Domain Inference Accuracy", fontsize=13, fontweight="bold")
+    ax.axhline(0.2, color="gray", linestyle=":", linewidth=1.2, label="Random (1/5)")
+    ax.legend(fontsize=9)
+    ax.grid(True, axis="y", linestyle="--", alpha=0.4)
+
+    return _save(fig, filename)
+
+
+# ---------------------------------------------------------------------------
+# Plot 7: Preference Alignment Heatmap (per-user, per-domain)
+# ---------------------------------------------------------------------------
+
+
+# Agents whose get_learned_distribution is non-trivial (bandit-based)
+_BANDIT_AGENTS = {"Pure-Bandit", "Bandit+CoT"}
+
+
+def plot_preference_alignment(
+    multi: MultiSeedResult,
+    filename: str = "preference_alignment.pdf",
+) -> str:
+    """
+    Per-user, per-domain heatmap showing how much probability each bandit-based
+    agent assigns to the user's TRUE preferred tool after training.
+
+    One subplot per bandit agent (side-by-side).  Rows = users, columns = domains.
+    Cell colour indicates alignment: >25% (random baseline) means the agent has
+    learned something useful; darker green = stronger personalization.
+    Values are averaged across seeds for stability.
+    """
+    from data_gen import DOMAINS, STANDARD_QUERIES
+    from matplotlib.colors import TwoSlopeNorm
+
+    domain_list = list(DOMAINS.keys())
+    n_domains = len(domain_list)
+
+    # Identify bandit agents present in this run
+    bandit_names = [n for n in multi.agent_names if n in _BANDIT_AGENTS]
+    if not bandit_names:
+        return ""
+
+    # Build alignment matrices: {agent_name: ndarray (n_users, n_domains)}
+    # Each cell = prob assigned to user's true preferred tool, averaged over seeds
+    alignment: Dict[str, np.ndarray] = {}
+    for agent_name in bandit_names:
+        # accumulate per-seed matrices then average
+        seed_matrices = []
+        for sr in multi.seed_results:
+            agent = next((a for a in sr.trained_agents if a.name == agent_name), None)
+            if agent is None:
+                continue
+            mat = np.zeros((multi.n_users, n_domains), dtype=np.float64)
+            for ui, user in enumerate(sr.users):
+                for dj, domain in enumerate(domain_list):
+                    domain_tools = DOMAINS[domain]
+                    sample_qs = STANDARD_QUERIES.get(domain, [])[:10]
+                    learned = agent.get_learned_distribution(
+                        user.user_id, domain, domain_tools, sample_qs
+                    )
+                    true_pref = user.preferences[domain]
+                    mat[ui, dj] = learned.get(true_pref, 0.0)
+            seed_matrices.append(mat)
+        if seed_matrices:
+            alignment[agent_name] = np.mean(seed_matrices, axis=0)
+
+    if not alignment:
+        return ""
+
+    n_agents = len(alignment)
+    fig, axes = plt.subplots(
+        1, n_agents,
+        figsize=(5 * n_agents + 1, max(5, multi.n_users * 0.35 + 1.5)),
+        squeeze=False,
+    )
+
+    # Diverging colormap centred at 0.25 (random baseline = 1/4 tools)
+    norm = TwoSlopeNorm(vmin=0.0, vcenter=0.25, vmax=1.0)
+
+    for col, agent_name in enumerate(alignment):
+        ax = axes[0, col]
+        mat = alignment[agent_name]
+
+        im = ax.imshow(mat, cmap="RdYlGn", norm=norm, aspect="auto")
+
+        ax.set_xticks(np.arange(n_domains))
+        ax.set_xticklabels(domain_list, rotation=30, ha="right", fontsize=9)
+        ax.set_yticks(np.arange(multi.n_users))
+        ax.set_yticklabels([f"u{i}" for i in range(multi.n_users)], fontsize=8)
+        ax.set_title(agent_name, fontsize=12, fontweight="bold")
+
+        # Annotate cells with probability values
+        for i in range(multi.n_users):
+            for j in range(n_domains):
+                val = mat[i, j]
+                text_color = "black" if 0.15 < val < 0.75 else "white"
+                ax.text(j, i, f"{val:.0%}", ha="center", va="center",
+                        fontsize=7, color=text_color)
+
+    fig.suptitle(
+        f"Preference Alignment: P(true preferred tool)\n"
+        f"({multi.n_users} users, {multi.n_seeds} seeds avg, "
+        f"random baseline = 25%)",
+        fontsize=12, y=1.02,
+    )
+    fig.colorbar(im, ax=axes.ravel().tolist(), label="P(true preferred tool)",
+                 shrink=0.8, pad=0.02)
 
     return _save(fig, filename)
 
