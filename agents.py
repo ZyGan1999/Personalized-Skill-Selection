@@ -336,37 +336,27 @@ class BanditPriorCoTAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        # Step 1: compute statistical prior from bandit (per-domain, 4 tools)
+        # Key insight: only show domain-relevant tools to LLM (4 tools, not 20)
+        # This matches the original successful design: small choice set + strong prior
         domain_tools = DOMAINS[domain]
         probs = self.bandit.probabilities(user_id, domain, query, domain_tools)
 
-        # Step 2: build tool list with metadata, highlighting prior for domain tools
-        tools_block = []
-        for t in tools:
-            metadata = TOOL_METADATA.get(t, '')
-            if t in domain_tools:
-                prior_pct = probs[t] * 100
-                tools_block.append(f"  - {t}: {metadata} [User preference: {prior_pct:.0f}%]")
-            else:
-                tools_block.append(f"  - {t}: {metadata}")
-        tools_str = "\n".join(tools_block)
+        # Build compact tool list with inline prior percentages
+        tools_block = "\n".join(
+            f"  - {t} ({probs[t]:.0%}): {TOOL_METADATA[t]}"
+            for t in sorted(domain_tools, key=lambda x: -probs[x])
+        )
 
-        # Step 3: build prompt emphasizing semantic reasoning over blind prior following
         prompt = (
-            f"Select the best tool for the user query.\n\n"
-            f"Available tools:\n{tools_str}\n\n"
+            f"Select the best tool for this query.\n"
+            f"Available tools (with learned user preference %):\n{tools_block}\n\n"
             f"Query: \"{query}\"\n\n"
-            f"Instructions:\n"
-            f"1. First, analyze the query semantically to understand what the user needs.\n"
-            f"2. If the query explicitly names a specific tool, select that tool.\n"
-            f"3. Otherwise, consider both the tool descriptions AND the user preference percentages.\n"
-            f"4. The preference percentages reflect past usage patterns - use them as a helpful signal, not a strict rule.\n"
-            f"5. Choose the tool that best matches the query's semantic intent.\n\n"
+            f"If the query explicitly names a tool, use it. Otherwise, balance semantic fit and user preference.\n"
             f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
 
         response = _llm_call(prompt, self.model)
-        return _extract_tool(response, tools)
+        return _extract_tool(response, domain_tools)
 
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
