@@ -25,7 +25,7 @@ from collections import defaultdict, deque
 from typing import Dict, List
 
 from bandits import LinUCBBandit
-from data_gen import TOOL_METADATA
+from data_gen import DOMAINS, TOOL_METADATA
 
 # ---------------------------------------------------------------------------
 # LLM client — lazy import so the module loads without LLM dependencies
@@ -283,12 +283,13 @@ class PureBanditAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        return self.bandit.select(user_id, query, tools)
+        domain_tools = DOMAINS[domain]
+        return self.bandit.select(user_id, domain, query, domain_tools)
 
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
     ) -> None:
-        self.bandit.update(user_id, query, selected_tool, reward)
+        self.bandit.update(user_id, domain, query, selected_tool, reward)
 
     def get_learned_distribution(
         self,
@@ -297,8 +298,9 @@ class PureBanditAgent(_AgentBase):
         tools: List[str],
         sample_queries: List[str],
     ) -> Dict[str, float]:
+        domain_tools = DOMAINS[domain]
         return self.bandit.learned_preference_distribution(
-            user_id, tools, sample_queries
+            user_id, domain, domain_tools, sample_queries
         )
 
 
@@ -314,8 +316,10 @@ class BanditPriorCoTAgent(_AgentBase):
     1. LinUCB bandit computes a softmax probability distribution over tools
        (the 'statistical prior') from user interaction history.
     2. The prior is injected into an LLM prompt together with the query.
-    3. The LLM produces <thinking>...</thinking> CoT that semantically evaluates
-       the query against the prior, then outputs its final tool selection.
+       The prior is computed per-domain (4 tools) for a concentrated signal,
+       while the LLM still sees all 20 tools with metadata.
+    3. The LLM semantically evaluates the query against the prior, then
+       outputs its final tool selection.
     4. The prior is OVERRIDDEN when the query explicitly requests a different tool
        (OOD robustness), but FOLLOWED for ambiguous standard queries (personalization).
 
@@ -332,23 +336,32 @@ class BanditPriorCoTAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        # Step 1: compute statistical prior from bandit (over all tools)
-        probs = self.bandit.probabilities(user_id, query, tools)
+        # Step 1: compute statistical prior from bandit (per-domain, 4 tools)
+        domain_tools = DOMAINS[domain]
+        probs = self.bandit.probabilities(user_id, domain, query, domain_tools)
 
-        # Step 2: build tool list with descriptions and prior probabilities
-        tools_block = "\n".join(
-            f"  - {tool} (prior {probs[tool]:.1%}): {TOOL_METADATA.get(tool, '')}"
-            for tool in sorted(tools, key=lambda t: -probs[t])
-        )
+        # Step 2: build tool list with metadata, highlighting prior for domain tools
+        tools_block = []
+        for t in tools:
+            metadata = TOOL_METADATA.get(t, '')
+            if t in domain_tools:
+                prior_pct = probs[t] * 100
+                tools_block.append(f"  - {t}: {metadata} [User preference: {prior_pct:.0f}%]")
+            else:
+                tools_block.append(f"  - {t}: {metadata}")
+        tools_str = "\n".join(tools_block)
 
-        # Step 3: build prompt that exposes prior and encourages override on OOD
+        # Step 3: build prompt emphasizing semantic reasoning over blind prior following
         prompt = (
-            f"Select the best tool for the user query.\n"
-            f"Available tools (sorted by learned user preference, highest first):\n"
-            f"{tools_block}\n"
-            f"Query: \"{query}\"\n"
-            f"Rules: if the query explicitly names a tool, use that tool. "
-            f"Otherwise, prefer the tool with the highest prior probability.\n"
+            f"Select the best tool for the user query.\n\n"
+            f"Available tools:\n{tools_str}\n\n"
+            f"Query: \"{query}\"\n\n"
+            f"Instructions:\n"
+            f"1. First, analyze the query semantically to understand what the user needs.\n"
+            f"2. If the query explicitly names a specific tool, select that tool.\n"
+            f"3. Otherwise, consider both the tool descriptions AND the user preference percentages.\n"
+            f"4. The preference percentages reflect past usage patterns - use them as a helpful signal, not a strict rule.\n"
+            f"5. Choose the tool that best matches the query's semantic intent.\n\n"
             f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
 
@@ -358,7 +371,7 @@ class BanditPriorCoTAgent(_AgentBase):
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
     ) -> None:
-        self.bandit.update(user_id, query, selected_tool, reward)
+        self.bandit.update(user_id, domain, query, selected_tool, reward)
 
     def get_learned_distribution(
         self,
@@ -367,8 +380,9 @@ class BanditPriorCoTAgent(_AgentBase):
         tools: List[str],
         sample_queries: List[str],
     ) -> Dict[str, float]:
+        domain_tools = DOMAINS[domain]
         return self.bandit.learned_preference_distribution(
-            user_id, tools, sample_queries
+            user_id, domain, domain_tools, sample_queries
         )
 
 
