@@ -337,32 +337,38 @@ class BanditPriorCoTAgent(_AgentBase):
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
         # Two-stage decision: Bandit pre-filters → LLM refines
-        # Stage 1: Bandit scores all 20 tools and selects top candidates
+        # Stage 1: Bandit scores all 20 tools
         all_scores = {}
         for d, d_tools in DOMAINS.items():
             d_probs = self.bandit.probabilities(user_id, d, query, d_tools)
             all_scores.update(d_probs)
 
-        # Select top-6 tools by bandit score (covers true domain + potential OOD)
-        top_k = 6
-        candidates = sorted(all_scores.keys(), key=lambda t: all_scores[t], reverse=True)[:top_k]
+        # Guarantee: always include all tools from the query's true domain
+        domain_tools = DOMAINS[domain]
+        candidates = set(domain_tools)  # start with 4 guaranteed tools
+
+        # Add top-scoring tools from other domains to reach ~6-8 total
+        other_tools = [t for t in all_scores if t not in domain_tools]
+        other_sorted = sorted(other_tools, key=lambda t: all_scores[t], reverse=True)
+        candidates.update(other_sorted[:4])  # add top-4 from other domains
 
         # Stage 2: LLM chooses from candidates with semantic reasoning
+        candidates_sorted = sorted(candidates, key=lambda t: all_scores[t], reverse=True)
         tools_block = "\n".join(
             f"  - {t} ({all_scores[t]:.0%}): {TOOL_METADATA[t]}"
-            for t in candidates
+            for t in candidates_sorted
         )
 
         prompt = (
             f"Select the best tool for this query.\n"
-            f"Top candidate tools (with learned preference %):\n{tools_block}\n\n"
+            f"Candidate tools (with learned preference %):\n{tools_block}\n\n"
             f"Query: \"{query}\"\n\n"
             f"If the query explicitly names a tool, use it. Otherwise, balance semantic fit and preference.\n"
             f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
 
         response = _llm_call(prompt, self.model)
-        return _extract_tool(response, candidates)
+        return _extract_tool(response, list(candidates))
 
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
