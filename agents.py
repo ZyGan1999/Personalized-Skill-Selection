@@ -336,27 +336,33 @@ class BanditPriorCoTAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        # Key insight: only show domain-relevant tools to LLM (4 tools, not 20)
-        # This matches the original successful design: small choice set + strong prior
-        domain_tools = DOMAINS[domain]
-        probs = self.bandit.probabilities(user_id, domain, query, domain_tools)
+        # Two-stage decision: Bandit pre-filters → LLM refines
+        # Stage 1: Bandit scores all 20 tools and selects top candidates
+        all_scores = {}
+        for d, d_tools in DOMAINS.items():
+            d_probs = self.bandit.probabilities(user_id, d, query, d_tools)
+            all_scores.update(d_probs)
 
-        # Build compact tool list with inline prior percentages
+        # Select top-6 tools by bandit score (covers true domain + potential OOD)
+        top_k = 6
+        candidates = sorted(all_scores.keys(), key=lambda t: all_scores[t], reverse=True)[:top_k]
+
+        # Stage 2: LLM chooses from candidates with semantic reasoning
         tools_block = "\n".join(
-            f"  - {t} ({probs[t]:.0%}): {TOOL_METADATA[t]}"
-            for t in sorted(domain_tools, key=lambda x: -probs[x])
+            f"  - {t} ({all_scores[t]:.0%}): {TOOL_METADATA[t]}"
+            for t in candidates
         )
 
         prompt = (
             f"Select the best tool for this query.\n"
-            f"Available tools (with learned user preference %):\n{tools_block}\n\n"
+            f"Top candidate tools (with learned preference %):\n{tools_block}\n\n"
             f"Query: \"{query}\"\n\n"
-            f"If the query explicitly names a tool, use it. Otherwise, balance semantic fit and user preference.\n"
+            f"If the query explicitly names a tool, use it. Otherwise, balance semantic fit and preference.\n"
             f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
 
         response = _llm_call(prompt, self.model)
-        return _extract_tool(response, domain_tools)
+        return _extract_tool(response, candidates)
 
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
