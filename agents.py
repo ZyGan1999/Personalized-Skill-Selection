@@ -338,6 +338,8 @@ class BanditPriorCoTAgent(_AgentBase):
         self.bandit = LinUCBBandit(alpha=alpha)
         # Track domain classification accuracy
         self.domain_predictions = []  # list of (true_domain, inferred_domain) tuples
+        # Cache inferred domain per (user_id, round) for consistent update
+        self._inferred_domains = {}  # (user_id, query) -> inferred_domain
 
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
@@ -369,6 +371,8 @@ class BanditPriorCoTAgent(_AgentBase):
 
         # Record domain prediction for accuracy tracking
         self.domain_predictions.append((domain, inferred_domain))
+        # Cache inferred domain for update
+        self._inferred_domains[(user_id, query)] = inferred_domain
 
         # Stage 2: Get bandit priors for inferred domain (4 tools only)
         domain_tools = DOMAINS[inferred_domain]
@@ -394,7 +398,9 @@ class BanditPriorCoTAgent(_AgentBase):
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
     ) -> None:
-        self.bandit.update(user_id, domain, query, selected_tool, reward)
+        # Use inferred domain (not ground truth) for consistent bandit update
+        inferred_domain = self._inferred_domains.get((user_id, query), domain)
+        self.bandit.update(user_id, inferred_domain, query, selected_tool, reward)
 
     def get_learned_distribution(
         self,
