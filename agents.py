@@ -344,13 +344,16 @@ class BanditPriorCoTAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        # Two-stage decision: LLM infers domain → Bandit + LLM refines
-        # Stage 1: LLM infers which domain this query belongs to
-        domain_list = ", ".join(DOMAINS.keys())
+        # Two-stage decision: LLM infers domain (with full metadata) → Bandit + LLM refines (compact)
+        # Stage 1: LLM infers domain by seeing all 20 tools with metadata
+        all_tools_block = "\n".join(
+            f"  - {t}: {TOOL_METADATA[t]}" for t in tools
+        )
         domain_prompt = (
-            f"Classify this query into one domain.\n"
-            f"Domains: {domain_list}\n"
+            f"Classify this query into one domain by analyzing which tools are most relevant.\n"
+            f"Available tools:\n{all_tools_block}\n\n"
             f"Query: \"{query}\"\n"
+            f"Domains: {', '.join(DOMAINS.keys())}\n"
             f"Reply with only JSON: {{\"domain\": \"<domain name>\"}}"
         )
         domain_response = _llm_call(domain_prompt, self.model)
@@ -378,17 +381,17 @@ class BanditPriorCoTAgent(_AgentBase):
         domain_tools = DOMAINS[inferred_domain]
         probs = self.bandit.probabilities(user_id, inferred_domain, query, domain_tools)
 
-        # Stage 3: LLM chooses from the 4 domain tools
+        # Stage 3: LLM chooses from 4 tools (names + priors only, no metadata)
         tools_block = "\n".join(
-            f"  - {t} ({probs[t]:.0%}): {TOOL_METADATA[t]}"
+            f"  - {t}: {probs[t]:.0%}"
             for t in sorted(domain_tools, key=lambda x: -probs[x])
         )
 
         prompt = (
             f"Select the best tool for this query.\n"
-            f"Available tools (with learned preference %):\n{tools_block}\n\n"
-            f"Query: \"{query}\"\n\n"
-            f"If the query explicitly names a tool, use it. Otherwise, balance semantic fit and preference.\n"
+            f"Available tools (with learned user preference %):\n{tools_block}\n\n"
+            f"Query: \"{query}\"\n"
+            f"Prefer the tool with the highest percentage unless the query explicitly names a different tool.\n"
             f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
 
