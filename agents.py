@@ -381,9 +381,9 @@ class BanditPriorCoTAgent(_AgentBase):
         domain_tools = DOMAINS[inferred_domain]
         probs = self.bandit.probabilities(user_id, inferred_domain, query, domain_tools)
 
-        # Stage 3: LLM chooses from 4 tools (with metadata + priors)
+        # Stage 3: LLM chooses from 4 tools (names + priors only, matching original successful design)
         tools_block = "\n".join(
-            f"  - {t} ({probs[t]:.0%}): {TOOL_METADATA[t]}"
+            f"  - {t}: {probs[t]:.0%}"
             for t in sorted(domain_tools, key=lambda x: -probs[x])
         )
 
@@ -391,7 +391,7 @@ class BanditPriorCoTAgent(_AgentBase):
             f"Select the best tool for this query.\n"
             f"Available tools (with learned user preference %):\n{tools_block}\n\n"
             f"Query: \"{query}\"\n\n"
-            f"If the query explicitly names a tool, use it. Otherwise, balance semantic fit and user preference.\n"
+            f"If the query explicitly names a tool, use it. Otherwise, prefer the tool with the highest user preference.\n"
             f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
 
