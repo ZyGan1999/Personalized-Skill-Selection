@@ -73,9 +73,10 @@ def _llm_call(prompt: str, model: str) -> str:
     for attempt in range(5):
         try:
             resp = requests.post(url, headers=headers, json=payload, timeout=120)
+            # Retry on 5xx server errors (502 Bad Gateway, 503 Service Unavailable, etc.)
             if resp.status_code >= 500:
                 raise requests.exceptions.HTTPError(
-                    f"{resp.status_code} Server Error — body: {resp.text[:300]}",
+                    f"{resp.status_code} Server Error",
                     response=resp,
                 )
             resp.raise_for_status()
@@ -85,9 +86,10 @@ def _llm_call(prompt: str, model: str) -> str:
                 requests.exceptions.HTTPError,
                 requests.exceptions.ChunkedEncodingError) as e:
             last_exc = e
-            is_upstream = "do_request_failed" in str(e) or "upstream" in str(e)
-            wait = 15 if is_upstream else min(2 ** attempt, 30)
-            print(f"\n  [LLM] attempt {attempt + 1}/5 failed, retrying in {wait}s…", flush=True)
+            # Longer wait for 502/503 errors (upstream issues)
+            is_5xx = "502" in str(e) or "503" in str(e) or "500" in str(e)
+            wait = 30 if is_5xx else min(2 ** attempt, 15)
+            print(f"\n  [LLM] attempt {attempt + 1}/5 failed ({type(e).__name__}), retrying in {wait}s…", flush=True)
             time.sleep(wait)
     raise last_exc
 
