@@ -2,10 +2,11 @@
 bandits.py
 Contextual bandit implementations used as personalization priors.
 
-LinUCB (disjoint model): one arm per (user_id, tool) pair.
-Features: 80-dim vector from feature-hashing over query + tool text.
-Domain is intentionally excluded so the bandit generalises across the full
-tool pool (all domains) rather than operating within a single domain silo.
+LinUCB (disjoint model): one arm per (user_id, domain, tool) triplet.
+Features: 96-dim vector from feature-hashing over query + tool + domain text.
+Domain is included in both the arm key and context vector so the bandit
+learns per-domain preferences (4 arms per domain) while agents can still
+present the full 20-tool pool to the LLM.
 
 Key addition over baseline: `learned_preference_distribution()` which
 estimates the agent's learned tool preferences for a given user by averaging
@@ -47,14 +48,15 @@ def _hash_feature(text: str, dim: int = VOCAB_SIZE) -> np.ndarray:
     return vec
 
 
-def context_vector(query: str, tool: str) -> np.ndarray:
-    """Concatenate query + tool feature hashes into one context vector."""
+def context_vector(query: str, tool: str, domain: str) -> np.ndarray:
+    """Concatenate query + tool + domain feature hashes into one context vector."""
     q_feat = _hash_feature(query, VOCAB_SIZE)          # 64-dim
     t_feat = _hash_feature(tool, VOCAB_SIZE // 4)      # 16-dim
-    return np.concatenate([q_feat, t_feat])            # 80-dim
+    d_feat = _hash_feature(domain, VOCAB_SIZE // 4)    # 16-dim
+    return np.concatenate([q_feat, t_feat, d_feat])    # 96-dim
 
 
-CONTEXT_DIM = VOCAB_SIZE + VOCAB_SIZE // 4  # 80
+CONTEXT_DIM = VOCAB_SIZE + VOCAB_SIZE // 4 + VOCAB_SIZE // 4  # 96
 
 
 # ---------------------------------------------------------------------------
@@ -78,6 +80,11 @@ class LinUCBArm:
         explore = self.alpha * float(np.sqrt(max(x @ A_inv_x, 0.0)))
         return exploit + explore
 
+    def exploit_score(self, x: np.ndarray) -> float:
+        """Return exploitation score only (theta @ x), without exploration bonus."""
+        theta, _, _, _ = np.linalg.lstsq(self.A, self.b, rcond=None)
+        return float(theta @ x)
+
     def update(self, x: np.ndarray, reward: float) -> None:
         self.A += np.outer(x, x)
         self.b += reward * x
@@ -95,10 +102,11 @@ class LinUCBArm:
 
 class LinUCBBandit:
     """
-    Per-user disjoint LinUCB bandit operating over the full tool pool.
+    Per-user disjoint LinUCB bandit with domain structure.
 
-    Arms are keyed by (user_id, tool_name) — domain is not part of the key
-    because the agent now selects from all tools across all domains.
+    Arms are keyed by (user_id, domain, tool_name) so the bandit learns
+    per-domain preferences (4 arms per domain) rather than competing
+    across all 20 tools at once.
     Provides:
       select()                       → greedy UCB selection
       scores() / probabilities()     → raw UCB / softmax distribution (prior for CoT)
@@ -111,38 +119,49 @@ class LinUCBBandit:
         self.alpha = alpha
         self._arms: Dict[tuple, LinUCBArm] = {}
 
-    def _get_arm(self, user_id: int, tool: str) -> LinUCBArm:
-        key = (user_id, tool)
+    def _get_arm(self, user_id: int, domain: str, tool: str) -> LinUCBArm:
+        key = (user_id, domain, tool)
         if key not in self._arms:
             self._arms[key] = LinUCBArm(d=CONTEXT_DIM, alpha=self.alpha)
         return self._arms[key]
 
-    def select(self, user_id: int, query: str, tools: List[str]) -> str:
+    def select(self, user_id: int, domain: str, query: str, tools: List[str]) -> str:
         """Return the tool with the highest UCB score."""
-        scores = {tool: self._get_arm(user_id, tool).ucb_score(
-            context_vector(query, tool)) for tool in tools}
+        scores = {tool: self._get_arm(user_id, domain, tool).ucb_score(
+            context_vector(query, tool, domain)) for tool in tools}
         return max(scores, key=lambda t: scores[t])
 
     def scores(
-        self, user_id: int, query: str, tools: List[str]
+        self, user_id: int, domain: str, query: str, tools: List[str]
     ) -> Dict[str, float]:
         """Return raw UCB scores for all tools."""
         return {
-            tool: self._get_arm(user_id, tool).ucb_score(
-                context_vector(query, tool)
+            tool: self._get_arm(user_id, domain, tool).ucb_score(
+                context_vector(query, tool, domain)
+            )
+            for tool in tools
+        }
+
+    def exploit_scores(
+        self, user_id: int, domain: str, query: str, tools: List[str]
+    ) -> Dict[str, float]:
+        """Return exploit-only scores (theta @ x) for all tools, no exploration bonus."""
+        return {
+            tool: self._get_arm(user_id, domain, tool).exploit_score(
+                context_vector(query, tool, domain)
             )
             for tool in tools
         }
 
     def probabilities(
-        self, user_id: int, query: str, tools: List[str]
+        self, user_id: int, domain: str, query: str, tools: List[str]
     ) -> Dict[str, float]:
         """
         Softmax-normalised UCB scores → probability distribution over tools.
         Used as the 'statistical prior' injected into the CoT agent prompt.
         Numerically stable via max-shift before exponentiation.
         """
-        raw = self.scores(user_id, query, tools)
+        raw = self.scores(user_id, domain, query, tools)
         vals = np.array([raw[t] for t in tools], dtype=np.float64)
         vals -= vals.max()
         exp_vals = np.exp(vals)
@@ -150,15 +169,16 @@ class LinUCBBandit:
         return {tool: float(p) for tool, p in zip(tools, probs)}
 
     def update(
-        self, user_id: int, query: str, tool: str, reward: float
+        self, user_id: int, domain: str, query: str, tool: str, reward: float
     ) -> None:
-        """Update the arm for the selected (user, tool) pair."""
-        x = context_vector(query, tool)
-        self._get_arm(user_id, tool).update(x, reward)
+        """Update the arm for the selected (user, domain, tool) triplet."""
+        x = context_vector(query, tool, domain)
+        self._get_arm(user_id, domain, tool).update(x, reward)
 
     def learned_preference_distribution(
         self,
         user_id: int,
+        domain: str,
         tools: List[str],
         sample_queries: List[str],
     ) -> Dict[str, float]:
@@ -180,7 +200,7 @@ class LinUCBBandit:
 
         accumulated = np.zeros(len(tools), dtype=np.float64)
         for query in sample_queries:
-            probs = self.probabilities(user_id, query, tools)
+            probs = self.probabilities(user_id, domain, query, tools)
             accumulated += np.array([probs[t] for t in tools])
         mean_probs = accumulated / len(sample_queries)
         return {tool: float(p) for tool, p in zip(tools, mean_probs)}
@@ -191,36 +211,37 @@ class LinUCBBandit:
 
 
 if __name__ == "__main__":
-    from data_gen import ALL_TOOLS, DOMAINS, STANDARD_QUERIES, generate_users
+    from data_gen import DOMAINS, STANDARD_QUERIES, generate_users
 
     bandit = LinUCBBandit(alpha=1.0)
     users = generate_users(n_users=2)
     u = users[0]
     domain = "food_delivery"
-    tools = ALL_TOOLS  # full pool: all 20 tools
+    tools = DOMAINS[domain]
     query = "Order some milk tea"
 
-    probs = bandit.probabilities(u.user_id, query, tools)
-    print("Initial uniform-ish priors (top-5):")
-    for t, p in sorted(probs.items(), key=lambda x: -x[1])[:5]:
+    probs = bandit.probabilities(u.user_id, domain, query, tools)
+    print(f"Initial priors for {domain}:")
+    for t, p in sorted(probs.items(), key=lambda x: -x[1]):
         print(f"  {t}: {p:.3f}")
 
     # Simulate positive updates for preferred food-delivery tool
     preferred = u.preferences[domain]
     sample_queries = STANDARD_QUERIES[domain]
     for q in sample_queries[:20]:
-        bandit.update(u.user_id, q, preferred, reward=1.0)
+        bandit.update(u.user_id, domain, q, preferred, reward=1.0)
 
-    probs = bandit.probabilities(u.user_id, query, tools)
-    print(f"\nAfter 20 positive updates for '{preferred}' (top-5):")
-    for t, p in sorted(probs.items(), key=lambda x: -x[1])[:5]:
+    probs = bandit.probabilities(u.user_id, domain, query, tools)
+    print(f"\nAfter 20 positive updates for '{preferred}':")
+    for t, p in sorted(probs.items(), key=lambda x: -x[1]):
         print(f"  {t}: {p:.3f}")
 
-    # Learned preference distribution over all tools
-    all_sample_qs = [q for qs in STANDARD_QUERIES.values() for q in qs[:3]]
-    learned = bandit.learned_preference_distribution(u.user_id, tools, all_sample_qs)
-    print("\nLearned marginal preference (top-5):")
-    for t, p in sorted(learned.items(), key=lambda x: -x[1])[:5]:
+    # Learned preference distribution (per-domain)
+    learned = bandit.learned_preference_distribution(
+        u.user_id, domain, tools, sample_queries[:10]
+    )
+    print(f"\nLearned preference for {domain}:")
+    for t, p in sorted(learned.items(), key=lambda x: -x[1]):
         print(f"  {t}: {p:.3f}")
-    print(f"Predicted preferred food tool: {max((t for t in DOMAINS[domain]), key=lambda t: learned[t])}")
-    print(f"True preferred food tool:      {preferred}")
+    print(f"Predicted preferred: {max(tools, key=lambda t: learned[t])}")
+    print(f"True preferred:      {preferred}")
