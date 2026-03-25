@@ -25,7 +25,6 @@ from collections import defaultdict, deque
 from typing import Dict, List
 
 from bandits import LinUCBBandit
-from data_gen import DOMAINS, TOOL_METADATA
 
 # ---------------------------------------------------------------------------
 # LLM client — lazy import so the module loads without LLM dependencies
@@ -72,30 +71,21 @@ def _llm_call(prompt: str, model: str) -> str:
     last_exc: Exception = RuntimeError("no attempts made")
     for attempt in range(5):
         try:
-            resp = requests.post(url, headers=headers, json=payload, timeout=120)
-            # Retry on 5xx server errors (502 Bad Gateway, 503 Service Unavailable, etc.)
+            resp = requests.post(url, headers=headers, json=payload, timeout=60)
             if resp.status_code >= 500:
                 raise requests.exceptions.HTTPError(
-                    f"{resp.status_code} Server Error",
+                    f"{resp.status_code} Server Error — body: {resp.text[:300]}",
                     response=resp,
                 )
             resp.raise_for_status()
-            if not resp.text.strip():
-                raise requests.exceptions.HTTPError(
-                    f"{resp.status_code} Empty response body",
-                    response=resp,
-                )
             return resp.json()["choices"][0]["message"]["content"].strip()
         except (requests.exceptions.Timeout,
                 requests.exceptions.ConnectionError,
-                requests.exceptions.HTTPError,
-                requests.exceptions.ChunkedEncodingError,
-                requests.exceptions.JSONDecodeError) as e:
+                requests.exceptions.HTTPError) as e:
             last_exc = e
-            # Longer wait for 502/503 errors (upstream issues)
-            is_5xx = "502" in str(e) or "503" in str(e) or "500" in str(e)
-            wait = 30 if is_5xx else min(2 ** attempt, 15)
-            print(f"\n  [LLM] attempt {attempt + 1}/5 failed ({type(e).__name__}), retrying in {wait}s…", flush=True)
+            is_upstream = "do_request_failed" in str(e) or "upstream" in str(e)
+            wait = 15 if is_upstream else min(2 ** attempt, 30)
+            print(f"\n  [LLM] attempt {attempt + 1}/5 failed, retrying in {wait}s…", flush=True)
             time.sleep(wait)
     raise last_exc
 
@@ -189,14 +179,11 @@ class ZeroShotAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        tools_block = "\n".join(
-            f"  - {t}: {TOOL_METADATA.get(t, '')}" for t in tools
-        )
+        tools_str = ", ".join(tools)
         prompt = (
-            f"Select the best tool for the user query.\n"
-            f"Available tools:\n{tools_block}\n"
-            f"Query: \"{query}\"\n"
-            f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
+            f"Select the best tool for the user query. "
+            f"Tools: {tools_str}. Query: \"{query}\". "
+            f"Reply with only the tool name."
         )
         response = _llm_call(prompt, self.model)
         return _extract_tool(response, tools)
@@ -232,16 +219,13 @@ class InContextMemoryAgent(_AgentBase):
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
         history = list(self._memory[(user_id, domain)])
-        tools_block = "\n".join(
-            f"  - {t}: {TOOL_METADATA.get(t, '')}" for t in tools
-        )
+        tools_str = ", ".join(tools)
+
         history_str = ", ".join(history) if history else "none"
         prompt = (
-            f"Select the best tool for the user query.\n"
-            f"Available tools:\n{tools_block}\n"
-            f"User's recent successful selections: {history_str}.\n"
-            f"Query: \"{query}\"\n"
-            f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
+            f"Select the best tool for the user query. "
+            f"Tools: {tools_str}. User's recent history: {history_str}. "
+            f"Query: \"{query}\". Reply with only the tool name."
         )
         response = _llm_call(prompt, self.model)
         return _extract_tool(response, tools)
@@ -291,8 +275,7 @@ class PureBanditAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        domain_tools = DOMAINS[domain]
-        return self.bandit.select(user_id, domain, query, domain_tools)
+        return self.bandit.select(user_id, domain, query, tools)
 
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
@@ -306,9 +289,8 @@ class PureBanditAgent(_AgentBase):
         tools: List[str],
         sample_queries: List[str],
     ) -> Dict[str, float]:
-        domain_tools = DOMAINS[domain]
         return self.bandit.learned_preference_distribution(
-            user_id, domain, domain_tools, sample_queries
+            user_id, domain, tools, sample_queries
         )
 
 
@@ -324,10 +306,8 @@ class BanditPriorCoTAgent(_AgentBase):
     1. LinUCB bandit computes a softmax probability distribution over tools
        (the 'statistical prior') from user interaction history.
     2. The prior is injected into an LLM prompt together with the query.
-       The prior is computed per-domain (4 tools) for a concentrated signal,
-       while the LLM still sees all 20 tools with metadata.
-    3. The LLM semantically evaluates the query against the prior, then
-       outputs its final tool selection.
+    3. The LLM produces <thinking>...</thinking> CoT that semantically evaluates
+       the query against the prior, then outputs its final tool selection.
     4. The prior is OVERRIDDEN when the query explicitly requests a different tool
        (OOD robustness), but FOLLOWED for ambiguous standard queries (personalization).
 
@@ -341,77 +321,35 @@ class BanditPriorCoTAgent(_AgentBase):
         self.model = model
         self.bandit = LinUCBBandit(alpha=alpha)
 
-    def __init__(self, model: str = DEFAULT_MODEL, alpha: float = 1.0):
-        self.model = model
-        self.bandit = LinUCBBandit(alpha=alpha)
-        # Track domain classification accuracy
-        self.domain_predictions = []  # list of (true_domain, inferred_domain) tuples
-        # Cache inferred domain per (user_id, round) for consistent update
-        self._inferred_domains = {}  # (user_id, query) -> inferred_domain
-
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        # Two-stage decision: LLM infers domain (with full metadata) → Bandit + LLM refines (compact)
-        # Stage 1: LLM infers domain by seeing all 20 tools with metadata
-        all_tools_block = "\n".join(
-            f"  - {t}: {TOOL_METADATA[t]}" for t in tools
+        # Step 1: compute statistical prior from bandit
+        probs = self.bandit.probabilities(user_id, domain, query, tools)
+        prior_str = "\n".join(
+            f"  - {tool}: {prob:.2%}"
+            for tool, prob in sorted(probs.items(), key=lambda x: -x[1])
         )
-        domain_prompt = (
-            f"Classify this query into one domain by analyzing which tools are most relevant.\n"
-            f"Available tools:\n{all_tools_block}\n\n"
-            f"Query: \"{query}\"\n"
-            f"Domains: {', '.join(DOMAINS.keys())}\n"
-            f"Reply with only JSON: {{\"domain\": \"<domain name>\"}}"
-        )
-        domain_response = _llm_call(domain_prompt, self.model)
+        tools_str = ", ".join(tools)
 
-        # Parse inferred domain
-        inferred_domain = domain  # fallback to ground truth
-        try:
-            domain_data = json.loads(domain_response)
-            candidate_domain = domain_data.get("domain", "")
-            if candidate_domain in DOMAINS:
-                inferred_domain = candidate_domain
-        except (json.JSONDecodeError, AttributeError):
-            # Try substring match
-            for d in DOMAINS:
-                if d in domain_response.lower():
-                    inferred_domain = d
-                    break
-
-        # Record domain prediction for accuracy tracking
-        self.domain_predictions.append((domain, inferred_domain))
-        # Cache inferred domain for update
-        self._inferred_domains[(user_id, query)] = inferred_domain
-
-        # Stage 2: Get bandit priors for inferred domain (4 tools only)
-        domain_tools = DOMAINS[inferred_domain]
-        probs = self.bandit.probabilities(user_id, inferred_domain, query, domain_tools)
-
-        # Stage 3: LLM chooses from 4 tools (names + priors only, matching original successful design)
-        tools_block = "\n".join(
-            f"  - {t}: {probs[t]:.0%}"
-            for t in sorted(domain_tools, key=lambda x: -probs[x])
-        )
-
+        # Step 2: build prompt that exposes prior and encourages override on OOD
         prompt = (
-            f"Select the best tool for this query.\n"
-            f"Available tools (with learned user preference %):\n{tools_block}\n\n"
-            f"Query: \"{query}\"\n\n"
-            f"If the query explicitly names a tool, use it. Otherwise, prefer the tool with the highest user preference.\n"
+            f"Select the best tool for the user query. "
+            f"Available tools: {tools_str}.\n"
+            f"User history priors: {prior_str}.\n"
+            f"Query: \"{query}\"\n"
+            f"Rules: if the query explicitly names a tool, use that tool. "
+            f"Otherwise, prefer the tool with the highest prior probability.\n"
             f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
         )
 
         response = _llm_call(prompt, self.model)
-        return _extract_tool(response, domain_tools)
+        return _extract_tool(response, tools)
 
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
     ) -> None:
-        # Use inferred domain (not ground truth) for consistent bandit update
-        inferred_domain = self._inferred_domains.get((user_id, query), domain)
-        self.bandit.update(user_id, inferred_domain, query, selected_tool, reward)
+        self.bandit.update(user_id, domain, query, selected_tool, reward)
 
     def get_learned_distribution(
         self,
@@ -420,9 +358,8 @@ class BanditPriorCoTAgent(_AgentBase):
         tools: List[str],
         sample_queries: List[str],
     ) -> Dict[str, float]:
-        domain_tools = DOMAINS[domain]
         return self.bandit.learned_preference_distribution(
-            user_id, domain, domain_tools, sample_queries
+            user_id, domain, tools, sample_queries
         )
 
 
@@ -453,12 +390,12 @@ def build_agents(model: str = DEFAULT_MODEL, include_random: bool = True) -> Lis
 
 
 if __name__ == "__main__":
-    from data_gen import ALL_TOOLS, generate_users
+    from data_gen import DOMAINS, generate_users
 
     users = generate_users(n_users=1)
     u = users[0]
     domain = "food_delivery"
-    tools = ALL_TOOLS  # full pool: all 20 tools across all domains
+    tools = DOMAINS[domain]
     query = "Order some milk tea"
 
     agents = build_agents()

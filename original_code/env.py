@@ -24,7 +24,7 @@ from typing import Callable, Dict, List, Optional
 
 import numpy as np
 
-from data_gen import ALL_TOOLS, DOMAINS, STANDARD_QUERIES, UserPersona, generate_users, sample_query
+from data_gen import DOMAINS, STANDARD_QUERIES, UserPersona, generate_users, sample_query
 
 
 # ---------------------------------------------------------------------------
@@ -138,7 +138,7 @@ def run_simulation(
     for user in users:
         for t in range(T):
             query, domain, is_ood, true_tool = sample_query(user, rng)
-            tools = ALL_TOOLS  # agents select from the full pool across all domains
+            tools = DOMAINS[domain]
 
             for agent_idx, agent in enumerate(agents):
                 selected = agent.select_tool(query, domain, user.user_id, tools)
@@ -290,20 +290,20 @@ def compute_preference_recovery(
     recovery: Dict[str, List[float]] = {name: [] for name in multi_result.agent_names}
 
     domains = list(DOMAINS.keys())
+
     for sr in multi_result.seed_results:
         agents_by_name = {a.name: a for a in sr.trained_agents}
         for user in sr.users:
             for domain in domains:
-                domain_tools = DOMAINS[domain]
+                tools = DOMAINS[domain]
+                sample_qs = STANDARD_QUERIES.get(domain, [])[:10]
                 true_pref = user.preferences[domain]
 
                 for agent_name, agent in agents_by_name.items():
-                    # Learned distribution is now per-domain (agents handle scoping internally)
-                    domain_sample_qs = STANDARD_QUERIES.get(domain, [])[:10]
                     learned = agent.get_learned_distribution(
-                        user.user_id, domain, domain_tools, domain_sample_qs
+                        user.user_id, domain, tools, sample_qs
                     )
-                    predicted = max(domain_tools, key=lambda t: learned.get(t, 0.0))
+                    predicted = max(learned, key=learned.get)
                     recovery[agent_name].append(1.0 if predicted == true_pref else 0.0)
 
     return {name: float(np.mean(vals)) if vals else 0.0 for name, vals in recovery.items()}

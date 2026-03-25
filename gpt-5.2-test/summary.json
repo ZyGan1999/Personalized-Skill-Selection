@@ -1,0 +1,103 @@
+{
+  "config": {
+    "n_users": 5,
+    "T": 5,
+    "n_seeds": 2,
+    "seeds": [
+      0,
+      1
+    ]
+  },
+  "agents": {
+    "Random": {
+      "final_cumulative_regret": {
+        "mean": 4.6,
+        "std": 0.2828427124746186,
+        "per_seed": [
+          4.4,
+          4.8
+        ]
+      },
+      "ood_accuracy_late": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "convergence_round": {
+        "mean": null
+      },
+      "preference_recovery_rate": 0.22
+    },
+    "ZeroShot-LLM": {
+      "final_cumulative_regret": {
+        "mean": 3.6,
+        "std": 0.2828427124746186,
+        "per_seed": [
+          3.4000000000000004,
+          3.8
+        ]
+      },
+      "ood_accuracy_late": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "convergence_round": {
+        "mean": null
+      },
+      "preference_recovery_rate": 0.22
+    },
+    "InContext-Memory": {
+      "final_cumulative_regret": {
+        "mean": 3.5,
+        "std": 0.141421356237309,
+        "per_seed": [
+          3.4000000000000004,
+          3.5999999999999996
+        ]
+      },
+      "ood_accuracy_late": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "convergence_round": {
+        "mean": null
+      },
+      "preference_recovery_rate": 0.24
+    },
+    "Pure-Bandit": {
+      "final_cumulative_regret": {
+        "mean": 3.4000000000000004,
+        "std": 0.2828427124746193,
+        "per_seed": [
+          3.2,
+          3.6000000000000005
+        ]
+      },
+      "ood_accuracy_late": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "convergence_round": {
+        "mean": null
+      },
+      "preference_recovery_rate": 0.26
+    },
+    "Bandit+CoT": {
+      "final_cumulative_regret": {
+        "mean": 3.2,
+        "std": 0.28284271247461895,
+        "per_seed": [
+          3.0000000000000004,
+          3.4000000000000004
+        ]
+      },
+      "ood_accuracy_late": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "convergence_round": {
+        "mean": null
+      },
+      "preference_recovery_rate": 0.24
+    }
+  }
+}

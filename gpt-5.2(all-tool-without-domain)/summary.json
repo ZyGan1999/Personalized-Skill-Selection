@@ -35,19 +35,19 @@
     },
     "ZeroShot-LLM": {
       "final_cumulative_regret": {
-        "mean": 34.9,
-        "std": 1.3592277219068085,
+        "mean": 34.769999999999996,
+        "std": 1.3103434664239657,
         "per_seed": [
-          34.050000000000004,
-          36.150000000000006,
-          35.899999999999984,
-          35.44999999999998,
-          32.95000000000002
+          34.1,
+          36.0,
+          35.59999999999999,
+          35.349999999999994,
+          32.80000000000002
         ]
       },
       "ood_accuracy_late": {
-        "mean": 0.9891891891891891,
-        "std": 0.024173707864862587
+        "mean": 1.0,
+        "std": 0.0
       },
       "convergence_round": {
         "mean": null
@@ -56,56 +56,14 @@
     },
     "InContext-Memory": {
       "final_cumulative_regret": {
-        "mean": 32.040000000000006,
-        "std": 2.255382450938204,
+        "mean": 31.699999999999996,
+        "std": 2.31651678172207,
         "per_seed": [
-          30.19999999999999,
-          33.250000000000014,
-          33.900000000000006,
-          33.800000000000004,
-          29.050000000000004
-        ]
-      },
-      "ood_accuracy_late": {
-        "mean": 0.9948717948717949,
-        "std": 0.0114670152692297
-      },
-      "convergence_round": {
-        "mean": null
-      },
-      "preference_recovery_rate": 0.488
-    },
-    "Pure-Bandit": {
-      "final_cumulative_regret": {
-        "mean": 18.089999999999996,
-        "std": 0.40835033978190693,
-        "per_seed": [
-          18.199999999999996,
-          18.39999999999999,
-          18.45,
-          17.45,
-          17.949999999999996
-        ]
-      },
-      "ood_accuracy_late": {
-        "mean": 0.09163989163989164,
-        "std": 0.010749276710262136
-      },
-      "convergence_round": {
-        "mean": null
-      },
-      "preference_recovery_rate": 0.944
-    },
-    "Bandit+CoT": {
-      "final_cumulative_regret": {
-        "mean": 13.830000000000004,
-        "std": 0.32710854467592454,
-        "per_seed": [
-          14.200000000000006,
-          13.900000000000006,
-          13.85,
-          13.900000000000004,
-          13.3
+          30.75,
+          32.849999999999994,
+          33.89999999999999,
+          32.9,
+          28.100000000000005
         ]
       },
       "ood_accuracy_late": {
@@ -115,7 +73,49 @@
       "convergence_round": {
         "mean": null
       },
-      "preference_recovery_rate": 0.964
+      "preference_recovery_rate": 0.484
+    },
+    "Pure-Bandit": {
+      "final_cumulative_regret": {
+        "mean": 44.629999999999995,
+        "std": 0.8927485648266271,
+        "per_seed": [
+          45.199999999999996,
+          43.1,
+          45.0,
+          44.59999999999998,
+          45.250000000000014
+        ]
+      },
+      "ood_accuracy_late": {
+        "mean": 0.05817425817425818,
+        "std": 0.04097486029966026
+      },
+      "convergence_round": {
+        "mean": null
+      },
+      "preference_recovery_rate": 0.274
+    },
+    "Bandit+CoT": {
+      "final_cumulative_regret": {
+        "mean": 35.75,
+        "std": 0.9974968671630018,
+        "per_seed": [
+          37.2,
+          35.900000000000006,
+          35.65,
+          35.6,
+          34.4
+        ]
+      },
+      "ood_accuracy_late": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "convergence_round": {
+        "mean": null
+      },
+      "preference_recovery_rate": 0.35
     }
   }
 }
