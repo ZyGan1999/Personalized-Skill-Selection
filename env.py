@@ -17,14 +17,17 @@ run_experiment(build_agents_fn, n_users, T, seeds, ...) -> MultiSeedResult
 
 from __future__ import annotations
 
+import os
+import pickle
 import random
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
 import numpy as np
 
-from data_gen import ALL_TOOLS, DOMAINS, STANDARD_QUERIES, UserPersona, generate_users, sample_query
+from data_gen import ALL_TOOLS, DOMAINS, STANDARD_QUERIES, UserPersona, generate_users, generate_users_soft, sample_query
 
 
 # ---------------------------------------------------------------------------
@@ -103,6 +106,73 @@ class MultiSeedResult:
 
 
 # ---------------------------------------------------------------------------
+# Checkpoint utilities
+# ---------------------------------------------------------------------------
+
+
+def _ckpt_dir(output_dir: str) -> Path:
+    p = Path(output_dir) / "checkpoints"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def _save_seed_checkpoint(output_dir: str, seed: int, sr: SeedResult) -> None:
+    path = _ckpt_dir(output_dir) / f"seed_{seed}.pkl"
+    with open(path, "wb") as f:
+        pickle.dump(sr, f)
+
+
+def _load_completed_seeds(output_dir: str) -> Dict[int, SeedResult]:
+    ckpt = Path(output_dir) / "checkpoints"
+    if not ckpt.exists():
+        return {}
+    completed = {}
+    for p in ckpt.glob("seed_*.pkl"):
+        if "_progress" in p.name:
+            continue
+        try:
+            with open(p, "rb") as f:
+                sr = pickle.load(f)
+            completed[sr.seed] = sr
+        except Exception:
+            pass
+    return completed
+
+
+def _save_mid_seed_checkpoint(
+    output_dir: str, seed: int,
+    agents, partial_records: List[List], completed_user_count: int,
+    rng_state,
+) -> None:
+    path = _ckpt_dir(output_dir) / f"seed_{seed}_progress.pkl"
+    data = {
+        "completed_user_count": completed_user_count,
+        "agents": agents,
+        "partial_records": partial_records,
+        "rng_state": rng_state,
+    }
+    with open(path, "wb") as f:
+        pickle.dump(data, f)
+
+
+def _load_mid_seed_checkpoint(output_dir: str, seed: int) -> Optional[dict]:
+    path = Path(output_dir) / "checkpoints" / f"seed_{seed}_progress.pkl"
+    if not path.exists():
+        return None
+    try:
+        with open(path, "rb") as f:
+            return pickle.load(f)
+    except Exception:
+        return None
+
+
+def _remove_mid_seed_checkpoint(output_dir: str, seed: int) -> None:
+    path = Path(output_dir) / "checkpoints" / f"seed_{seed}_progress.pkl"
+    if path.exists():
+        path.unlink()
+
+
+# ---------------------------------------------------------------------------
 # Single-seed simulation
 # ---------------------------------------------------------------------------
 
@@ -113,6 +183,7 @@ def run_simulation(
     T: int = 50,
     seed: int = 0,
     verbose: bool = False,  # noqa: ARG001 (kept for API compatibility)
+    output_dir: Optional[str] = None,
 ) -> List[AgentResult]:
     """
     Run the online evaluation loop for one set of agents and users.
@@ -121,6 +192,9 @@ def run_simulation(
     Reward is binary: 1.0 iff selected_tool == true_tool.
     Agent state is updated after each selection.
 
+    If output_dir is set, saves a checkpoint after each user completes
+    so the simulation can resume from where it left off.
+
     Returns
     -------
     List[AgentResult], one per agent, in the same order as `agents`.
@@ -128,14 +202,35 @@ def run_simulation(
     results: List[AgentResult] = [AgentResult(agent_name=a.name) for a in agents]
     rng = random.Random(seed)
 
+    # Try to resume from mid-seed checkpoint
+    start_user_idx = 0
+    if output_dir is not None:
+        ckpt = _load_mid_seed_checkpoint(output_dir, seed)
+        if ckpt is not None:
+            start_user_idx = ckpt["completed_user_count"]
+            # Restore agent state
+            for i, saved_agent in enumerate(ckpt["agents"]):
+                agents[i] = saved_agent
+            # Restore partial records
+            for i, records in enumerate(ckpt["partial_records"]):
+                results[i].records = records
+            # Restore RNG state
+            rng.setstate(ckpt["rng_state"])
+            if start_user_idx > 0:
+                print(f"  [Resume] Seed {seed}: skipping {start_user_idx}/{len(users)} completed users", flush=True)
+
+    remaining_steps = (len(users) - start_user_idx) * T
     try:
         from tqdm import tqdm
-        pbar = tqdm(total=len(users) * T, unit="step",
+        pbar = tqdm(total=remaining_steps, unit="step",
                     desc=f"seed={seed}", leave=False)
     except ImportError:
         pbar = None
 
-    for user in users:
+    for user_idx, user in enumerate(users):
+        if user_idx < start_user_idx:
+            continue
+
         for t in range(T):
             query, domain, is_ood, true_tool = sample_query(user, rng)
             tools = ALL_TOOLS  # agents select from the full pool across all domains
@@ -157,11 +252,18 @@ def run_simulation(
                 agent.update(query, domain, user.user_id, selected, reward)
 
             if pbar is not None:
-                # show mean reward of first agent as live metric
                 recent = results[0].records[-min(10, len(results[0].records)):]
                 acc = sum(r.reward for r in recent) / len(recent)
                 pbar.set_postfix({"acc": f"{acc:.0%}", "user": user.user_id})
                 pbar.update(1)
+
+        # Checkpoint after each user completes
+        if output_dir is not None:
+            _save_mid_seed_checkpoint(
+                output_dir, seed, agents,
+                [r.records for r in results],
+                user_idx + 1, rng.getstate(),
+            )
 
     if pbar is not None:
         pbar.close()
@@ -181,6 +283,9 @@ def run_experiment(
     ood_ratio: float = 0.10,
     pool_size: int = 200,
     verbose: bool = False,
+    soft_preferences: bool = False,
+    concentration: float = 2.0,
+    output_dir: Optional[str] = None,
 ) -> MultiSeedResult:
     """
     Run independent simulation trials across multiple random seeds.
@@ -190,8 +295,9 @@ def run_experiment(
       - Fresh agent instances (clean state)
       - An independent simulation run
 
-    This generates statistically independent trials for computing
-    confidence intervals and running significance tests.
+    If output_dir is set, checkpoints are saved after each seed (and each user
+    within a seed). On resume, completed seeds are loaded from checkpoint and
+    partially completed seeds continue from where they left off.
 
     Parameters
     ----------
@@ -200,31 +306,54 @@ def run_experiment(
     ood_ratio       : fraction of OOD queries in each user's pool
     pool_size       : total queries per user pool
     verbose         : print per-seed progress
+    output_dir      : if set, enable checkpoint/resume to this directory
     """
     if seeds is None:
         seeds = list(range(5))
+
+    # Load completed seed checkpoints
+    completed = _load_completed_seeds(output_dir) if output_dir else {}
+    if completed and verbose:
+        print(f"  [Resume] Found {len(completed)} completed seed(s): {sorted(completed.keys())}", flush=True)
 
     seed_results: List[SeedResult] = []
     agent_names: Optional[List[str]] = None
 
     for i, seed in enumerate(seeds):
+        # Skip fully completed seeds
+        if seed in completed:
+            sr = completed[seed]
+            seed_results.append(sr)
+            if agent_names is None:
+                agent_names = [ar.agent_name for ar in sr.agent_results]
+            if verbose:
+                print(f"\n[Seed {seed}] ({i + 1}/{len(seeds)}) — loaded from checkpoint", flush=True)
+            continue
+
         if verbose:
             print(f"\n[Seed {seed}] ({i + 1}/{len(seeds)})", flush=True)
         t0 = time.time()
 
         # Fresh users with this seed's preference assignments
-        users = generate_users(
-            n_users=n_users, seed=seed, pool_size=pool_size, ood_ratio=ood_ratio
-        )
+        if soft_preferences:
+            users = generate_users_soft(
+                n_users=n_users, seed=seed, pool_size=pool_size,
+                ood_ratio=ood_ratio, concentration=concentration,
+            )
+        else:
+            users = generate_users(
+                n_users=n_users, seed=seed, pool_size=pool_size, ood_ratio=ood_ratio
+            )
 
         # Fresh agents (clean state — no cross-seed contamination)
         agents = build_agents_fn()
         if agent_names is None:
             agent_names = [a.name for a in agents]
 
-        # Run simulation
+        # Run simulation (with mid-seed checkpoint support)
         agent_results = run_simulation(
-            agents=agents, users=users, T=T, seed=seed, verbose=verbose
+            agents=agents, users=users, T=T, seed=seed, verbose=verbose,
+            output_dir=output_dir,
         )
 
         elapsed = time.time() - t0
@@ -233,12 +362,18 @@ def run_experiment(
             n_total = sum(len(ar.records) for ar in agent_results)
             print(f"  Done in {elapsed:.1f}s | overall acc: {n_correct / n_total:.1%}")
 
-        seed_results.append(SeedResult(
+        sr = SeedResult(
             seed=seed,
             agent_results=agent_results,
             users=users,
             trained_agents=agents,
-        ))
+        )
+        seed_results.append(sr)
+
+        # Save seed-level checkpoint and clean up mid-seed checkpoint
+        if output_dir is not None:
+            _save_seed_checkpoint(output_dir, seed, sr)
+            _remove_mid_seed_checkpoint(output_dir, seed)
 
     return MultiSeedResult(
         seed_results=seed_results,
@@ -271,23 +406,44 @@ def rewards_matrix(result: AgentResult, n_users: int, T: int) -> np.ndarray:
 # ---------------------------------------------------------------------------
 
 
+def _kl_divergence(p: np.ndarray, q: np.ndarray, eps: float = 1e-12) -> float:
+    """KL(p || q) with smoothing to avoid log(0)."""
+    p = np.clip(p, eps, None)
+    q = np.clip(q, eps, None)
+    p = p / p.sum()
+    q = q / q.sum()
+    return float(np.sum(p * np.log(p / q)))
+
+
+def _spearman_rank_corr(a: np.ndarray, b: np.ndarray) -> float:
+    """Spearman rank correlation between two arrays."""
+    from scipy.stats import spearmanr
+    corr, _ = spearmanr(a, b)
+    return float(corr) if not np.isnan(corr) else 0.0
+
+
 def compute_preference_recovery(
     multi_result: MultiSeedResult,
-) -> Dict[str, float]:
+) -> Dict[str, Dict[str, float]]:
     """
-    Preference recovery rate: fraction of (user, domain) pairs where the
-    agent's learned distribution assigns the highest probability to the
-    user's true preferred tool.
-
-    Only applicable to agents that implement `get_learned_distribution`
-    (bandit-based agents). Others return None.
+    Preference recovery metrics for each agent.
 
     Returns
     -------
-    Dict mapping agent_name → mean preference recovery rate across all
-    (seed, user, domain) triples.
+    In one-hot mode:
+      {agent_name: {"recovery_rate": float}}
+    In soft mode:
+      {agent_name: {"cosine_sim": float, "kl_divergence": float, "spearman": float}}
     """
-    recovery: Dict[str, List[float]] = {name: [] for name in multi_result.agent_names}
+    # Detect soft mode
+    soft_mode = (multi_result.seed_results[0].users[0].soft_preferences is not None)
+
+    if soft_mode:
+        cosine: Dict[str, List[float]] = {n: [] for n in multi_result.agent_names}
+        kl: Dict[str, List[float]] = {n: [] for n in multi_result.agent_names}
+        spearman: Dict[str, List[float]] = {n: [] for n in multi_result.agent_names}
+    else:
+        recovery: Dict[str, List[float]] = {n: [] for n in multi_result.agent_names}
 
     domains = list(DOMAINS.keys())
     for sr in multi_result.seed_results:
@@ -295,18 +451,44 @@ def compute_preference_recovery(
         for user in sr.users:
             for domain in domains:
                 domain_tools = DOMAINS[domain]
-                true_pref = user.preferences[domain]
 
                 for agent_name, agent in agents_by_name.items():
-                    # Learned distribution is now per-domain (agents handle scoping internally)
                     domain_sample_qs = STANDARD_QUERIES.get(domain, [])[:10]
                     learned = agent.get_learned_distribution(
                         user.user_id, domain, domain_tools, domain_sample_qs
                     )
-                    predicted = max(domain_tools, key=lambda t: learned.get(t, 0.0))
-                    recovery[agent_name].append(1.0 if predicted == true_pref else 0.0)
+                    if soft_mode and user.soft_preferences is not None:
+                        true_dist = user.soft_preferences[domain]
+                        true_vec = np.array([true_dist.get(t, 0.0) for t in domain_tools])
+                        learned_vec = np.array([learned.get(t, 0.0) for t in domain_tools])
+                        # Cosine similarity
+                        norm_prod = np.linalg.norm(true_vec) * np.linalg.norm(learned_vec)
+                        cosine[agent_name].append(
+                            float(np.dot(true_vec, learned_vec) / (norm_prod + 1e-12))
+                        )
+                        # KL divergence: KL(true || learned)
+                        kl[agent_name].append(_kl_divergence(true_vec, learned_vec))
+                        # Spearman rank correlation
+                        spearman[agent_name].append(_spearman_rank_corr(true_vec, learned_vec))
+                    else:
+                        true_pref = user.preferences[domain]
+                        predicted = max(domain_tools, key=lambda t: learned.get(t, 0.0))
+                        recovery[agent_name].append(1.0 if predicted == true_pref else 0.0)
 
-    return {name: float(np.mean(vals)) if vals else 0.0 for name, vals in recovery.items()}
+    if soft_mode:
+        return {
+            name: {
+                "cosine_sim": float(np.mean(cosine[name])) if cosine[name] else 0.0,
+                "kl_divergence": float(np.mean(kl[name])) if kl[name] else 0.0,
+                "spearman": float(np.mean(spearman[name])) if spearman[name] else 0.0,
+            }
+            for name in multi_result.agent_names
+        }
+    else:
+        return {
+            name: {"recovery_rate": float(np.mean(recovery[name])) if recovery[name] else 0.0}
+            for name in multi_result.agent_names
+        }
 
 
 if __name__ == "__main__":

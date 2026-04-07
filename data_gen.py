@@ -403,6 +403,53 @@ def _generate_query_pool(
     return pool
 
 
+def _generate_query_pool_soft(
+    soft_preferences: Dict[str, Dict[str, float]],
+    domains: Dict[str, List[str]],
+    pool_size: int = 200,
+    ood_ratio: float = 0.10,
+    rng: Optional[np.random.Generator] = None,
+) -> List[Tuple[str, str, bool, str]]:
+    """
+    Build a query pool where true_tool is sampled from soft preference distribution.
+
+    Standard queries: true_tool sampled from soft_preferences[domain] probabilities.
+    OOD queries: explicitly request a non-argmax tool (same as _generate_query_pool).
+    """
+    if rng is None:
+        rng = np.random.default_rng()
+
+    pool: List[Tuple[str, str, bool, str]] = []
+    domain_list = list(domains.keys())
+
+    n_ood = max(1, int(pool_size * ood_ratio))
+    n_standard = pool_size - n_ood
+
+    # Standard queries — true_tool sampled from soft distribution
+    for _ in range(n_standard):
+        domain = random.choice(domain_list)
+        query = random.choice(STANDARD_QUERIES[domain])
+        tools = domains[domain]
+        probs = np.array([soft_preferences[domain][t] for t in tools])
+        probs = probs / probs.sum()  # re-normalise for safety
+        true_tool = rng.choice(tools, p=probs)
+        pool.append((query, domain, False, true_tool))
+
+    # OOD queries — pick a non-argmax tool and sample a query that *names* it
+    for _ in range(n_ood):
+        domain = random.choice(domain_list)
+        tools = domains[domain]
+        probs_dict = soft_preferences[domain]
+        argmax_tool = max(probs_dict, key=probs_dict.get)
+        other_tools = [t for t in tools if t != argmax_tool]
+        ood_target = random.choice(other_tools)
+        query = random.choice(OOD_QUERIES[domain][ood_target])
+        pool.append((query, domain, True, ood_target))
+
+    random.shuffle(pool)
+    return pool
+
+
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
@@ -455,7 +502,7 @@ def generate_users_soft(
         soft = _assign_soft_preferences(domains, concentration=concentration, rng=np_rng)
         # Hard label = argmax of soft distribution
         prefs = {domain: max(tool_probs, key=tool_probs.get) for domain, tool_probs in soft.items()}
-        pool = _generate_query_pool(prefs, domains, pool_size=pool_size, ood_ratio=ood_ratio)
+        pool = _generate_query_pool_soft(soft, domains, pool_size=pool_size, ood_ratio=ood_ratio, rng=np_rng)
         users.append(
             UserPersona(user_id=uid, preferences=prefs, soft_preferences=soft, query_pool=pool)
         )
@@ -485,4 +532,12 @@ if __name__ == "__main__":
         for domain, dist in u.soft_preferences.items():
             dist_str = ", ".join(f"{t}: {p:.2f}" for t, p in dist.items())
             print(f"  {domain}: {dist_str}")
+        # Show true_tool distribution in pool per domain
+        from collections import Counter
+        for domain in DOMAINS:
+            tool_counts = Counter(t for _, d, ood, t in u.query_pool if d == domain and not ood)
+            total = sum(tool_counts.values())
+            if total > 0:
+                freq_str = ", ".join(f"{t}: {c}/{total}" for t, c in tool_counts.most_common())
+                print(f"  Pool [{domain}]: {freq_str}")
         print()

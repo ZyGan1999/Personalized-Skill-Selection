@@ -83,6 +83,18 @@ def parse_args() -> argparse.Namespace:
         "--verbose", action="store_true",
         help="Print per-seed simulation progress",
     )
+    parser.add_argument(
+        "--soft-preferences", action="store_true",
+        help="Use Dirichlet-sampled soft preferences instead of one-hot",
+    )
+    parser.add_argument(
+        "--concentration", type=float, default=2.0,
+        help="Dirichlet concentration parameter for soft preferences (higher = more peaked, default: 2.0)",
+    )
+    parser.add_argument(
+        "--resume", action="store_true",
+        help="Resume from checkpoint if available (saves progress after each user/seed)",
+    )
     return parser.parse_args()
 
 
@@ -101,6 +113,9 @@ def main() -> None:
     print(f"  Rounds    : {args.rounds}")
     print(f"  Seeds     : {args.seeds}")
     print(f"  OOD ratio : {args.ood_ratio:.0%}")
+    print(f"  Soft prefs: {args.soft_preferences}")
+    if args.soft_preferences:
+        print(f"  Concentration: {args.concentration}")
     print(f"  Dry-run   : {args.dry_run}")
     print("=" * 65)
 
@@ -145,6 +160,9 @@ def main() -> None:
         ood_ratio=args.ood_ratio,
         pool_size=args.pool_size,
         verbose=args.verbose,
+        soft_preferences=args.soft_preferences,
+        concentration=args.concentration,
+        output_dir=output_dir if args.resume else None,
     )
     elapsed = time.time() - t0
     print(f"  Done in {elapsed:.1f}s  "
@@ -155,8 +173,14 @@ def main() -> None:
     # ------------------------------------------------------------------
     print("\n[2/3] Computing preference recovery …")
     recovery = compute_preference_recovery(multi)
-    for name, rate in recovery.items():
-        print(f"  {name:<22}: {rate:.1%}")
+    for name, metrics_dict in recovery.items():
+        if "recovery_rate" in metrics_dict:
+            print(f"  {name:<22}: {metrics_dict['recovery_rate']:.1%}")
+        else:
+            parts = []
+            for k, v in metrics_dict.items():
+                parts.append(f"{k}={v:.3f}")
+            print(f"  {name:<22}: {', '.join(parts)}")
 
     # ------------------------------------------------------------------
     # 4. Plot metrics and print summary
@@ -181,7 +205,7 @@ def main() -> None:
     plot_cumulative_regret_ci(multi)
     plot_rolling_accuracy_ci(multi)
     plot_ood_robustness(multi)
-    plot_preference_recovery(recovery, multi.agent_names)
+    plot_preference_recovery(recovery, multi.agent_names, soft_mode=args.soft_preferences)
     plot_per_domain_accuracy(multi)
     plot_preference_alignment(multi)
     plot_domain_classification_accuracy(multi)

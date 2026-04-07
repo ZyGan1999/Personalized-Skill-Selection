@@ -212,6 +212,14 @@ class ZeroShotAgent(_AgentBase):
 # ---------------------------------------------------------------------------
 
 
+class _DequeFactory:
+    """Picklable factory for defaultdict of bounded deques."""
+    def __init__(self, maxlen: int):
+        self.maxlen = maxlen
+    def __call__(self):
+        return deque(maxlen=self.maxlen)
+
+
 class InContextMemoryAgent(_AgentBase):
     """
     Appends the last K successful (reward=1) tool selections to the LLM prompt.
@@ -225,7 +233,7 @@ class InContextMemoryAgent(_AgentBase):
         self.memory_size = memory_size
         # (user_id, domain) → deque of successful tool names
         self._memory: Dict[tuple, deque] = defaultdict(
-            lambda: deque(maxlen=memory_size)
+            _DequeFactory(memory_size)
         )
 
     def select_tool(

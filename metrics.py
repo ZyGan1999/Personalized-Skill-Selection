@@ -305,41 +305,76 @@ def plot_ood_robustness(
 
 
 def plot_preference_recovery(
-    recovery_rates: Dict[str, float],
+    recovery_rates: Dict[str, Dict[str, float]],
     agent_names: List[str],
     filename: str = "preference_recovery.pdf",
+    soft_mode: bool = False,
 ) -> str:
     """
-    Bar chart showing what fraction of (user, domain) pairs each agent
-    correctly identifies the user's preferred tool after training.
+    Bar chart showing preference recovery quality after training.
 
-    Parameters
-    ----------
-    recovery_rates : output of env.compute_preference_recovery(multi_result)
+    In one-hot mode: single bar chart of recovery rate.
+    In soft mode: 3-panel subplot (Cosine Similarity, KL Divergence, Spearman Correlation).
     """
-    vals = [recovery_rates.get(name, 0.0) for name in agent_names]
+    if not soft_mode:
+        # One-hot mode: single bar chart
+        def _get_rate(v):
+            return v.get("recovery_rate", 0.0) if isinstance(v, dict) else float(v)
+        vals = [_get_rate(recovery_rates.get(name, 0.0)) for name in agent_names]
+        x = np.arange(len(agent_names))
+        colors = [_agent_color(i) for i in range(len(agent_names))]
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        bars = ax.bar(x, vals, color=colors, edgecolor="black", linewidth=0.8)
+        for bar, v in zip(bars, vals):
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
+                    f"{v:.1%}", ha="center", va="bottom", fontsize=10, fontweight="bold")
+        ax.set_xticks(x)
+        ax.set_xticklabels(agent_names, fontsize=10)
+        ax.set_ylim(0, 1.15)
+        ax.set_ylabel("Preference Recovery Rate", fontsize=12)
+        ax.set_title(
+            "Preference Recovery Rate after Training\n"
+            "(fraction of users where argmax learned dist = true preferred tool)",
+            fontsize=12,
+        )
+        ax.axhline(1.0 / 4, color="gray", linestyle=":", linewidth=1.2, label="Random baseline (1/K)")
+        ax.legend(fontsize=9)
+        ax.grid(True, axis="y", linestyle="--", alpha=0.4)
+        return _save(fig, filename)
+
+    # Soft mode: 3-panel subplot
+    metric_configs = [
+        ("cosine_sim", "Cosine Similarity", (0, 1.15), True, "{:.3f}"),
+        ("kl_divergence", "KL Divergence", None, False, "{:.3f}"),
+        ("spearman", "Spearman Rank Correlation", (-0.3, 1.15), True, "{:.3f}"),
+    ]
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
     x = np.arange(len(agent_names))
     colors = [_agent_color(i) for i in range(len(agent_names))]
 
-    fig, ax = plt.subplots(figsize=(8, 4))
-    bars = ax.bar(x, vals, color=colors, edgecolor="black", linewidth=0.8)
+    for ax, (key, ylabel, ylim, higher_better, fmt) in zip(axes, metric_configs):
+        def _get_metric(v, k=key):
+            return v.get(k, 0.0) if isinstance(v, dict) else 0.0
+        vals = [_get_metric(recovery_rates.get(name, {})) for name in agent_names]
+        bars = ax.bar(x, vals, color=colors, edgecolor="black", linewidth=0.8)
 
-    for bar, v in zip(bars, vals):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
-                f"{v:.1%}", ha="center", va="bottom", fontsize=10, fontweight="bold")
+        for bar, v in zip(bars, vals):
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
+                    fmt.format(v), ha="center", va="bottom", fontsize=9, fontweight="bold")
 
-    ax.set_xticks(x)
-    ax.set_xticklabels(agent_names, fontsize=10)
-    ax.set_ylim(0, 1.15)
-    ax.set_ylabel("Preference Recovery Rate", fontsize=12)
-    ax.set_title(
-        "Preference Recovery Rate after Training\n"
-        "(fraction of users where argmax learned dist = true preferred tool)",
-        fontsize=12,
-    )
-    ax.axhline(1.0 / 4, color="gray", linestyle=":", linewidth=1.2, label="Random baseline (1/K)")
-    ax.legend(fontsize=9)
-    ax.grid(True, axis="y", linestyle="--", alpha=0.4)
+        ax.set_xticks(x)
+        ax.set_xticklabels(agent_names, fontsize=9, rotation=15, ha="right")
+        if ylim is not None:
+            ax.set_ylim(ylim)
+        ax.set_ylabel(ylabel, fontsize=11)
+        arrow = "↑" if higher_better else "↓"
+        ax.set_title(f"{ylabel} ({arrow} better)", fontsize=11, fontweight="bold")
+        ax.grid(True, axis="y", linestyle="--", alpha=0.4)
+
+    fig.suptitle("Distribution Alignment after Training (Soft Preferences)", fontsize=13, y=1.02)
+    fig.tight_layout()
     return _save(fig, filename)
 
 
@@ -459,35 +494,24 @@ def plot_domain_classification_accuracy(
 _BANDIT_AGENTS = {"Pure-Bandit", "Bandit+CoT"}
 
 
-def plot_preference_alignment(
+def _build_alignment_matrices(
     multi: MultiSeedResult,
-    filename: str = "preference_alignment.pdf",
-) -> str:
+    metric_fn,
+) -> Dict[str, np.ndarray]:
     """
-    Per-user, per-domain heatmap showing how much probability each bandit-based
-    agent assigns to the user's TRUE preferred tool after training.
+    Build per-(user, domain) matrices for bandit agents using a custom metric_fn.
 
-    One subplot per bandit agent (side-by-side).  Rows = users, columns = domains.
-    Cell colour indicates alignment: >25% (random baseline) means the agent has
-    learned something useful; darker green = stronger personalization.
-    Values are averaged across seeds for stability.
+    metric_fn(learned: Dict[str, float], user: UserPersona, domain: str,
+              domain_tools: List[str]) -> float
     """
     from data_gen import DOMAINS, STANDARD_QUERIES
-    from matplotlib.colors import TwoSlopeNorm
 
     domain_list = list(DOMAINS.keys())
     n_domains = len(domain_list)
-
-    # Identify bandit agents present in this run
     bandit_names = [n for n in multi.agent_names if n in _BANDIT_AGENTS]
-    if not bandit_names:
-        return ""
 
-    # Build alignment matrices: {agent_name: ndarray (n_users, n_domains)}
-    # Each cell = prob assigned to user's true preferred tool, averaged over seeds
     alignment: Dict[str, np.ndarray] = {}
     for agent_name in bandit_names:
-        # accumulate per-seed matrices then average
         seed_matrices = []
         for sr in multi.seed_results:
             agent = next((a for a in sr.trained_agents if a.name == agent_name), None)
@@ -501,55 +525,148 @@ def plot_preference_alignment(
                     learned = agent.get_learned_distribution(
                         user.user_id, domain, domain_tools, sample_qs
                     )
-                    true_pref = user.preferences[domain]
-                    mat[ui, dj] = learned.get(true_pref, 0.0)
+                    mat[ui, dj] = metric_fn(learned, user, domain, domain_tools)
             seed_matrices.append(mat)
         if seed_matrices:
             alignment[agent_name] = np.mean(seed_matrices, axis=0)
+    return alignment
 
-    if not alignment:
+
+def _plot_alignment_heatmap(
+    multi: MultiSeedResult,
+    alignment: Dict[str, np.ndarray],
+    metric_label: str,
+    baseline_str: str,
+    norm,
+    filename: str,
+    fmt: str = "{:.0%}",
+) -> str:
+    """Render a preference alignment heatmap and save it."""
+    from data_gen import DOMAINS
+
+    domain_list = list(DOMAINS.keys())
+    n_domains = len(domain_list)
+    n_agents = len(alignment)
+    if n_agents == 0:
         return ""
 
-    n_agents = len(alignment)
     fig, axes = plt.subplots(
         1, n_agents,
-        figsize=(5 * n_agents + 1, max(5, multi.n_users * 0.35 + 1.5)),
+        figsize=(5 * n_agents + 2, max(5, multi.n_users * 0.35 + 1.5)),
         squeeze=False,
     )
-
-    # Diverging colormap centred at 0.25 (random baseline = 1/4 tools)
-    norm = TwoSlopeNorm(vmin=0.0, vcenter=0.25, vmax=1.0)
 
     for col, agent_name in enumerate(alignment):
         ax = axes[0, col]
         mat = alignment[agent_name]
-
         im = ax.imshow(mat, cmap="RdYlGn", norm=norm, aspect="auto")
-
         ax.set_xticks(np.arange(n_domains))
         ax.set_xticklabels(domain_list, rotation=30, ha="right", fontsize=9)
         ax.set_yticks(np.arange(multi.n_users))
         ax.set_yticklabels([f"u{i}" for i in range(multi.n_users)], fontsize=8)
         ax.set_title(agent_name, fontsize=12, fontweight="bold")
-
-        # Annotate cells with probability values
         for i in range(multi.n_users):
             for j in range(n_domains):
                 val = mat[i, j]
                 text_color = "black" if 0.15 < val < 0.75 else "white"
-                ax.text(j, i, f"{val:.0%}", ha="center", va="center",
+                ax.text(j, i, fmt.format(val), ha="center", va="center",
                         fontsize=7, color=text_color)
 
     fig.suptitle(
-        f"Preference Alignment: P(true preferred tool)\n"
+        f"Preference Alignment: {metric_label}\n"
         f"({multi.n_users} users, {multi.n_seeds} seeds avg, "
-        f"random baseline = 25%)",
+        f"{baseline_str})",
         fontsize=12, y=1.02,
     )
-    fig.colorbar(im, ax=axes.ravel().tolist(), label="P(true preferred tool)",
-                 shrink=0.8, pad=0.02)
-
+    fig.colorbar(im, ax=axes.ravel().tolist(), label=metric_label,
+                 shrink=0.8, pad=0.04, fraction=0.03)
     return _save(fig, filename)
+
+
+def plot_preference_alignment(
+    multi: MultiSeedResult,
+    filename: str = "preference_alignment.pdf",
+) -> str:
+    """
+    Per-user, per-domain heatmap(s) showing alignment between learned and true
+    preference distributions.
+
+    One-hot mode: single heatmap of P(true preferred tool).
+    Soft mode: three heatmaps (Cosine Similarity, KL Divergence, Spearman Rank Corr).
+    """
+    from matplotlib.colors import TwoSlopeNorm
+
+    bandit_names = [n for n in multi.agent_names if n in _BANDIT_AGENTS]
+    if not bandit_names:
+        return ""
+
+    soft_mode = (multi.seed_results[0].users[0].soft_preferences is not None)
+
+    if not soft_mode:
+        # One-hot mode: P(true preferred tool)
+        def _pref_prob(learned, user, domain, domain_tools):
+            return learned.get(user.preferences[domain], 0.0)
+
+        alignment = _build_alignment_matrices(multi, _pref_prob)
+        norm = TwoSlopeNorm(vmin=0.0, vcenter=0.25, vmax=1.0)
+        return _plot_alignment_heatmap(
+            multi, alignment, "P(true preferred tool)", "random baseline = 25%",
+            norm, filename,
+        )
+
+    # Soft mode: three metrics
+    saved = []
+
+    # 1. Cosine Similarity
+    def _cosine(learned, user, domain, domain_tools):
+        true_dist = user.soft_preferences[domain]
+        tv = np.array([true_dist.get(t, 0.0) for t in domain_tools])
+        lv = np.array([learned.get(t, 0.0) for t in domain_tools])
+        return float(np.dot(tv, lv) / (np.linalg.norm(tv) * np.linalg.norm(lv) + 1e-12))
+
+    alignment = _build_alignment_matrices(multi, _cosine)
+    norm = TwoSlopeNorm(vmin=0.0, vcenter=0.5, vmax=1.0)
+    saved.append(_plot_alignment_heatmap(
+        multi, alignment, "Cosine Similarity", "uniform baseline ≈ 0.5",
+        norm, filename,
+    ))
+
+    # 2. KL Divergence
+    def _kl(learned, user, domain, domain_tools):
+        eps = 1e-12
+        true_dist = user.soft_preferences[domain]
+        tv = np.array([true_dist.get(t, 0.0) for t in domain_tools])
+        lv = np.array([learned.get(t, 0.0) for t in domain_tools])
+        tv = np.clip(tv, eps, None); tv = tv / tv.sum()
+        lv = np.clip(lv, eps, None); lv = lv / lv.sum()
+        return float(np.sum(tv * np.log(tv / lv)))
+
+    alignment_kl = _build_alignment_matrices(multi, _kl)
+    # KL: lower is better. Use inverted colormap.
+    max_kl = max(m.max() for m in alignment_kl.values()) if alignment_kl else 1.0
+    norm_kl = TwoSlopeNorm(vmin=0.0, vcenter=max_kl / 2, vmax=max(max_kl, 0.01))
+    saved.append(_plot_alignment_heatmap(
+        multi, alignment_kl, "KL Divergence (↓ better)", f"0 = perfect match",
+        norm_kl, filename.replace(".pdf", "_kl.pdf"), fmt="{:.2f}",
+    ))
+
+    # 3. Spearman Rank Correlation
+    def _spearman(learned, user, domain, domain_tools):
+        from scipy.stats import spearmanr
+        true_dist = user.soft_preferences[domain]
+        tv = np.array([true_dist.get(t, 0.0) for t in domain_tools])
+        lv = np.array([learned.get(t, 0.0) for t in domain_tools])
+        corr, _ = spearmanr(tv, lv)
+        return float(corr) if not np.isnan(corr) else 0.0
+
+    alignment_sp = _build_alignment_matrices(multi, _spearman)
+    norm_sp = TwoSlopeNorm(vmin=-1.0, vcenter=0.0, vmax=1.0)
+    saved.append(_plot_alignment_heatmap(
+        multi, alignment_sp, "Spearman Rank Correlation", "0 = no correlation",
+        norm_sp, filename.replace(".pdf", "_spearman.pdf"), fmt="{:.2f}",
+    ))
+
+    return saved[0]
 
 
 # ---------------------------------------------------------------------------
@@ -677,7 +794,7 @@ def export_csv(multi: MultiSeedResult, path: str = "results.csv") -> str:
 
 def export_json_summary(
     multi: MultiSeedResult,
-    recovery_rates: Optional[Dict[str, float]] = None,
+    recovery_rates: Optional[Dict] = None,
     path: str = "summary.json",
 ) -> str:
     """Export aggregated statistics to JSON for reproducibility."""
