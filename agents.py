@@ -25,7 +25,7 @@ from collections import defaultdict, deque
 from typing import Dict, List
 
 from bandits import LinUCBBandit
-from data_gen import DOMAINS, TOOL_METADATA
+import data_gen
 
 # ---------------------------------------------------------------------------
 # LLM client — lazy import so the module loads without LLM dependencies
@@ -190,7 +190,7 @@ class ZeroShotAgent(_AgentBase):
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
         tools_block = "\n".join(
-            f"  - {t}: {TOOL_METADATA.get(t, '')}" for t in tools
+            f"  - {t}: {data_gen.TOOL_METADATA.get(t, '')}" for t in tools
         )
         prompt = (
             f"Select the best tool for the user query.\n"
@@ -241,7 +241,7 @@ class InContextMemoryAgent(_AgentBase):
     ) -> str:
         history = list(self._memory[(user_id, domain)])
         tools_block = "\n".join(
-            f"  - {t}: {TOOL_METADATA.get(t, '')}" for t in tools
+            f"  - {t}: {data_gen.TOOL_METADATA.get(t, '')}" for t in tools
         )
         history_str = ", ".join(history) if history else "none"
         prompt = (
@@ -284,7 +284,88 @@ class InContextMemoryAgent(_AgentBase):
 
 
 # ---------------------------------------------------------------------------
-# Baseline 3: Pure Bandit (LinUCB, no LLM)
+# Baseline 3: Profile Memory (structured user profiles + LLM)
+# ---------------------------------------------------------------------------
+
+
+class _StatsFactory:
+    """Picklable factory for defaultdict of stats dicts."""
+    def __call__(self):
+        return {"successes": 0, "attempts": 0}
+
+
+class ProfileMemoryAgent(_AgentBase):
+    """
+    Maintains structured user profiles with per-tool success statistics.
+    Injects profile into LLM prompt for personalized tool selection.
+
+    Simulates how current AI agents handle personalization in practice:
+    record user preferences in a memory/profile, then use as LLM context.
+    """
+
+    name = "Profile-Memory"
+
+    def __init__(self, model: str = DEFAULT_MODEL):
+        self.model = model
+        # (user_id, domain, tool) -> {"successes": int, "attempts": int}
+        self._stats: Dict[tuple, Dict[str, int]] = defaultdict(_StatsFactory())
+
+    def select_tool(
+        self, query: str, domain: str, user_id: int, tools: List[str]
+    ) -> str:
+        domain_tools = data_gen.DOMAINS[domain]
+        # Build profile string from stats
+        profile_lines = []
+        for t in domain_tools:
+            s = self._stats[(user_id, domain, t)]
+            if s["attempts"] > 0:
+                rate = s["successes"] / s["attempts"]
+                profile_lines.append(
+                    f"  - {t}: {s['successes']}/{s['attempts']} successful ({rate:.0%})"
+                )
+            else:
+                profile_lines.append(f"  - {t}: no data yet")
+        profile_block = "\n".join(profile_lines)
+
+        prompt = (
+            f"Select the best tool for this query.\n"
+            f"User's history with tools in this domain:\n{profile_block}\n\n"
+            f"Query: \"{query}\"\n\n"
+            f"If the query explicitly names a tool, use it. "
+            f"Otherwise, prefer the tool with the highest success rate.\n"
+            f"Reply with only JSON: {{\"tool\": \"<tool name>\"}}"
+        )
+        response = _llm_call(prompt, self.model)
+        return _extract_tool(response, domain_tools)
+
+    def update(
+        self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
+    ) -> None:
+        self._stats[(user_id, domain, selected_tool)]["attempts"] += 1
+        if reward == 1.0:
+            self._stats[(user_id, domain, selected_tool)]["successes"] += 1
+
+    def get_learned_distribution(
+        self,
+        user_id: int,
+        domain: str,
+        tools: List[str],
+        sample_queries: List[str],
+    ) -> Dict[str, float]:
+        """Return success-rate distribution over tools."""
+        domain_tools = data_gen.DOMAINS[domain]
+        rates = {}
+        for t in domain_tools:
+            s = self._stats[(user_id, domain, t)]
+            rates[t] = s["successes"] / max(s["attempts"], 1)
+        total = sum(rates.values())
+        if total > 0:
+            return {t: r / total for t, r in rates.items()}
+        return {t: 1.0 / len(domain_tools) for t in domain_tools}
+
+
+# ---------------------------------------------------------------------------
+# Baseline 4: Pure Bandit (LinUCB, no LLM)
 # ---------------------------------------------------------------------------
 
 
@@ -299,7 +380,7 @@ class PureBanditAgent(_AgentBase):
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        domain_tools = DOMAINS[domain]
+        domain_tools = data_gen.DOMAINS[domain]
         return self.bandit.select(user_id, domain, query, domain_tools)
 
     def update(
@@ -314,7 +395,7 @@ class PureBanditAgent(_AgentBase):
         tools: List[str],
         sample_queries: List[str],
     ) -> Dict[str, float]:
-        domain_tools = DOMAINS[domain]
+        domain_tools = data_gen.DOMAINS[domain]
         return self.bandit.learned_preference_distribution(
             user_id, domain, domain_tools, sample_queries
         )
@@ -332,72 +413,31 @@ class BanditPriorCoTAgent(_AgentBase):
     1. LinUCB bandit computes a softmax probability distribution over tools
        (the 'statistical prior') from user interaction history.
     2. The prior is injected into an LLM prompt together with the query.
-       The prior is computed per-domain (4 tools) for a concentrated signal,
-       while the LLM still sees all 20 tools with metadata.
+       The prior is computed per-domain for a concentrated signal.
     3. The LLM semantically evaluates the query against the prior, then
        outputs its final tool selection.
     4. The prior is OVERRIDDEN when the query explicitly requests a different tool
        (OOD robustness), but FOLLOWED for ambiguous standard queries (personalization).
 
-    This combines the sample-efficiency of bandit learning with the semantic
-    flexibility of LLM reasoning — the two are complementary.
+    Domain classification is handled externally (shared across agents).
     """
 
     name = "Bandit+CoT"
 
-    def __init__(self, model: str = DEFAULT_MODEL, alpha: float = 1.0):
+    def __init__(self, model: str = DEFAULT_MODEL, alpha: float = 1.0, temperature: float = 3.0):
         self.model = model
         self.bandit = LinUCBBandit(alpha=alpha)
-
-    def __init__(self, model: str = DEFAULT_MODEL, alpha: float = 1.0):
-        self.model = model
-        self.bandit = LinUCBBandit(alpha=alpha)
-        # Track domain classification accuracy
-        self.domain_predictions = []  # list of (true_domain, inferred_domain) tuples
-        # Cache inferred domain per (user_id, round) for consistent update
-        self._inferred_domains = {}  # (user_id, query) -> inferred_domain
+        self.temperature = temperature
 
     def select_tool(
         self, query: str, domain: str, user_id: int, tools: List[str]
     ) -> str:
-        # Two-stage decision: LLM infers domain (with full metadata) → Bandit + LLM refines (compact)
-        # Stage 1: LLM infers domain by seeing all 20 tools with metadata
-        all_tools_block = "\n".join(
-            f"  - {t}: {TOOL_METADATA[t]}" for t in tools
-        )
-        domain_prompt = (
-            f"Classify this query into one domain by analyzing which tools are most relevant.\n"
-            f"Available tools:\n{all_tools_block}\n\n"
-            f"Query: \"{query}\"\n"
-            f"Domains: {', '.join(DOMAINS.keys())}\n"
-            f"Reply with only JSON: {{\"domain\": \"<domain name>\"}}"
-        )
-        domain_response = _llm_call(domain_prompt, self.model)
+        # Domain is provided by the shared classifier (or ground truth)
+        domain_tools = data_gen.DOMAINS[domain]
+        probs = self.bandit.probabilities(user_id, domain, query, domain_tools,
+                                           temperature=self.temperature)
 
-        # Parse inferred domain
-        inferred_domain = domain  # fallback to ground truth
-        try:
-            domain_data = json.loads(domain_response)
-            candidate_domain = domain_data.get("domain", "")
-            if candidate_domain in DOMAINS:
-                inferred_domain = candidate_domain
-        except (json.JSONDecodeError, AttributeError):
-            # Try substring match
-            for d in DOMAINS:
-                if d in domain_response.lower():
-                    inferred_domain = d
-                    break
-
-        # Record domain prediction for accuracy tracking
-        self.domain_predictions.append((domain, inferred_domain))
-        # Cache inferred domain for update
-        self._inferred_domains[(user_id, query)] = inferred_domain
-
-        # Stage 2: Get bandit priors for inferred domain (4 tools only)
-        domain_tools = DOMAINS[inferred_domain]
-        probs = self.bandit.probabilities(user_id, inferred_domain, query, domain_tools)
-
-        # Stage 3: LLM chooses from 4 tools (names + priors only, matching original successful design)
+        # LLM chooses from domain tools (names + bandit priors)
         tools_block = "\n".join(
             f"  - {t}: {probs[t]:.0%}"
             for t in sorted(domain_tools, key=lambda x: -probs[x])
@@ -417,9 +457,7 @@ class BanditPriorCoTAgent(_AgentBase):
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
     ) -> None:
-        # Use inferred domain (not ground truth) for consistent bandit update
-        inferred_domain = self._inferred_domains.get((user_id, query), domain)
-        self.bandit.update(user_id, inferred_domain, query, selected_tool, reward)
+        self.bandit.update(user_id, domain, query, selected_tool, reward)
 
     def get_learned_distribution(
         self,
@@ -428,7 +466,7 @@ class BanditPriorCoTAgent(_AgentBase):
         tools: List[str],
         sample_queries: List[str],
     ) -> Dict[str, float]:
-        domain_tools = DOMAINS[domain]
+        domain_tools = data_gen.DOMAINS[domain]
         return self.bandit.learned_preference_distribution(
             user_id, domain, domain_tools, sample_queries
         )

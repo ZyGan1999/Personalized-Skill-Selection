@@ -154,17 +154,21 @@ class LinUCBBandit:
         }
 
     def probabilities(
-        self, user_id: int, domain: str, query: str, tools: List[str]
+        self, user_id: int, domain: str, query: str, tools: List[str],
+        temperature: float = 3.0,
     ) -> Dict[str, float]:
         """
         Softmax-normalised UCB scores → probability distribution over tools.
         Used as the 'statistical prior' injected into the CoT agent prompt.
-        Numerically stable via max-shift before exponentiation.
+
+        temperature > 1 sharpens the distribution (amplifies score differences).
+        temperature = 1 is standard softmax.
+        temperature < 1 flattens the distribution.
         """
         raw = self.scores(user_id, domain, query, tools)
         vals = np.array([raw[t] for t in tools], dtype=np.float64)
         vals -= vals.max()
-        exp_vals = np.exp(vals)
+        exp_vals = np.exp(vals * temperature)
         probs = exp_vals / exp_vals.sum()
         return {tool: float(p) for tool, p in zip(tools, probs)}
 

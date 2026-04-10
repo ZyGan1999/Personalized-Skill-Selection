@@ -225,6 +225,31 @@ def plot_rolling_accuracy_ci(
     rolling_data = _multi_seed_rolling(multi, window)
     rounds = np.arange(window, multi.T + 1)
 
+    # Compute oracle accuracy: best possible accuracy if always picking the
+    # most frequent true_tool per (user, domain) in the query pool.
+    # This represents the theoretical upper bound given the preference distribution.
+    oracle_accs = []
+    for sr in multi.seed_results:
+        correct = 0
+        total = 0
+        for ar in sr.agent_results[:1]:  # just count from any agent's records
+            from collections import Counter
+            # Group by (user_id, domain) and find the most common true_tool
+            ud_tools = {}  # (user_id, domain) -> Counter of true_tools
+            for r in ar.records:
+                key = (r.user_id, r.domain)
+                if key not in ud_tools:
+                    ud_tools[key] = Counter()
+                ud_tools[key][r.true_tool] += 1
+            for r in ar.records:
+                key = (r.user_id, r.domain)
+                best_tool = ud_tools[key].most_common(1)[0][0]
+                if r.true_tool == best_tool:
+                    correct += 1
+                total += 1
+        oracle_accs.append(correct / max(total, 1))
+    oracle_mean = float(np.mean(oracle_accs))
+
     fig, ax = plt.subplots(figsize=(8, 5))
     for idx, name in enumerate(multi.agent_names):
         arr = rolling_data[name]         # (n_seeds, T_eff)
@@ -234,6 +259,8 @@ def plot_rolling_accuracy_ci(
         ax.plot(rounds, mean, label=name, color=color, linewidth=2)
         ax.fill_between(rounds, lo, hi, alpha=0.15, color=color)
 
+    ax.axhline(oracle_mean, color="green", linestyle="-.", linewidth=1.5,
+               label=f"Oracle ({oracle_mean:.0%})", alpha=0.7)
     ax.axhline(threshold, color="black", linestyle="--", linewidth=1.2,
                label=f"{threshold:.0%} threshold")
     ax.set_xlabel("Round (T)", fontsize=12)
@@ -441,44 +468,51 @@ def plot_domain_classification_accuracy(
     filename: str = "domain_classification_accuracy.pdf",
 ) -> str:
     """
-    Bar chart showing domain classification accuracy for agents that infer domain.
-    Only applicable to Bandit+CoT agent with domain_predictions tracking.
+    Bar chart showing domain classification accuracy.
+    Reads from SeedResult.domain_predictions (shared classifier) or
+    falls back to agent.domain_predictions (legacy per-agent tracking).
     """
-    agent_accuracies = {}
+    seed_accuracies = []
 
     for sr in multi.seed_results:
-        for agent in sr.trained_agents:
-            if hasattr(agent, 'domain_predictions') and agent.domain_predictions:
-                correct = sum(1 for true_d, pred_d in agent.domain_predictions if true_d == pred_d)
-                total = len(agent.domain_predictions)
-                acc = correct / total if total > 0 else 0.0
-                if agent.name not in agent_accuracies:
-                    agent_accuracies[agent.name] = []
-                agent_accuracies[agent.name].append(acc)
+        # Prefer shared domain predictions from env.py
+        preds = getattr(sr, 'domain_predictions', None)
+        if preds:
+            correct = sum(1 for true_d, pred_d in preds if true_d == pred_d)
+            total = len(preds)
+            seed_accuracies.append(correct / total if total > 0 else 0.0)
+        else:
+            # Legacy: check agents for domain_predictions
+            for agent in sr.trained_agents:
+                if hasattr(agent, 'domain_predictions') and agent.domain_predictions:
+                    correct = sum(1 for true_d, pred_d in agent.domain_predictions if true_d == pred_d)
+                    total = len(agent.domain_predictions)
+                    seed_accuracies.append(correct / total if total > 0 else 0.0)
+                    break
 
-    if not agent_accuracies:
-        return ""  # No agents with domain prediction tracking
+    if not seed_accuracies:
+        return ""
 
-    # Compute mean and std across seeds
-    agent_names = list(agent_accuracies.keys())
-    means = [np.mean(agent_accuracies[name]) for name in agent_names]
-    stds = [np.std(agent_accuracies[name]) for name in agent_names]
+    mean_acc = np.mean(seed_accuracies)
+    std_acc = np.std(seed_accuracies) if len(seed_accuracies) > 1 else 0.0
+    n_domains = len(multi.seed_results[0].agent_results[0].records[0].domain
+                     if multi.seed_results else 5)
 
-    x = np.arange(len(agent_names))
+    from data_gen import DOMAINS
+    n_domains = len(DOMAINS)
+    random_baseline = 1.0 / max(n_domains, 1)
+
     fig, ax = plt.subplots(figsize=(6, 4))
-    bars = ax.bar(x, means, yerr=stds, capsize=5, color='steelblue',
-                   edgecolor='black', linewidth=0.8)
+    bar = ax.bar(["Shared Domain\nClassifier"], [mean_acc], yerr=[std_acc],
+                  capsize=5, color='steelblue', edgecolor='black', linewidth=0.8)
+    ax.text(bar[0].get_x() + bar[0].get_width() / 2, bar[0].get_height() + 0.02,
+            f"{mean_acc:.1%}", ha="center", va="bottom", fontsize=11, fontweight="bold")
 
-    for bar, m in zip(bars, means):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
-                f"{m:.1%}", ha="center", va="bottom", fontsize=11, fontweight="bold")
-
-    ax.set_xticks(x)
-    ax.set_xticklabels(agent_names, fontsize=10)
     ax.set_ylim(0, 1.15)
     ax.set_ylabel("Domain Classification Accuracy", fontsize=12)
     ax.set_title("LLM Domain Inference Accuracy", fontsize=13, fontweight="bold")
-    ax.axhline(0.2, color="gray", linestyle=":", linewidth=1.2, label="Random (1/5)")
+    ax.axhline(random_baseline, color="gray", linestyle=":", linewidth=1.2,
+               label=f"Random (1/{n_domains})")
     ax.legend(fontsize=9)
     ax.grid(True, axis="y", linestyle="--", alpha=0.4)
 

@@ -27,7 +27,8 @@ from typing import Callable, Dict, List, Optional
 
 import numpy as np
 
-from data_gen import ALL_TOOLS, DOMAINS, STANDARD_QUERIES, UserPersona, generate_users, generate_users_soft, sample_query
+import data_gen
+from data_gen import UserPersona, generate_users, generate_users_soft, sample_query
 
 
 # ---------------------------------------------------------------------------
@@ -71,6 +72,8 @@ class SeedResult:
     users: List[UserPersona]   # kept for post-hoc preference alignment metrics
     # Agents after training — used to extract learned distributions
     trained_agents: List                # list of agent objects
+    # Domain classification predictions (true_domain, inferred_domain) — tracked at env level
+    domain_predictions: List = field(default_factory=list)
 
 
 @dataclass
@@ -173,6 +176,52 @@ def _remove_mid_seed_checkpoint(output_dir: str, seed: int) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Shared domain classification
+# ---------------------------------------------------------------------------
+
+
+def _classify_domain(query: str, model: str) -> str:
+    """
+    Classify a query into a domain using an LLM call.
+    Shared across all agents for fair comparison.
+    Falls back to the first domain if parsing fails.
+    """
+    import json as _json
+    from agents import _llm_call
+
+    domain_summaries = []
+    for d, d_tools in data_gen.DOMAINS.items():
+        tool_names = ", ".join(d_tools[:4])
+        if len(d_tools) > 4:
+            tool_names += f", ... ({len(d_tools)} total)"
+        domain_summaries.append(f"  - {d}: [{tool_names}]")
+    domains_block = "\n".join(domain_summaries)
+
+    prompt = (
+        f"Which domain does this query belong to?\n\n"
+        f"Domains and their tools:\n{domains_block}\n\n"
+        f"Query: \"{query}\"\n"
+        f"Reply with only JSON: {{\"domain\": \"<exact domain name>\"}}"
+    )
+    response = _llm_call(prompt, model)
+
+    # Parse
+    try:
+        data = _json.loads(response)
+        candidate = data.get("domain", "")
+        if candidate in data_gen.DOMAINS:
+            return candidate
+    except (_json.JSONDecodeError, AttributeError):
+        pass
+    # Substring fallback
+    for d in data_gen.DOMAINS:
+        if d.lower() in response.lower():
+            return d
+    # Last resort: first domain
+    return list(data_gen.DOMAINS.keys())[0]
+
+
+# ---------------------------------------------------------------------------
 # Single-seed simulation
 # ---------------------------------------------------------------------------
 
@@ -184,7 +233,8 @@ def run_simulation(
     seed: int = 0,
     verbose: bool = False,  # noqa: ARG001 (kept for API compatibility)
     output_dir: Optional[str] = None,
-) -> List[AgentResult]:
+    shared_domain_model: Optional[str] = None,
+) -> tuple:
     """
     Run the online evaluation loop for one set of agents and users.
 
@@ -192,14 +242,16 @@ def run_simulation(
     Reward is binary: 1.0 iff selected_tool == true_tool.
     Agent state is updated after each selection.
 
-    If output_dir is set, saves a checkpoint after each user completes
-    so the simulation can resume from where it left off.
+    If shared_domain_model is set, domain classification is done once per query
+    via LLM and shared across all agents (fair comparison).
+    Otherwise, ground truth domain is used.
 
     Returns
     -------
-    List[AgentResult], one per agent, in the same order as `agents`.
+    (List[AgentResult], List[tuple]) — agent results and domain predictions.
     """
     results: List[AgentResult] = [AgentResult(agent_name=a.name) for a in agents]
+    domain_predictions: List[tuple] = []  # (true_domain, inferred_domain)
     rng = random.Random(seed)
 
     # Try to resume from mid-seed checkpoint
@@ -233,10 +285,18 @@ def run_simulation(
 
         for t in range(T):
             query, domain, is_ood, true_tool = sample_query(user, rng)
-            tools = ALL_TOOLS  # agents select from the full pool across all domains
+            tools = data_gen.ALL_TOOLS  # agents select from the full pool across all domains
+
+            # Shared domain classification: one LLM call, result shared by all agents
+            if shared_domain_model:
+                inferred_domain = _classify_domain(query, shared_domain_model)
+                domain_predictions.append((domain, inferred_domain))
+                agent_domain = inferred_domain
+            else:
+                agent_domain = domain  # ground truth fallback
 
             for agent_idx, agent in enumerate(agents):
-                selected = agent.select_tool(query, domain, user.user_id, tools)
+                selected = agent.select_tool(query, agent_domain, user.user_id, tools)
                 reward = 1.0 if selected == true_tool else 0.0
 
                 results[agent_idx].records.append(RoundRecord(
@@ -249,7 +309,7 @@ def run_simulation(
                     selected_tool=selected,
                     reward=reward,
                 ))
-                agent.update(query, domain, user.user_id, selected, reward)
+                agent.update(query, agent_domain, user.user_id, selected, reward)
 
             if pbar is not None:
                 recent = results[0].records[-min(10, len(results[0].records)):]
@@ -267,7 +327,7 @@ def run_simulation(
 
     if pbar is not None:
         pbar.close()
-    return results
+    return results, domain_predictions
 
 
 # ---------------------------------------------------------------------------
@@ -286,6 +346,7 @@ def run_experiment(
     soft_preferences: bool = False,
     concentration: float = 2.0,
     output_dir: Optional[str] = None,
+    shared_domain_model: Optional[str] = None,
 ) -> MultiSeedResult:
     """
     Run independent simulation trials across multiple random seeds.
@@ -351,9 +412,10 @@ def run_experiment(
             agent_names = [a.name for a in agents]
 
         # Run simulation (with mid-seed checkpoint support)
-        agent_results = run_simulation(
+        agent_results, domain_preds = run_simulation(
             agents=agents, users=users, T=T, seed=seed, verbose=verbose,
             output_dir=output_dir,
+            shared_domain_model=shared_domain_model,
         )
 
         elapsed = time.time() - t0
@@ -367,6 +429,7 @@ def run_experiment(
             agent_results=agent_results,
             users=users,
             trained_agents=agents,
+            domain_predictions=domain_preds,
         )
         seed_results.append(sr)
 
@@ -445,15 +508,15 @@ def compute_preference_recovery(
     else:
         recovery: Dict[str, List[float]] = {n: [] for n in multi_result.agent_names}
 
-    domains = list(DOMAINS.keys())
+    domains = list(data_gen.DOMAINS.keys())
     for sr in multi_result.seed_results:
         agents_by_name = {a.name: a for a in sr.trained_agents}
         for user in sr.users:
             for domain in domains:
-                domain_tools = DOMAINS[domain]
+                domain_tools = data_gen.DOMAINS[domain]
 
                 for agent_name, agent in agents_by_name.items():
-                    domain_sample_qs = STANDARD_QUERIES.get(domain, [])[:10]
+                    domain_sample_qs = data_gen.STANDARD_QUERIES.get(domain, [])[:10]
                     learned = agent.get_learned_distribution(
                         user.user_id, domain, domain_tools, domain_sample_qs
                     )

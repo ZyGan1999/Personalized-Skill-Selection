@@ -4,6 +4,47 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-04-10 — Benchmark Scaling, Shared Domain Classification, ProfileMemory Baseline & Temperature Tuning
+
+### Benchmark Scaling: ToolBench Integration
+- Added `extract_tools.py`: extracts real API tools from ToolBench data (3,451 tools across 49 categories)
+- Added `generate_queries.py`: LLM-based batch generation of standard and OOD queries for any tool set
+- Added `load_benchmark()` to `data_gen.py`: loads tool definitions from JSON config files, replacing hardcoded 20-tool setup
+- Added `--benchmark` CLI flag to `main.py`: switch between built-in benchmark and custom configs
+- Changed module imports in `env.py` and `agents.py` to `import data_gen` (module reference) so `load_benchmark()` updates are visible globally
+- Created `benchmark_data/toolbench_60.json`: 60 real APIs across 10 domains (Finance, Sports, Travel, Entertainment, Gaming, Education, Communication, Location, eCommerce, Social)
+
+### Shared Domain Classification (Fair Comparison)
+- Added `_classify_domain()` in `env.py`: one LLM call per query, result shared across all agents
+- All agents (including Pure-Bandit) now use the same inferred domain — no agent gets ground truth for free
+- Removed Stage 1 (domain inference) from `BanditPriorCoTAgent` — it now only does Stage 2 (bandit prior + LLM tool selection), saving one LLM call per round
+- Domain classification accuracy tracked at `env.py` level via `SeedResult.domain_predictions`
+- Updated `plot_domain_classification_accuracy()` in `metrics.py` to read from `SeedResult`
+
+### New Baseline: ProfileMemoryAgent
+- Simulates how current AI agents (Claude Memory, ChatGPT Memory) handle personalization
+- Maintains per-(user, domain, tool) success/attempt statistics
+- Injects structured profile into LLM prompt: "Tool X: 8/10 successful (80%)"
+- A strong baseline that accumulates knowledge over all rounds (unlike InContext-Memory's 5-item window)
+
+### Softmax Temperature for Bandit Prior
+- Added `temperature` parameter to `LinUCBBandit.probabilities()` (default: 3.0)
+- Higher temperature sharpens the prior distribution, making it more informative for the LLM
+- Example: UCB [1.21, 1.0, 1.0, 1.0] → temp=1: [29%, 24%, 24%, 24%] → temp=3: [38%, 21%, 21%, 21%]
+- Added `--temperature` CLI flag for easy tuning
+
+### Oracle Baseline in Rolling Accuracy Plot
+- Added "Oracle" line: theoretical upper bound if always picking the most frequent true_tool per (user, domain)
+- For one-hot mode: ~90% (standard queries all correct, OOD all wrong)
+- Provides visual reference for how far agents are from optimal
+
+### Key Experimental Findings
+- toolbench_100 (10 domains × 10 tools): domain classification only 74%, Bandit+CoT underperformed Pure-Bandit
+- toolbench_60 (10 domains × 6 tools) + improved Stage 1 prompt: domain classification improved to 94.5%
+- Shared domain classification eliminates the unfair advantage Pure-Bandit had from using ground truth domain
+
+---
+
 ## 2026-04-07 — Soft Preferences, Multi-Metric Evaluation & Checkpoint/Resume
 
 **Commit**: `ea732db`

@@ -314,6 +314,48 @@ OOD_QUERIES: Dict[str, Dict[str, List[str]]] = {
 }
 
 # ---------------------------------------------------------------------------
+# Benchmark loading (config-file-driven)
+# ---------------------------------------------------------------------------
+
+
+def load_benchmark(config_path: str) -> None:
+    """
+    Load benchmark configuration from a JSON file, replacing the module-level
+    DOMAINS, TOOL_METADATA, STANDARD_QUERIES, OOD_QUERIES, and ALL_TOOLS.
+
+    JSON format:
+    {
+      "domains": {"category": ["tool1", "tool2", ...], ...},
+      "tool_metadata": {"tool1": "description", ...},
+      "standard_queries": {"category": ["query1", ...], ...},
+      "ood_queries": {"category": {"tool1": ["query1", ...], ...}, ...}
+    }
+
+    Call this BEFORE generate_users() / generate_users_soft() etc.
+    If not called, the built-in 20-tool benchmark is used (backward compatible).
+    """
+    import json
+
+    global DOMAINS, ALL_TOOLS, TOOL_METADATA, STANDARD_QUERIES, OOD_QUERIES
+
+    with open(config_path, "r", encoding="utf-8") as f:
+        cfg = json.load(f)
+
+    DOMAINS = {k: list(v) for k, v in cfg["domains"].items()}
+    ALL_TOOLS = [t for tools in DOMAINS.values() for t in tools]
+    TOOL_METADATA = dict(cfg["tool_metadata"])
+    STANDARD_QUERIES = {k: list(v) for k, v in cfg["standard_queries"].items()}
+    OOD_QUERIES = {
+        domain: {tool: list(queries) for tool, queries in tools.items()}
+        for domain, tools in cfg["ood_queries"].items()
+    }
+
+    n_domains = len(DOMAINS)
+    n_tools = len(ALL_TOOLS)
+    print(f"[benchmark] Loaded {config_path}: {n_domains} domains, {n_tools} tools")
+
+
+# ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
 

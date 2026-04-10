@@ -95,6 +95,14 @@ def parse_args() -> argparse.Namespace:
         "--resume", action="store_true",
         help="Resume from checkpoint if available (saves progress after each user/seed)",
     )
+    parser.add_argument(
+        "--benchmark", type=str, default=None,
+        help="Path to benchmark config JSON (default: built-in 20-tool benchmark)",
+    )
+    parser.add_argument(
+        "--temperature", type=float, default=3.0,
+        help="Softmax temperature for bandit prior (higher = sharper, default: 3.0)",
+    )
     return parser.parse_args()
 
 
@@ -102,12 +110,19 @@ def main() -> None:
     args = parse_args()
     os.environ["AGENT_MODEL"] = args.model
 
+    # Load benchmark config if specified (must happen before anything else)
+    if args.benchmark:
+        from data_gen import load_benchmark
+        load_benchmark(args.benchmark)
+
     output_dir = args.output_dir if args.output_dir else args.model
     os.makedirs(output_dir, exist_ok=True)
 
     print("=" * 65)
     print("  Personalized Agent Tool-Selection Benchmark")
     print("=" * 65)
+    if args.benchmark:
+        print(f"  Benchmark : {args.benchmark}")
     print(f"  Model     : {args.model}")
     print(f"  Users     : {args.users}")
     print(f"  Rounds    : {args.rounds}")
@@ -125,6 +140,7 @@ def main() -> None:
     from agents import (
         BanditPriorCoTAgent,
         InContextMemoryAgent,
+        ProfileMemoryAgent,
         PureBanditAgent,
         RandomAgent,
         ZeroShotAgent,
@@ -140,8 +156,9 @@ def main() -> None:
         agents.extend([
             ZeroShotAgent(model=args.model),
             InContextMemoryAgent(model=args.model, memory_size=5),
+            ProfileMemoryAgent(model=args.model),
             PureBanditAgent(alpha=1.0),
-            BanditPriorCoTAgent(model=args.model, alpha=1.0),
+            BanditPriorCoTAgent(model=args.model, alpha=1.0, temperature=args.temperature),
         ])
         return agents
 
@@ -149,6 +166,9 @@ def main() -> None:
     # 2. Run multi-seed experiment
     # ------------------------------------------------------------------
     from env import run_experiment, compute_preference_recovery
+
+    # Use shared domain classification for non-dry-run experiments
+    shared_domain = args.model if not args.dry_run else None
 
     print(f"\n[1/3] Running {len(args.seeds)}-seed experiment …")
     t0 = time.time()
@@ -163,6 +183,7 @@ def main() -> None:
         soft_preferences=args.soft_preferences,
         concentration=args.concentration,
         output_dir=output_dir if args.resume else None,
+        shared_domain_model=shared_domain,
     )
     elapsed = time.time() - t0
     print(f"  Done in {elapsed:.1f}s  "

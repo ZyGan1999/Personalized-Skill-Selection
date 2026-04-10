@@ -1,0 +1,812 @@
+{
+  "name": "toolbench_60",
+  "description": "60 real APIs from ToolBench across 10 categories",
+  "domains": {
+    "Finance": [
+      "Extended ACH and Check Prescreen",
+      "Twelve Data",
+      "ChangeNOW crypto exchange",
+      "YNAB - You Need a Budget",
+      "DeFi Watch",
+      "Yawin Calculator"
+    ],
+    "Sports": [
+      "Fantasy Cricket",
+      "Tank01 NFL Live In-Game Real Time Statistics NFL",
+      "FlashLive Sports",
+      "Ultimate Tennis",
+      "API-HOCKEY",
+      "API-HANDBALL"
+    ],
+    "Travel": [
+      "Skyscanner API",
+      "Airbnb listings",
+      "webcams.travel",
+      "Airport Guide - Aviation Info",
+      "THT Tour XML OUT API",
+      "ASR Hub"
+    ],
+    "Entertainment": [
+      "Web - Novel API",
+      "Book Discovery by ReadsOmnia",
+      "They Said So - Say it with style",
+      "Euro Millions",
+      "Riddlie ",
+      "ASCII Art"
+    ],
+    "Gaming": [
+      "RoCO API",
+      "League of Legends API",
+      "Games Details",
+      "The Legend of Zelda",
+      "GOG ( good old game )",
+      "Minecraft API"
+    ],
+    "Education": [
+      "Coursmos.com V2",
+      "Tech Exams",
+      "Drillster 2.0",
+      "Braille Translator",
+      "IVLE LAPI",
+      "Reading Home APIs"
+    ],
+    "Communication": [
+      "Whatsapp Private API",
+      "2Factor Authentication - India",
+      "Phone Formatter",
+      "TrumpetBox Cloud",
+      "Eqivo Telephony",
+      "31Events - Send Native Calendar Invites"
+    ],
+    "Location": [
+      "Egypt API",
+      "GeoSource API",
+      "IPinfo by CC",
+      "World Time",
+      "NAVITIME Geocoding",
+      "Nigeria API"
+    ],
+    "eCommerce": [
+      "Axesso - Amazon Data Service",
+      "Cryptocurrency APIs",
+      "Ecommerce Backend",
+      "Jingdong(京东) Data Service",
+      "Pinduoduo(拼多多) Data Service",
+      "Gold Silver live prices"
+    ],
+    "Social": [
+      "Repustate Sentiment and Text Analytics",
+      "Branch Metrics",
+      "Twitter Downloader - Download Twitter videos, GIFs, and images",
+      "Twitter AIO",
+      "TikTok Video No Watermark_v2",
+      "Easy Instagram Automation Service"
+    ]
+  },
+  "tool_metadata": {
+    "Extended ACH and Check Prescreen": "This service is used to reduce ACH/check fraud and returns by processing a submitted Routing and Account Number against an extended network of ACH/check databases containing positive and negative ACH/check writing history. It is used to validate that an account is open and in good standing, while al",
+    "Twelve Data": "Financial data provided for developers, to enter the world markets. Instant access for real-time and historical data of stocks, forex, crypto, ETFs, indices, and more. Read more in [documentation](https://twelvedata.com/docs) and start [here](https://twelvedata.com/apikey).",
+    "ChangeNOW crypto exchange": "Empower your business by letting your customers buy, sell, and exchange crypto. You will earn % on every transaction. 400+ cryptocurrencies and 75+ fiats are available. IMPORTANT: You should get your API key by creating a partner's account here: changenow.io/affiliate. Or email us: partners@changeno",
+    "YNAB - You Need a Budget": "Our API uses a REST based design, leverages the JSON data format, and relies upon HTTPS for transport. We respond with meaningful HTTP response codes and if an error occurs, we include error details in the response body.  API Documentation is at https://api.youneedabudget.com",
+    "DeFi Watch": "DeFi Watch's API opens access to up-to-date data for thousands of cryptocurrencies. The API code is clear, developer-friendly, and provides daily and historical cryptocurrency information for each API request",
+    "Yawin Calculator": "**API for Financial Calculator - Mortgage, Reverse Mortgage, EMI, PreEMI, Loan, Retirement, Fixed Deposit, Monthly Income, Recrring Deposit**\nMortgage, EMI, Loan, Retirement, and other financial products can be integrated into WordPress, your website, or your app. Mortgage Calculator, Home Loan Calc",
+    "Fantasy Cricket": "Most Accurate, Realtime, Fast and Reliable Fantasy Cricket API in the market. Any issues, queries, api integration, custom plan or to Create your own Fantasy Sports Application  contact us at support@techflinch.com",
+    "Tank01 NFL Live In-Game Real Time Statistics NFL": "NFL Live, In-Game Fantasy Stats - NFL (National Football League).  Delivering Accurate Real Time Game Statistics. Updated Rosters/Player Information, Current Schedules, Fantasy Projections, and Updated Standings immediately after every game.  Very Useful for Fantasy Football Apps. \n\nNOW ALSO WITH BE",
+    "FlashLive Sports": "FlashLive Sports provides the fastest live scores, standings and detailed stats. FlashLive covers thousands of competitions in 30+ sports. Soccer, football, baseball, tennis, basketball, hockey, golf mma, cricket, darts. Translation of players, teams and leagues (25 languages).  You can make a site ",
+    "Ultimate Tennis": "Welcome to the Ultimate Tennis API!  It provides all the information you need about the tennis world, including all the details related to players and tournaments(live scores, matches, statistics), from both the ATP and tha WTA circuits, both singles and doubles . We also provide live bettings odds ",
+    "API-HOCKEY": "+ 245 Hockey Leagues & Cups with Livescore, Odds, Bookmakers, Statistics, Standings, Historical Data, Countries, Seasons. Documentation : https://api-sports.io/documentation/hockey/v1. Widgets : https://www.api-football.com/widgets",
+    "API-HANDBALL": "+195 Handball Leagues & Cups with Livescore, Odds, Bookmakers, Statistics, Standings, Historical Data, Countries, Seasons. Documentation : https://api-sports.io/documentation/handball/v1. Widgets : https://www.api-football.com/widgets",
+    "Skyscanner API": "The Skyscanner API offers developers a way to integrate Skyscanner's data into their own applications, allowing users to access and interact with the vast travel data offered by Skyscanner. \n\n![](https://tip.ep-proxy.net/t/ra-ss-main)",
+    "Airbnb listings": "Join the over 300 users/customers and access all Airbnb data updated daily.\nGet Airbnb listings details, future prices and availability, reviews, and more using listing IDs, geo coordinates or \"market\". \nData analytics endpoints are also available to get detailed info around all airbnb accomodations",
+    "webcams.travel": "The World's Largest Landscape Webcam API ***** Get webcams by categories, country, region or just nearby your location ***** Get timelapse slideshows for every webcam ***** Get an uncluttered webcam layer for your map",
+    "Airport Guide - Aviation Info": "Get complete Airport Details by ICAO, IATA or Local IDs. AirportGuide.com has compiled data for over 30 years from multiple sources around the world to provide the best quality global landing facility data. Our database contains over 60,000 airports, heliports, balloonports, seaplane bases, ultralig",
+    "THT Tour XML OUT API": "Introduction\n\nThe purpose of this document is to provide technical details about the API's. This document outlines the business processes supported by the API and details about specifications of API’s. It assumes that reader has a technical background and is familiar with JSON, API's.\n\nConnection pr",
+    "ASR Hub": "ASR Hub is a nomalized XML API which integrates airline content from multiple sources like Direct &amp; NDC connect, Multi-GDS and aggregators from various markets and  offers search, ticket, Payments, ancillary sales, and post bookings services through a single API.  ASR Hub 1.0 provides the comple",
+    "Web - Novel API": "Looking for the latest and greatest in Korean, Chinese, and Japanese web novels? Look no further than Web - Novel API! Our platform offers access to thousands of titles and millions of chapters, all translated into English for your reading pleasure. We provide metadata, ratings, and other important ",
+    "Book Discovery by ReadsOmnia": "Get access to the Internet’s best-curated selection of must-read books. Search up-to-date databases and/or directly access the data via numerous API endpoints, including: Top-of-the-charts bestsellers, new and trending fiction and nonfiction, Critically acclaimed & Award-winning titles and authors, ",
+    "They Said So - Say it with style": "They Said So has more than 1 million+ quotes in the database, the largest such database in the world. And Quotes API gives easy way to access the data. Random quotes, quote of the day and bible verses are all accessible from this simple REST API.",
+    "Euro Millions": "A rich API to get EuroMillions results. With this API you can consult the last result, submit the numbers of one or more bets and check how many numbers you hit. As it has a track record since 2004, you can even get statistics on the numbers that have been drawn the most, check if your lucky numbers",
+    "Riddlie ": "API that provides access to a collection of thousands of riddles (and growing). Fetch a random riddle or a riddle of the day. You can build a perfect app to entertain kids and families for dinner times. You can also pull riddles by their ID, difficulty level and keyword of your interest. API also co",
+    "ASCII Art": "Create ASCII art from your images. Create ASCII tables from your CSV data. Create ASCII figlets (text art using text fonts) for any strings using any of the 200+ figlet styles. Make our cow (or other animals) say things you want in ascii (cowsay).\r\n\r\nAll the results are returned as base64 encoded js",
+    "RoCO API": "This API is a simple ROgue Company API made with info found online on different resources.\nIt started as a personal project, but given that there seems to be no official API, I decided to make a fan based one and make it public.",
+    "League of Legends API": "An league of Legnds API to get all champions, chamption details, champion rotations, league queue, game from summoner, some informtions in a summoner. \nAll information is translated into 28 languages! \nAvailable for all regions!",
+    "Games Details": "get steam platform games details including(system requirement for all operating system ( window, linux and macos ), supported language, developer details include(developer name, publisher , franchise)),reviews,news,screenshots and many more of all games  present in steam platform.",
+    "The Legend of Zelda": "The Zelda API is a cool open-source API that provides information about the greatest game franchise out there: The Legend of Zelda. This API is open, so it doesn't require an API key to use it. Also, please give us a star on our official GitHub repository, and feel free to post issues there.",
+    "GOG ( good old game )": "GOG (Good Old Games) API, an all-in-one solution for accessing a treasure trove of information about classic and beloved video games. Developed specifically for developers and gaming enthusiasts, this API grants seamless access to a comprehensive range of data, including system requirements, feature",
+    "Minecraft API": "Experience the quickest Minecraft API available! Obtain essential Minecraft Server Information, Minecraft Player Details, Minecraft Player Avatars, and more, all without worrying about Mojang rate limits.",
+    "Coursmos.com V2": "Coursmos is a micro-education platform uniting both authors and students, and hosting more than 75,000 online courses. \r\n\r\nMicro-learning is not just shorter courses. At Coursmos, we're leading the way in defining what micro learning means and developing it to achieve its maximum potential for you. ",
+    "Tech Exams": "Tech Exams offers flexible, affordable and the most up to date test banks for self-study training and exam creation. Practice exams for CompTIA,  and coming soon, Microsoft, EC-Council, SANS, PMI, ISC2, CISCO, ISACA, CITRIX, ITIL, VMware, Juniper.",
+    "Drillster 2.0": "Drillster is an open cloud based memorization platform that helps users learn more in less time. Use our API to integrate with Drillster or to create your own memorization solution.\r\n\r\nFor detailed information about this API, please refer to http://www.drillster.com/info/api-2/.",
+    "Braille Translator": "All you need to create a traditional / non traditional Braille display system.  If you have a braille display / want to mimic one in the browser or in your app this is the API you will integrate with.  This takes plain English text and converts to various forms of braille (unicode/ braille/ image et",
+    "IVLE LAPI": "This is the Learning API for the Integrated Virtual Learning Environment (IVLE) used by the National University of Singapore.\r\n\r\nWith this API, you will be able to access your course information on any platform that has internet access.\r\n\r\nUsage of this API is governed by the NUS Acceptable Use Poli",
+    "Reading Home APIs": "Join the millions of readers who turn to Reading Home digital library to access bookss including Personal Growth, True Crime, Business, Travel, Non-Fiction, Contemporary Fiction, YA, Science Fiction, and more.\n\nDownload App at\n\nhttps://play.google.com/store/apps/details?id=com.elabdtech.reading_home",
+    "Whatsapp Private API": "WhatsApp Private API is an unofficial API that allows developers to access WhatsApp's messaging platform outside of the official WhatsApp application. This API is not supported or endorsed by WhatsApp and its use violates WhatsApp's terms of service.  The WhatsApp Private API provides developers wit",
+    "2Factor Authentication - India": "2Factor.in provides extremely simple to use APIs for implementing 2Factor Authentication ( Phone verification ) with just 1 API Call.\r\nBest Part of 2Factor.in solution is its Fast, Reliable & Economical too.",
+    "Phone Formatter": "With this API you will be able to get the entered phone number in international, national and several standard formats with additional information about the country for the correct phone numbers. The formatting method can use probabilistic algorithms and try to get all the necessary information if i",
+    "TrumpetBox Cloud": "Thousands of businesses rely on TrumpetBox Cloud to communicate with their audience via text message. With our API, developers can access many of our platform’s features and integrate them with other websites or applications.",
+    "Eqivo Telephony": "Started as a reimplementation of the open source Plivo Framework (now discontinued), Eqivo Telephony API simplifies the integration between web applications and voice-enabled endpoints, such as traditional phone lines (PSTN), VoIP phones, webRTC clients etc.",
+    "31Events - Send Native Calendar Invites": "31Events is a simple, yet powerful calendaring event management service that allows for the sending of calendaring events directly to your customer’s calendar.  It could be used for Webinars, Seminars, Training, etc.   If the customer accepts the calendar invite they are automatically signed up for ",
+    "Egypt API": "The Egypt Lookup API users to retrieve in realtime the latitude, longitude, and address of a location in Egypt. The API utilizes the OpenStreetMap and Project-OSRM to retrieve up-to-date location data.",
+    "GeoSource API": "Introducing GeoSource API - the comprehensive API service that provides a wealth of geo-information on countries, states, cities, zip codes, currencies, flags, and much more. With GeoSource API, developers can easily access accurate and up-to-date geo-information to enhance their applications and se",
+    "IPinfo by CC": "Pinpoint your users’ exact location, no matter where they are in the world. Find out which internet service provider your visitors are using. Identify the company name and domain for whoever is using the IP address.",
+    "World Time": "WorldTimeAPI is a simple web service which returns the local-time for a given timezone as either JSON or plain-text. Some additional information is provided, such as whether that timezone is currently in Daylight Savings Time, when DST starts and ends, the UTC offset, etc.",
+    "NAVITIME Geocoding": "Return address informations including longitude/latitude and a postal code, by specifying keywords or a postal code. \nWe also provide Reverse geocoding function, which converts from longitude/latitude into address informations.",
+    "Nigeria API": "Welcome to the Nigeria API! This API provides endpoints to lookup locations, find facilities and perform geospatial operations such as distance calculation and directions between two locations in Nigeria.",
+    "Axesso - Amazon Data Service": "The Axesso Amazon Data Service API returns detailed Amazon product information including product title, manufacturer, reviews, size selection, price, reviews and many more. Additionally, the API supports product recommendations as provided by Amazon and invoke keyword searches to find up to 20 produ",
+    "Cryptocurrency APIs": "Through the integrated cryptocurrency API service, it is possible to create addresses, wallets, search past data, create and track transactions, and webhooks.  Developer documentation : https://docs.blocksdk.com",
+    "Ecommerce Backend": "Backend for shopping portal. Use these apis to create a sample shopping portal for Development purposes.  \nThe project has APIs for user, product, cart & images.\n\nCreate a partner & use the partnerId (uuidv4) as a header in All other requests \n\nThese apis are suitable for developers who have experti",
+    "Jingdong(京东) Data Service": "Our JD commodity data API provides you with easy access to valuable product, and seller data from the popular Chinese e-commerce platform. Our endpoints are designed to provide you with fast, accurate data without the need to create a scraper or subscribe to the official JD API. With easy-to-underst",
+    "Pinduoduo(拼多多) Data Service": "Pinduoduo Data Service API offers a comprehensive suite of functions to enable seamless integration and interaction with the Pinduoduo e-commerce platform. Designed to provide developers with powerful tools, this API empowers applications to leverage the full potential of Pinduoduo's vast product ca",
+    "Gold Silver live prices": "This API provides live gold and silver prices for various locations.This API provides a convenient and up-to-date source of information for individuals and businesses interested in tracking the live gold and silver prices in various locations.",
+    "Repustate Sentiment and Text Analytics": "Repustate's sentiment analysis and text analytics API allows you to extract key words and phrases and determine social media sentiment in one of many languages. These languages include English, Arabic, German, French and Spanish. Monitor social media as well using our API and retrieve your data all ",
+    "Branch Metrics": "The Branch SDK Less API under branch metrics is used to track events associated with user and tie back to referring source and generate URL for sharing/referral purposes (optional for tracking shareability/invites/referrals).",
+    "Twitter Downloader - Download Twitter videos, GIFs, and images": "This API allows you to retrieve information about a specific tweet on Twitter. You can use it to retrieve details such as the tweet’s title, description, image, video, gif. With the Twitter Downloader API, you can easily access and leverage the wealth of information available on Twitter.\n\ntelegram D",
+    "Twitter AIO": "Access real-time data as soon as it's posted! With the Twitter AIO API, you can retrieve tweets, spaces, media and profiles instantly. Say goodbye to expensive fees charged by Twitter while still getting access to all the available data.",
+    "TikTok Video No Watermark_v2": "The API helps you to download and get the video download link without the Tiktok logo quickly, completely and in detail. Contact me: phamvandienofficial@gmail.com if you are interested in the source code\n***\nIf you encounter any errors, please contact me so I can fix it quickly.\n***\nContact me: pham",
+    "Easy Instagram Automation Service": "Automate your instagram anonymously without blocks! -use the Instagram Private API on any operating system from any programming language (C++, C#, F#, D, Golang, Erlang, Elixir, Nim, Haskell, Lisp, Closure, Julia, R, Java, Kotlin, Scala, OCaml, JavaScript, Crystal, Ruby, Rust, Swift, Objective-C, Vi"
+  },
+  "standard_queries": {
+    "Finance": [
+      "Can you verify whether this routing and account number is valid and in good standing before I let the user submit an ACH payment? I want to reduce returns and fraud.",
+      "I need to screen a batch of checking accounts before printing and mailing checks to new payees; can you flag risky accounts based on prior negative history?",
+      "Pull real-time and 10-year historical daily prices for a list of US stocks, and also include splits and dividends where available.",
+      "I’m building a dashboard that tracks forex rates live (EUR/USD, GBP/USD, USD/JPY) and needs minute-by-minute candles for the last 30 days.",
+      "Can you stream real-time crypto prices for 50 coins and also provide OHLCV candles for multiple intervals (1m, 1h, 1d)?",
+      "I need end-of-day data for major indices and ETFs, plus a way to backfill missing market days automatically.",
+      "Let users swap between cryptocurrencies and fiat currencies inside my app; I need quotes, expected output amounts, and a way to create exchanges.",
+      "I want to show the best available rate for a crypto-to-crypto swap and then lock it in for a short time so the user can confirm the transaction.",
+      "Provide the status of a crypto exchange after it’s created, including confirmations and whether it completed, refunded, or failed.",
+      "Connect to a budgeting app account so I can import budgets, accounts, categories, and transactions into my analytics tool.",
+      "I need to create new transactions programmatically (including split transactions) and then reconcile them against existing ones to avoid duplicates.",
+      "Can you return monthly spending totals by category for the last 12 months and also compare them to the user’s budgeted amounts?",
+      "I want to calculate mortgage payments with taxes and insurance, generate an amortization schedule, and show total interest over time.",
+      "Build an EMI calculator for auto loans that supports changing interest rates mid-loan and shows the updated payment schedule.",
+      "I need a retirement planner that projects savings growth with variable contributions, inflation assumptions, and expected withdrawal rates.",
+      "Calculate a reverse mortgage estimate based on age, home value, and interest rate, and return payout options (lump sum vs monthly).",
+      "Provide fixed-deposit and recurring-deposit maturity values with compounding options (monthly/quarterly/annual) and a downloadable schedule.",
+      "I want a monthly income plan calculator that estimates how long a principal amount can last given a target monthly payout and expected return.",
+      "Give me daily and historical metrics for thousands of cryptocurrencies, including market cap and volume, with simple pagination and caching support.",
+      "I’m building a risk monitor that alerts when a token’s 24h volume spikes or price drops beyond a threshold; can you provide the data to power those triggers?"
+    ],
+    "Sports": [
+      "I’m building a fantasy cricket app—can you provide real-time player points, lineups, and match status with low latency?",
+      "Can I pull live NFL in-game stats play-by-play (or drive-by-drive) and update fantasy points instantly in my mobile app?",
+      "I need live scores and standings for thousands of competitions across many sports—how can I fetch and cache them efficiently for a news site?",
+      "Can you return today’s soccer fixtures with live scores, lineups, and key match events, and let me filter by country and league?",
+      "I want tennis live scores for ATP and WTA, including match statistics and tournament brackets—can I query singles and doubles separately?",
+      "Do you support live betting odds for tennis matches, including multiple bookmakers and odds movement over time?",
+      "I need hockey live scores plus standings and team/player stats for multiple seasons—can I query historical data by league and year?",
+      "Can you provide handball live match data (score timeline, team stats) and league tables, with reliable coverage for smaller competitions?",
+      "I’m creating a multilingual sports portal—can I retrieve teams, players, and leagues with translated names in multiple languages?",
+      "Can I get real-time injury updates, roster changes, and starting lineups for NFL teams and have them reflected immediately in projections?",
+      "I need a single feed for live scores across sports like basketball, baseball, cricket, MMA, and darts—can I subscribe to only the sports I show?",
+      "Can you give me a schedule endpoint that returns upcoming games, venues, and start times, and automatically adjusts for time zones?",
+      "I’m building a fantasy dashboard—can I fetch player projections and actual performance side-by-side and compute custom scoring rules?",
+      "Can I display embedded live score widgets on my website with minimal setup and consistent styling across leagues?",
+      "I want detailed match statistics (possession, shots, penalties, etc.) and need them updated live—what endpoints support that depth?",
+      "Can you provide standings that update immediately after games end, including tiebreakers and playoff qualification indicators?",
+      "I need a robust way to handle rate limits and retries for live sports data—do you offer guidance or recommended polling intervals?",
+      "Can I fetch tournament-level tennis data like rounds, seeds, and matchups, and track a player’s path through the draw in real time?",
+      "I’m building alerts—can I trigger notifications for goals, touchdowns, period endings, and final results with near real-time accuracy?",
+      "Can you help me backfill historical match results and stats so I can train a model, and then switch to live updates for production?"
+    ],
+    "Travel": [
+      "I need to search and compare round-trip flight options from NYC to Tokyo for flexible dates next month, including price trends and the cheapest day to fly.",
+      "Can you find the lowest fares for a multi-city itinerary (London -> Rome -> Athens -> London) and return results with cabin class, baggage rules, and cancellation terms?",
+      "I want to monitor a specific route (SFO to LAS) and alert me when the price drops below a threshold within the next 60 days.",
+      "Please provide an endpoint-style response that lists the top 10 cheapest destinations I can fly to from Berlin this weekend, with total trip cost estimates.",
+      "I need to pull airport metadata for an airport code, including runway details, elevation, coordinates, time zone, and available services.",
+      "Given a pair of airport codes, return the distance, typical flight duration, and which airport is better for international connections.",
+      "I’m building a map and need nearby live landscape camera feeds around a set of GPS coordinates, filtered to “mountain” and “beach” categories.",
+      "Can you return a timelapse slideshow link for each camera in a specific region, and include basic info like title, location, and last update time?",
+      "I need a clean, map-ready overlay layer of camera locations for a country, including thumbnails and tags for each feed.",
+      "Please search for short-term stays within 2 km of a landmark, and return listings with nightly price, cleaning fees, total price, and cancellation policy.",
+      "I want to look up a stay by its listing ID and fetch full details: amenities, house rules, check-in window, and host response metrics.",
+      "Can you provide future nightly price and availability for a specific property over the next 90 days, including minimum-stay rules?",
+      "I need recent reviews for a set of properties and a quick sentiment summary by category (cleanliness, location, communication).",
+      "Please return market-level analytics for a city: average nightly rates by neighborhood, occupancy estimates, and distribution of property types.",
+      "I’m implementing flight booking and need a unified workflow for search, fare verification, ticketing, and payment capture in one consistent format.",
+      "After booking, I need post-booking operations like retrieving the reservation, changing passenger details, handling cancellations, and reissuing tickets.",
+      "I want to offer paid extras (bags, seat selection, meals) and need to fetch available ancillaries for a chosen itinerary and price them.",
+      "Please generate a combined flight itinerary that supports both direct airline content and GDS content, and normalize the results into a single schema.",
+      "I need to export tour package availability and pricing in XML format, and include booking conditions, inclusions, and per-date allotments.",
+      "Can you ingest an XML feed for tours, validate it, and return a structured summary of errors plus a normalized JSON version for my app?"
+    ],
+    "Entertainment": [
+      "Can you recommend five new fantasy web serials translated into English that have strong female leads and high reader ratings? Include synopsis, tags, and where each one stands in popularity right now.",
+      "I’m looking for completed romance web stories originally from East Asia that aren’t too long; can you find a few with chapter counts under 200 and solid reviews?",
+      "Find me the top trending sci-fi web fiction this week, and filter out anything with graphic violence. Please return the results with ratings and genre metadata.",
+      "I want a list of mystery/thriller web narratives with “time loop” or “memory loss” themes; can you search by keywords and sort by highest rated?",
+      "Suggest award-winning literary fiction published in the last 2 years, and include a brief “why it’s notable” note for each pick.",
+      "What are the current bestsellers in nonfiction (history and science), and which of them are also critically acclaimed? Provide authors and a short summary.",
+      "I need book recommendations similar to “Project Hail Mary” and “The Martian,” but not by the same author; can you pull comparable titles and explain the similarity?",
+      "Build me a “to-read” list of 10 debut novels that are trending right now, split evenly between fiction and nonfiction, with publication dates and genres.",
+      "Give me a quote of the day that’s motivational but not cheesy, and also provide three alternatives in case I don’t like the first one.",
+      "I’m writing a toast for a wedding—can you fetch a short, heartfelt love quote and a second one that’s funny but tasteful?",
+      "I want a daily rotating quote for a meditation app; can you generate a week’s worth of inspirational quotes with author attribution?",
+      "Can you pull a random quote about resilience and also a short verse suitable for a reflective journal entry?",
+      "What were the latest lottery draw numbers and jackpot amount, and when is the next draw scheduled?",
+      "I have three sets of numbers—can you check each one against the most recent draw and tell me how many matches I got?",
+      "Show me statistics for which numbers have been drawn most frequently since 2004, and summarize any notable patterns.",
+      "I want to track my “lucky numbers” over time—can you tell me how often they would have won something historically?",
+      "Give me a riddle of the day that’s kid-friendly, plus the answer hidden behind a spoiler-style hint.",
+      "I need 15 medium-difficulty riddles for a family game night; include answers and a one-line explanation for each.",
+      "Can you fetch riddles related to “space” and “robots” and filter out anything too hard for a 10-year-old?",
+      "Turn this short phrase into large text-art in a few different styles, and also generate a simple ASCII cow saying it as a speech bubble."
+    ],
+    "Gaming": [
+      "Can you show today’s free-to-play character rotation for my region and list roles plus difficulty for each option?",
+      "I need full details for a specific champion, including abilities, cooldowns, and tips, in Spanish.",
+      "Pull my last 20 ranked games by summoner name and summarize KDA, damage, and win/loss trends.",
+      "What are the current ranked queue types available, and how do their rules and team sizes differ?",
+      "Give me a list of all playable characters and filter to only supports with crowd control and healing.",
+      "Fetch the latest patch news and recent reviews for a Steam game, then summarize sentiment and common complaints.",
+      "I’m building a store page—grab screenshots, supported languages, and developer/publisher info for this Steam title.",
+      "Compare system requirements (Windows/Linux/macOS) for two Steam games and tell me which is lighter to run.",
+      "Get the most recent announcements and news items for a game on Steam and return titles with publish dates.",
+      "Look up a classic game on a DRM-free store and return its features, system requirements, and any edition/bonus content details.",
+      "Can you search that DRM-free catalog for “turn-based tactics” and return the top 15 results with release dates?",
+      "For a specific game on that store, tell me whether it supports controllers, cloud saves, and multiplayer features.",
+      "Give me a list of all dungeons in a Zelda game, including locations and the items found in each.",
+      "I want to quiz my friends—generate 10 trivia questions using Zelda characters, races, and places with correct answers.",
+      "Show me all Zelda items that are swords or shields and include descriptions and which games they appear in.",
+      "Check a Minecraft server status and return version, player count, MOTD, and whether it’s online right now.",
+      "Look up a Minecraft player by username and return their UUID plus links to common avatar/skin renders.",
+      "I need a leaderboard widget—fetch Minecraft player info for a list of usernames and normalize missing accounts gracefully.",
+      "For Rogue Company, list all rogues with their gadgets and perks, and let me filter by role and weapon type.",
+      "Pull the latest available match stats for a Rogue Company player and summarize performance over the last 10 matches."
+    ],
+    "Education": [
+      "I want to pull a list of bite-sized courses on “time management” and show the top-rated ones in my app. Can you help me fetch titles, durations, and ratings?",
+      "Can you generate a 30-day study plan with daily micro-lessons based on a learner’s goal and available time (15 minutes/day)?",
+      "I need to create a practice exam for a CompTIA certification with randomized questions and timed sections. How can I assemble and score it automatically?",
+      "Can you track a student’s quiz performance over time and recommend which topics to review next based on weak areas?",
+      "I’m building a spaced-repetition flashcard feature and need to schedule reviews adaptively based on recall accuracy. How should I structure the intervals and store progress?",
+      "I want to import a user’s existing memorization deck into my platform and sync progress between devices. Can you outline an API flow for decks, items, and results?",
+      "Convert this English paragraph into braille output suitable for a refreshable braille display, and also provide a printable braille version.",
+      "I need to render braille in a web app as both Unicode braille characters and as an image for printing. Can you produce both formats from the same input text?",
+      "For accessibility, can you translate UI labels into braille and provide metadata so I can map braille cells to screen coordinates?",
+      "I want to fetch a university student’s enrolled modules, class timetable, and announcements so I can display them on a mobile dashboard.",
+      "Can you pull assignment deadlines and exam dates from a learning environment and generate calendar events with reminders?",
+      "I need to show a student’s grades and feedback comments in my app, with proper permissions and secure authentication. What would the integration look like?",
+      "Can you search a digital library for “true crime” audiobooks and return the newest releases with cover images and descriptions?",
+      "I want to create curated reading lists (e.g., “Business Essentials”) and let users save them offline. How can I fetch and cache the book metadata efficiently?",
+      "Provide personalized book recommendations based on a user’s reading history and preferred genres, and explain why each recommendation was chosen.",
+      "I want to embed a “continue reading” feature that syncs last-read position across devices for ebooks. What data should I store and how do I update it?",
+      "Can you generate a mock exam with 90 questions, pull a different mix each attempt, and produce a detailed score report by domain?",
+      "I need to export exam results (attempts, time spent per question, correctness) to a CSV for instructors. Can you help design that export?",
+      "Build a micro-credential workflow where users complete short lessons, pass a quiz, and receive a shareable certificate link. How can I automate the checks?",
+      "I want to detect when learners are stuck (repeated wrong answers or low recall) and trigger a remediation micro-lesson automatically. Can you propose the logic and required endpoints?"
+    ],
+    "Communication": [
+      "I need to send and receive chat messages programmatically from a server, including handling delivery/read status callbacks. How can I integrate that into my app?",
+      "Can you help me set up phone number verification via SMS with a single API call, and automatically expire codes after 5 minutes?",
+      "I have a user-entered phone number string; I need it normalized into E.164 and also returned in national format with country details. What API can do that reliably?",
+      "I want to send bulk text messages to customers and track which ones were delivered, failed, or opted out. How should I implement this?",
+      "I need to place outbound voice calls from my web app and connect them to a PSTN number, with programmable call flows (IVR). What’s the best approach?",
+      "Can I build a click-to-call feature in my dashboard that rings an agent first and then bridges to the customer, recording the call?",
+      "I need to send a one-time passcode for login to Indian phone numbers and also support resending with rate limits. How do I do that?",
+      "How can I validate whether a phone number is plausible, infer the country when the user forgets the country code, and then store it in a consistent format?",
+      "I want to send appointment invites that show up as native calendar events (Google/Apple/Outlook) with an .ics-like experience, not just an email. Can you help?",
+      "I need to create and send calendar invites for webinars, include a meeting link, and automatically track accept/decline responses. What API supports that?",
+      "I want to receive inbound SMS replies and route them into different support queues based on keywords, with a webhook. How can I set that up?",
+      "Can I programmatically manage opt-in/opt-out compliance for SMS campaigns and maintain a suppression list across all sends?",
+      "I need to send transactional messages (order confirmations, shipping updates) to users over a chat channel, and also allow them to reply. How should I implement two-way messaging?",
+      "I want to mask customer phone numbers by assigning temporary proxy numbers that forward calls and texts between parties. What’s an API solution for that?",
+      "I need to run an IVR that asks callers to press 1/2/3, then routes to different departments and plays different audio prompts. How do I build this?",
+      "I’m building a signup flow and want to verify a phone number with OTP, but fall back to voice call verification if SMS fails. Can an API support both?",
+      "How can I format and store phone numbers from multiple countries, display them nicely in the UI, and avoid duplicates caused by different formatting?",
+      "I need scheduled SMS reminders for upcoming appointments, with automatic retries and a “STOP” keyword to unsubscribe. How can I implement that end-to-end?",
+      "I want to send a calendar invite when a customer books a training session, and if they reschedule, the event should update on their calendar automatically. Can you help?",
+      "I need to integrate a chat messaging service into my CRM so agents can message customers, see conversation history, and handle attachments. What would that integration look like?"
+    ],
+    "Location": [
+      "Can you convert this street address in Cairo into precise latitude/longitude and return a clean formatted address too?",
+      "I have a latitude/longitude pair—can you reverse-geocode it into an address and postal code?",
+      "For this IP address, can you tell me the user’s approximate city/region/country and the internet provider?",
+      "I need the local current time in “Asia/Tokyo” and whether daylight saving time is active there right now.",
+      "Can you list all states/provinces for this country and include their codes if available?",
+      "Please look up details for this city (country, region/state, coordinates if available, and any standard identifiers).",
+      "Given this ZIP/postal code, can you return the corresponding city, state/region, and country?",
+      "I’m building a signup form—can you validate whether this city and state combination actually exists in that country?",
+      "Can you return the currency information for this country (code, symbol, name) and any basic metadata you have?",
+      "I need the national flag for this country and a reliable way to display it in my app.",
+      "Can you geocode this place name in Japan (e.g., a station or neighborhood) into coordinates and a postal code?",
+      "Please calculate the distance between these two locations in Nigeria and provide an estimated driving route summary.",
+      "Can you find nearby facilities (like hospitals or ATMs) within 5 km of this point in Lagos?",
+      "I have a list of Egyptian addresses—can you batch convert them to coordinates and flag any that are ambiguous or missing?",
+      "For a user’s IP, can you identify the organization/company associated with it and the domain if known?",
+      "Can you tell me when daylight saving time starts and ends for “Europe/Berlin” this year and the current UTC offset?",
+      "I need a searchable list of cities in this state/region, sorted by name, for an autocomplete dropdown.",
+      "Can you standardize this messy address string into a structured format (street, city, region, postal code, country) if possible?",
+      "Given a coordinate in Nigeria, can you return the nearest named place and administrative area (city/LGA/state)?",
+      "Can you provide a quick country profile for this code (official name, capital, currency, calling code if available, and region/continent)?"
+    ],
+    "eCommerce": [
+      "Pull the full details for a given Amazon product URL/ASIN, including title, brand, variants (size/color), current price, and rating.",
+      "Search Amazon for “wireless earbuds” and return the top 20 results with price, Prime eligibility, and review count.",
+      "Given an ASIN, fetch the most helpful recent reviews and summarize common pros/cons with star distribution.",
+      "For a specific Amazon product, retrieve “customers also bought/viewed” recommendations and return them as a ranked list.",
+      "Look up a product on a major Chinese marketplace by keyword in Chinese and return matching items with seller info and pricing.",
+      "Given a product ID from a Chinese marketplace, fetch SKU options, stock availability, and shipping/fulfillment details.",
+      "Compare prices for the same product keyword across two Chinese marketplaces and output the cheapest 10 comparable listings.",
+      "Pull seller/store metadata for a Chinese marketplace shop (rating, follower count, top products) and flag potential risk signals.",
+      "Create a new developer “partner” identity and ensure all subsequent API calls include the required partner identifier header.",
+      "Build a minimal shopping portal backend flow: register a user, create a product catalog entry, add items to cart, and checkout.",
+      "Implement cart operations: add/remove/update quantities, apply a coupon code, and return updated totals with taxes/shipping.",
+      "Upload product images, generate accessible URLs, and associate multiple images with a product in the catalog.",
+      "Retrieve the full product list with pagination, filtering by category and price range, and sorting by newest first.",
+      "Create a cryptocurrency wallet and generate a new deposit address for a specific chain, then store it under a user account.",
+      "Track a blockchain transaction by hash and return confirmations, status, timestamps, and any failure reason if applicable.",
+      "Send a cryptocurrency payment from a wallet to a destination address, estimate network fees, and return the final transaction ID.",
+      "Set up webhooks to notify my app when deposits hit a given address and verify webhook signatures on receipt.",
+      "Pull historical cryptocurrency price data for the last 90 days and compute daily returns and volatility for a dashboard.",
+      "Get live gold and silver prices for New York and London, and convert them into USD per ounce and EUR per gram.",
+      "Alert me when silver drops below a threshold and return the latest spot price along with the timestamp and location."
+    ],
+    "Social": [
+      "Can you analyze the sentiment of 50,000 recent social posts about my brand in English and Spanish and give me the top positive/negative themes?",
+      "I need to extract key phrases and entities from a stream of customer comments and summarize what people complain about most each week.",
+      "Can you detect a sudden spike in negative sentiment around a new product launch and alert me when it crosses a threshold?",
+      "Please classify social mentions into categories like “shipping,” “pricing,” “quality,” and “support,” and show sentiment for each category.",
+      "I have Arabic and French social posts—can you score sentiment reliably across both and normalize the results for a single dashboard?",
+      "Can you pull the media URLs (video/GIF/image) and basic metadata from a specific public post link so I can archive it?",
+      "I want to download the highest-quality version of a video from a public post and store it in my S3 bucket with the original caption.",
+      "Can you fetch real-time posts matching a keyword as soon as they’re published, including author profile details and attached media?",
+      "I need to monitor mentions of my CEO’s name and provide a daily digest of the most influential posts and their sentiment.",
+      "Can you track when a user clicks a shared referral link, tie that event back to the original sharer, and attribute sign-ups correctly?",
+      "I want to generate shareable links for an invite campaign and measure which channels drive the most installs and purchases.",
+      "Can you instrument in-app events (signup, purchase, subscription) and connect them to the original referral source for attribution?",
+      "Please build a report showing conversion rates by referrer, with cohorts for users acquired via shared links versus paid ads.",
+      "I need to download a short-form video from a public link without any platform watermark and return a direct downloadable URL.",
+      "Can you take a list of 500 public short-video links and batch-download them, returning status, duration, and file sizes?",
+      "I want to automate posting to my social account on a schedule, rotate proxies, and avoid triggering anti-bot blocks.",
+      "Can you automatically follow/unfollow, like, and comment based on target hashtags while respecting rate limits and safety checks?",
+      "I need to fetch a user’s public profile info and most recent posts, then compute engagement metrics and growth over time.",
+      "Can you detect spammy or bot-like accounts from their posting patterns and sentiment distribution, and flag them for review?",
+      "I want to compare sentiment and key topics for three competitors over the last 30 days and export the results to CSV."
+    ]
+  },
+  "ood_queries": {
+    "Finance": {
+      "Extended ACH and Check Prescreen": [
+        "Can you run an \"Extended ACH and Check Prescreen\" on this routing and account number to confirm the account is open and in good standing before we accept an ACH payment?",
+        "Please use \"Extended ACH and Check Prescreen\" to evaluate the risk of this customer’s checking account and help us reduce potential ACH/check returns.",
+        "Before we approve this vendor for ACH payouts, can you perform an \"Extended ACH and Check Prescreen\" using the provided routing and account details?",
+        "Use \"Extended ACH and Check Prescreen\" on this bank account to check for negative check-writing or ACH history and flag any fraud indicators.",
+        "Can you apply \"Extended ACH and Check Prescreen\" to validate this account for a first-time check payment and let me know if there are any warnings or high-return signals?"
+      ],
+      "Twelve Data": [
+        "Use Twelve Data to pull real-time and 1-minute intraday prices for AAPL for today, and return the latest quote plus OHLCV data.",
+        "With Twelve Data, fetch the last 5 years of daily historical data for EUR/USD and calculate a 50-day vs 200-day moving average crossover summary.",
+        "Please use Twelve Data to retrieve BTC/USD hourly candles for the past 30 days and compute daily realized volatility from the returns.",
+        "Use Twelve Data to get a list of constituents and current levels for the S&P 500 (or the closest available index symbol), then show the top 10 movers today.",
+        "Using Twelve Data, pull weekly price history for the ETF SPY since 2010 and generate a simple backtest of a monthly rebalancing strategy with max drawdown."
+      ],
+      "ChangeNOW crypto exchange": [
+        "I want to integrate the ChangeNOW crypto exchange into my checkout so customers can buy and exchange crypto; can you outline the steps and what I need to get started?",
+        "Can you show me how to use the ChangeNOW crypto exchange API to let users swap between 400+ cryptocurrencies and 75+ fiats in my app?",
+        "Please help me set up an affiliate/partner flow with the ChangeNOW crypto exchange so my business earns a percentage on each customer transaction.",
+        "I’m building a crypto widget for my website—can you provide an implementation plan for embedding the ChangeNOW crypto exchange and handling quotes, swaps, and status updates?",
+        "How do I obtain and securely use an API key for the ChangeNOW crypto exchange partner program, and what best practices should I follow for production deployment?"
+      ],
+      "YNAB - You Need a Budget": [
+        "Can you use the YNAB - You Need a Budget API to list my budgets and return the budget IDs and names in JSON over HTTPS?",
+        "Please use YNAB - You Need a Budget to fetch all accounts for a given budget via the REST API and include the HTTP status code in the response you show me.",
+        "Use YNAB - You Need a Budget to create a new transaction in my checking account and tell me what meaningful HTTP response code you receive if it succeeds or fails.",
+        "Can you call the YNAB - You Need a Budget API to pull my category groups and categories for this month, and if there’s an error, show the error details from the response body?",
+        "Please use YNAB - You Need a Budget to retrieve my most recent transactions (last 30 days) from a specific budget, returning the results in JSON and using HTTPS transport."
+      ],
+      "DeFi Watch": [
+        "Use DeFi Watch to pull today’s price, 24h volume, and market cap for BTC, ETH, and SOL, and summarize any notable changes since yesterday.",
+        "With DeFi Watch, fetch the last 90 days of daily close prices for ETH and compute a simple 7-day vs 30-day moving average crossover report.",
+        "Please use DeFi Watch to retrieve historical daily data for DOGE from Jan 1, 2021 to today and plot (or describe) the major drawdowns and recoveries.",
+        "Use DeFi Watch to get the top 50 cryptocurrencies by market cap today, then return a table with symbol, price, 24h change, and 7-day change.",
+        "Using DeFi Watch, compare BTC and ETH volatility over the past 30 days based on daily returns, and explain which one has been more volatile and why."
+      ],
+      "Yawin Calculator": [
+        "Can you use Yawin Calculator to estimate my monthly mortgage payment for a 30-year home loan at 6.5% interest, including principal and interest?",
+        "Please run Yawin Calculator to calculate the EMI for a $25,000 loan over 5 years at 9% APR, and show the total interest payable.",
+        "Use Yawin Calculator to compare PreEMI vs regular EMI for a construction-linked home loan, and tell me how much extra I pay in interest.",
+        "Can you use Yawin Calculator to estimate how much I need to save for retirement if I want $4,000/month in retirement income starting at age 65?",
+        "Please use Yawin Calculator to compute the maturity amount and monthly interest payout for a fixed deposit of $50,000 for 3 years at 5.2%."
+      ]
+    },
+    "Sports": {
+      "Fantasy Cricket": [
+        "Can you use the Fantasy Cricket API to fetch today’s match schedule and live scores in realtime, and show me a simple JSON example response?",
+        "Please use Fantasy Cricket to generate the most accurate fantasy team suggestions for the upcoming match, including captain/vice-captain picks and risk notes.",
+        "I’m integrating Fantasy Cricket into my app—can you outline the required endpoints and a fast, reliable flow for pulling squads, lineups, and live points updates?",
+        "Can you use Fantasy Cricket to compare two players’ fantasy performance trends from recent matches and recommend which one to pick for my team?",
+        "I want to create my own fantasy sports application—can you use Fantasy Cricket to propose a custom plan (features + API usage) and tell me how to contact support@techflinch.com if I hit integration issues?"
+      ],
+      "Tank01 NFL Live In-Game Real Time Statistics NFL": [
+        "Use Tank01 NFL Live In-Game Real Time Statistics NFL to pull live in-game stats for tonight’s matchup and summarize key fantasy contributors (QB/RB/WR/TE) with current points and projections.",
+        "Please use Tank01 NFL Live In-Game Real Time Statistics NFL to fetch the latest rosters and player statuses for the Kansas City Chiefs and Buffalo Bills, and flag any recent depth-chart changes that affect fantasy value.",
+        "Using Tank01 NFL Live In-Game Real Time Statistics NFL, get the current NFL schedule for this week and highlight games with the highest projected scoring along with top projected fantasy players.",
+        "Can you use Tank01 NFL Live In-Game Real Time Statistics NFL to retrieve updated team standings immediately after the final games end today, and list any clinched playoff spots and tiebreaker notes?",
+        "Use Tank01 NFL Live In-Game Real Time Statistics NFL to track my fantasy-relevant players in real time during Sunday games, and alert me when a player scores, gets injured, or sees a major snap/share usage change."
+      ],
+      "FlashLive Sports": [
+        "Use FlashLive Sports to show me the fastest live scores and updated standings for today’s soccer matches across the top European leagues.",
+        "Build a simple site using FlashLive Sports that lets me track live NBA and NHL games with detailed team stats and a clean scoreboard view.",
+        "With FlashLive Sports, pull the live tennis scores for the current ATP and WTA tournaments and include match stats like aces, break points, and serve percentages.",
+        "Use FlashLive Sports to create a page that lists live cricket and baseball games right now, with filters by competition and a compact standings table.",
+        "In FlashLive Sports, display live MMA and darts results for this week and show translated player and league names in Spanish and French."
+      ],
+      "Ultimate Tennis": [
+        "Use Ultimate Tennis to show today’s ATP and WTA live scores, and highlight any matches that are currently in a deciding set.",
+        "Can you use Ultimate Tennis to pull the full player profile and recent match statistics for Iga Swiatek, including surface splits this season?",
+        "Using Ultimate Tennis, list the upcoming tournament schedule for the next 30 days on both ATP and WTA tours, and include locations and draw sizes.",
+        "Use Ultimate Tennis to compare Carlos Alcaraz vs Novak Djokovic head-to-head, and summarize their last five matches with key stats (aces, break points, winners/errors if available).",
+        "Please use Ultimate Tennis to fetch live betting odds for the top 10 matches happening right now, and flag any big odds swings in the last hour."
+      ],
+      "API-HOCKEY": [
+        "Use API-HOCKEY to pull today’s live scores for the NHL and SHL, and summarize the in-progress games with current period, time remaining, and score.",
+        "Using API-HOCKEY, show me the latest standings for the Finnish Liiga and include wins, losses, OT losses, points, and goal differential for each team.",
+        "With API-HOCKEY, fetch pre-game odds and bookmakers for tomorrow’s KHL matches and highlight the best available moneyline for each game.",
+        "Use API-HOCKEY to retrieve the last 10 head-to-head results between Team A and Team B (include dates, final scores, and league), and give a quick trend summary.",
+        "Using API-HOCKEY, list all available seasons for the Swedish Hockey League and then pull historical match results for the 2022 season, grouped by round or matchday."
+      ],
+      "API-HANDBALL": [
+        "Use API-HANDBALL to show today’s handball fixtures with live scores and pre-match odds, and include the available bookmakers for each game.",
+        "Using API-HANDBALL, pull the current standings for the French Starligue and also provide each team’s recent form and key season statistics.",
+        "Please use API-HANDBALL to list all leagues and cups available for Germany, and for each competition include the supported seasons and a count of teams if possible.",
+        "With API-HANDBALL, fetch the match details for a specific fixture (lineups, score progression if available, and team stats), and summarize the key moments in a short report.",
+        "Use API-HANDBALL to retrieve historical results and odds for a given league and season, then calculate basic trends like average goals per match and home vs away win rates."
+      ]
+    },
+    "Travel": {
+      "Skyscanner API": [
+        "Use the Skyscanner API to find the cheapest round-trip flights from New York (JFK) to London (LHR) for flexible dates in the next two months, and return the top 10 options.",
+        "Can you use the Skyscanner API to compare flight prices from San Francisco (SFO) to Tokyo (HND/NRT) across a 7-day date range and tell me which departure day is cheapest?",
+        "Please use the Skyscanner API to search multi-city flights (Paris -> Rome -> Barcelona) in mid-September and list the best itineraries by total price and total travel time.",
+        "Use the Skyscanner API to pull the lowest available fares from Chicago (ORD) to Cancun (CUN) for a long weekend next month, and include airline, layovers, and booking links.",
+        "Can you use the Skyscanner API to track price changes for flights from Los Angeles (LAX) to Sydney (SYD) for December dates and alert me when prices drop below $1,200?"
+      ],
+      "Airbnb listings": [
+        "Use Airbnb listings to pull all active listings in the Lisbon market, including nightly price, cleaning fee, minimum stay, and availability for the next 60 days.",
+        "Using Airbnb listings, get the full details for listing ID 123456789 (photos count, amenities, host info, and location) and summarize the most important info for a first-time guest.",
+        "Use Airbnb listings to find highly rated entire-home stays within 2 km of Times Square (geo coordinates 40.7580, -73.9855), then return the top 15 by review score and price.",
+        "Using Airbnb listings, retrieve future prices and availability for listing ID 987654321 for the next three months and highlight any weekends with unusually high rates.",
+        "Use Airbnb listings to run an analytics endpoint for the Barcelona market: average nightly price by neighborhood, occupancy trend for the next 30 days, and the distribution of review scores."
+      ],
+      "webcams.travel": [
+        "Use webcams.travel to find nearby landscape webcams around my current location, and show the top 10 with a quick preview and distance for each.",
+        "Using webcams.travel, list beach-category webcams in Portugal by region, and include direct links to view each stream.",
+        "Please use webcams.travel to pull webcams in the Swiss Alps (mountain category) and generate a timelapse slideshow for the 3 most popular spots.",
+        "Can you use webcams.travel to get all webcams in Japan by country, then filter to Tokyo region and return the clearest daytime views?",
+        "Use webcams.travel to produce an uncluttered webcam layer I can overlay on my map for Northern Italy, and include basic metadata (name, coordinates, category)."
+      ],
+      "Airport Guide - Aviation Info": [
+        "Use Airport Guide - Aviation Info to pull the full details for JFK (KJFK), including runways, frequencies, elevation, and any notes relevant to arriving GA traffic.",
+        "Can you use Airport Guide - Aviation Info to look up EGLL (LHR) and summarize the airport facilities, operating hours, and available services in a few bullet points?",
+        "Please use Airport Guide - Aviation Info to find the airport record for YSSY (SYD) and list runway dimensions, lighting, and communications (tower/ground/ATIS) if available.",
+        "Using Airport Guide - Aviation Info, look up the local airport identifier “APA” and confirm the correct ICAO/IATA mapping along with field elevation and fuel options.",
+        "Use Airport Guide - Aviation Info to search for heliport “6NY4” and report coordinates, pad/rwy info, and any remarks or restrictions shown in the database."
+      ],
+      "THT Tour XML OUT API": [
+        "Can you use the THT Tour XML OUT API to search for available tours in Paris for next month, and return the results with pricing and cancellation policies?",
+        "Please integrate with the THT Tour XML OUT API to fetch tour details (itinerary, inclusions, exclusions, and meeting point) for a given tour ID and format it as JSON.",
+        "Using the THT Tour XML OUT API, can you perform an availability check for 2 adults on a specific tour date and show the booking conditions and total price?",
+        "Can you call the THT Tour XML OUT API to create a booking for a selected tour option and then retrieve the booking confirmation and voucher details?",
+        "Please use the THT Tour XML OUT API to pull a list of all supported destinations/categories and generate a simple mapping I can use in my frontend filters."
+      ],
+      "ASR Hub": [
+        "Use ASR Hub to search for round-trip flights from JFK to LHR for May 10–17, including baggage fees and any available ancillaries like seat selection.",
+        "Please use ASR Hub to find the cheapest nonstop options from SFO to NRT next month and show fares from both NDC/direct and GDS sources if available.",
+        "Use ASR Hub to book two tickets from DXB to BOM for the earliest flight tomorrow, and then take payment and issue the tickets in the same flow.",
+        "Can you use ASR Hub to add a checked bag and a preferred seat to my existing booking, and confirm the updated total price before charging my card?",
+        "Use ASR Hub to retrieve my PNR, check the ticket status, and process a voluntary change to move the outbound flight to the next day."
+      ]
+    },
+    "Entertainment": {
+      "Web - Novel API": [
+        "Using Web - Novel API, find the top-rated Korean web novels updated in the last 30 days and list their titles, genres, ratings, and chapter counts.",
+        "Please use Web - Novel API to recommend 10 Chinese cultivation web novels with English translations, including metadata like author, status (ongoing/completed), and average rating.",
+        "With Web - Novel API, pull the latest Japanese isekai releases and show me the synopsis, tags, current translated chapter total, and last update date for each.",
+        "Use Web - Novel API to search for romance fantasy web novels (Korean or Chinese) where the female lead is a villainess, and return the highest-rated matches with brief summaries.",
+        "Can you use Web - Novel API to compare three popular titles by rating distribution, total chapters available in English, and reader reviews or review counts, then suggest which one to start with?"
+      ],
+      "Book Discovery by ReadsOmnia": [
+        "Use Book Discovery by ReadsOmnia to find this week’s top-of-the-charts bestsellers in fiction and nonfiction, and give me the top 10 from each with brief blurbs.",
+        "Please use Book Discovery by ReadsOmnia to recommend 8 new and trending sci-fi or fantasy novels released in the last 12 months, prioritizing highly rated picks.",
+        "With Book Discovery by ReadsOmnia, pull a shortlist of award-winning literary fiction from the past 5 years and include the award name and author for each title.",
+        "Use Book Discovery by ReadsOmnia to surface critically acclaimed narrative nonfiction about technology and society, and return 12 must-reads with one-sentence reasons.",
+        "Can you use Book Discovery by ReadsOmnia to find books similar in tone to “The Night Circus,” including both popular bestsellers and hidden gems, and explain why each matches?"
+      ],
+      "They Said So - Say it with style": [
+        "Use \"They Said So - Say it with style\" to fetch a random inspirational quote and include the author’s name.",
+        "Please call \"They Said So - Say it with style\" and show me the quote of the day, formatted nicely for sharing.",
+        "With \"They Said So - Say it with style\", get three funny quotes about work and return them as a short bulleted list.",
+        "Use \"They Said So - Say it with style\" to retrieve a random Bible verse and provide the verse text plus its reference.",
+        "Can you use \"They Said So - Say it with style\" to find a quote about perseverance, and then give me one sentence on how it applies to setbacks?"
+      ],
+      "Euro Millions": [
+        "Use Euro Millions to fetch the latest EuroMillions draw results and tell me the winning numbers and Lucky Stars.",
+        "With Euro Millions, check my bet numbers (5, 12, 23, 34, 45 + Lucky Stars 3 and 9) against the most recent draw and tell me how many I hit.",
+        "Use Euro Millions to submit three bets at once and report the matches for each bet against the latest result.",
+        "Using Euro Millions, show me statistics since 2004 for the most frequently drawn main numbers and Lucky Stars, and summarize the top 10.",
+        "Use Euro Millions to see whether my lucky numbers (7, 14, 21, 28, 35 + Lucky Stars 2 and 11) have ever appeared together in a past draw, and if so, list the dates."
+      ],
+      "Riddlie ": [
+        "Use Riddlie to fetch a random riddle that’s kid-friendly and give me the answer after a short pause cue for our dinner game.",
+        "Can you use Riddlie to pull today’s “riddle of the day” and present it without spoilers until I ask for the solution?",
+        "Please use Riddlie to find three easy riddles about animals (keyword: “animals”) and include their answers on a separate line for each.",
+        "Use Riddlie to retrieve a medium-difficulty riddle by ID 1287 and tell me the riddle first, then the answer.",
+        "Use Riddlie to get five hard riddles filtered by the keyword “mystery,” and format them as a quick quiz for a family game night."
+      ],
+      "ASCII Art": [
+        "Please use ASCII Art to turn my uploaded photo into ASCII art and return the result as a base64-encoded JS string.",
+        "Use ASCII Art to convert this CSV data into a clean ASCII table, and send back the output as base64 encoded JS.",
+        "Can you use ASCII Art to generate a FIGlet-style text banner for the phrase \"WELCOME HOME\" in a few different fonts, returning each as base64 encoded JS?",
+        "Use ASCII Art (cowsay) to make a cow say \"Build successful, ship it!\" in ASCII, and return the result as base64 encoded JS.",
+        "Please use ASCII Art to create an ASCII art version of my image plus a separate ASCII Art figlet of my username, with both results returned as base64 encoded JS."
+      ]
+    },
+    "Gaming": {
+      "RoCO API": [
+        "Using the RoCO API, can you pull my Rogue Company player profile and show my current level, rank, and total playtime?",
+        "Can you use the RoCO API to fetch my last 20 matches and summarize win/loss, K/D, and most-played rogues?",
+        "With the RoCO API, please generate a leaderboard for my friends list based on recent win rate and average damage.",
+        "Using the RoCO API, can you compare two player usernames and report who has better stats in ranked (wins, K/D, and MVPs)?",
+        "Can you use the RoCO API to build a simple JSON report of my seasonal stats, including matches played, win rate, and top 3 rogues?"
+      ],
+      "League of Legends API": [
+        "Using the League of Legends API, fetch the full champion list for EUW and show each champion’s name in Spanish and English.",
+        "Can you use the League of Legends API to pull detailed info for Ahri (abilities, lore, and stats) and return it translated into French for the NA region?",
+        "With the League of Legends API, get the current free champion rotation for KR and present it in Japanese, including champion roles.",
+        "Please use the League of Legends API to look up a summoner on EUNE by name, then show their ranked league queue entries and recent match history in German.",
+        "Using the League of Legends API, retrieve match data from a specific summoner in BR and summarize the last 5 games (K/D/A, champions played, and win/loss) in Portuguese."
+      ],
+      "Games Details": [
+        "Use Games Details to pull the full Steam info for Baldur’s Gate 3, including system requirements for Windows/Linux/macOS, supported languages, developer/publisher/franchise details, recent reviews, news, and screenshots.",
+        "Can you use Games Details to compare Elden Ring and Sekiro on Steam—show their OS-specific system requirements (Windows/Linux/macOS), supported languages, developer/publisher/franchise info, review summaries, latest news, and screenshots?",
+        "Using Games Details, get me the Steam page details for Counter-Strike 2, specifically the system requirements for Windows/Linux/macOS, supported language list, developer/publisher/franchise, plus recent reviews, news posts, and screenshots.",
+        "Please use Games Details to fetch the complete Steam details for Hades II, including all operating system requirements (Windows, Linux, macOS), supported languages, developer/publisher/franchise information, current reviews, recent news, and screenshots.",
+        "Use Games Details to look up Stardew Valley on Steam and return its system requirements for Windows/Linux/macOS, supported languages, developer/publisher/franchise details, along with review highlights, news updates, and screenshots."
+      ],
+      "The Legend of Zelda": [
+        "Use The Legend of Zelda via the Zelda API to fetch a list of major characters and summarize who they are in 2-3 lines each.",
+        "With The Legend of Zelda data from the Zelda API, show me a few iconic locations and include a short description for each.",
+        "Use the Zelda API to pull information about The Legend of Zelda items (like weapons or artifacts) and present them in a simple table with names and brief notes.",
+        "Using The Legend of Zelda through the Zelda API, find a handful of enemies or bosses and give me a quick overview of their traits and where they appear.",
+        "Query The Legend of Zelda content from the Zelda API and generate a short “beginner’s guide” paragraph that introduces the world, recurring characters, and common themes."
+      ],
+      "GOG ( good old game )": [
+        "Use the GOG ( good old game ) API to fetch system requirements, supported languages, and features for “Baldur’s Gate: Enhanced Edition,” and summarize them for Windows and macOS.",
+        "With GOG ( good old game ), pull a list of the top-rated classic RPGs on the store and include each game’s release date, genres, and key features in a compact table.",
+        "Query GOG ( good old game ) for “The Witcher 3: Wild Hunt” and return its available editions, DLC list, and minimum/recommended PC requirements.",
+        "Use GOG ( good old game ) to find all games tagged “point-and-click” that are DRM-free, and provide their system requirements plus a short one-line description for each.",
+        "Through GOG ( good old game ), look up “System Shock 2” and report its supported operating systems, feature set (e.g., cloud saves), and any available patches or extras."
+      ],
+      "Minecraft API": [
+        "Can you use the Minecraft API to fetch my server’s status (online players, version, and MOTD) and summarize it in a clean table?",
+        "Please use the Minecraft API to look up the player details for the username “Notch,” including UUID and any available profile info.",
+        "Use the Minecraft API to generate direct links for Minecraft player avatars (head and full-body renders) for a list of usernames I provide.",
+        "Can you use the Minecraft API to check whether these Minecraft usernames are valid and return their UUIDs, without running into Mojang rate limits?",
+        "Please use the Minecraft API to pull essential Minecraft server information for `play.example.com` and tell me if it’s reachable, what version it’s running, and how many players are online."
+      ]
+    },
+    "Education": {
+      "Coursmos.com V2": [
+        "Using Coursmos.com V2, help me find a micro-learning path to learn Python fundamentals in 2 weeks and recommend 5 courses to start with.",
+        "On Coursmos.com V2, can you curate a set of short courses on project management basics and organize them into a 7-day study plan?",
+        "Please use Coursmos.com V2 to locate beginner-friendly lessons on data analysis with Excel and suggest a daily micro-learning routine I can follow.",
+        "Using Coursmos.com V2, recommend micro-courses that teach public speaking skills and create a structured 10-day practice schedule.",
+        "On Coursmos.com V2, help me choose the best courses to learn digital marketing from scratch and outline what to study each day for the next month."
+      ],
+      "Tech Exams": [
+        "Can you help me use Tech Exams to build a 2-week self-study plan for the CompTIA Security+ exam using its test banks and practice exams?",
+        "I want to use Tech Exams to create a timed practice exam for CompTIA Network+ and then review my weak areas based on the results.",
+        "Please show me how to use Tech Exams to generate a custom quiz (50 questions) focused only on troubleshooting and subnetting topics for CompTIA Network+.",
+        "Can you use Tech Exams to assemble a mixed-difficulty practice test and a retake strategy so I can steadily improve my score before my CompTIA A+ exam?",
+        "I’m planning ahead for Microsoft exams—can you explain how I should use Tech Exams now for CompTIA practice and how to transition once Tech Exams adds Microsoft test banks?"
+      ],
+      "Drillster 2.0": [
+        "Can you help me integrate Drillster 2.0 into our learning app using their API so we can create and assign memorization drills to users?",
+        "I want to use Drillster 2.0 to build a spaced-repetition module for vocabulary practice; what endpoints and data flow should I start with?",
+        "Please show me an example of how to authenticate and fetch a user’s drill progress from Drillster 2.0 via the API.",
+        "Can you design a simple backend service that syncs our course content to Drillster 2.0 and keeps sessions and results updated daily?",
+        "I need guidance on creating a custom memorization solution powered by Drillster 2.0—how should I structure decks, sessions, and reporting with the API?"
+      ],
+      "Braille Translator": [
+        "I’m building an accessibility feature for my education app; can you use Braille Translator to convert lesson text into Unicode braille and return the output for display?",
+        "Please use Braille Translator to translate this paragraph into braille and also generate a braille image version I can embed on a worksheet.",
+        "I want to mimic a refreshable braille display in the browser; can you integrate Braille Translator so typed English shows up as braille cells in real time?",
+        "Can you use Braille Translator to convert my quiz questions into braille (both standard and a simplified format) so students can toggle between modes?",
+        "For a reading practice tool, use Braille Translator to batch-convert a list of vocabulary words into braille and return the results in a JSON structure my app can consume."
+      ],
+      "IVLE LAPI": [
+        "Use IVLE LAPI to fetch my current semester modules and show their course codes, titles, and lecturers.",
+        "Can you use IVLE LAPI to pull all my module announcements from the past 14 days and summarize the key deadlines?",
+        "Please use IVLE LAPI to retrieve my timetable for this week and export it in a simple calendar-friendly format.",
+        "Use IVLE LAPI to list all files and folders in each module’s Workbin, and highlight anything uploaded in the last 7 days.",
+        "Can you use IVLE LAPI to get my enrolled classes and group memberships, and present them in a clean table?"
+      ],
+      "Reading Home APIs": [
+        "Can you use Reading Home APIs to fetch a curated list of Personal Growth and Business books that are trending this week, and include titles, authors, and short descriptions?",
+        "Please use Reading Home APIs to search for True Crime and Non-Fiction books about investigations, then return the top 15 results with publication year and reading length.",
+        "Use Reading Home APIs to recommend Contemporary Fiction and YA books similar to “The Hunger Games,” and explain why each recommendation matches.",
+        "Could you use Reading Home APIs to pull Travel books focused on Japan and Italy, and organize them into beginner, intermediate, and advanced reading tiers?",
+        "Use Reading Home APIs to create a Science Fiction reading plan for the next 30 days, selecting one book per week and providing a brief summary for each."
+      ]
+    },
+    "Communication": {
+      "Whatsapp Private API": [
+        "Can you help me set up the Whatsapp Private API to send and receive messages programmatically from my existing WhatsApp number?",
+        "Write a Python script that uses the Whatsapp Private API to auto-reply to incoming chats with a custom message and log each conversation.",
+        "I want to connect the Whatsapp Private API to my CRM so new leads get an automated WhatsApp follow-up message—can you show me how?",
+        "Provide a step-by-step guide for authenticating a session and sending bulk messages using the Whatsapp Private API.",
+        "Can you generate sample Node.js code that uses the Whatsapp Private API to listen for incoming messages and forward them to a webhook endpoint?"
+      ],
+      "2Factor Authentication - India": [
+        "Please integrate \"2Factor Authentication - India\" into my app for phone number verification via OTP, using their single API call flow. Keep it fast and economical.",
+        "Can you show me how to implement SMS-based OTP login using \"2Factor Authentication - India\" and provide a minimal example request/response? I want a reliable setup for production.",
+        "I need to add phone verification to my signup process—use \"2Factor Authentication - India\" and outline the exact API steps and error handling. Make it simple and robust.",
+        "Help me migrate our current OTP provider to \"2Factor Authentication - India\" and explain what code/config changes are required. Please prioritize reliability and cost efficiency.",
+        "Please generate a backend helper function that sends and verifies OTPs using \"2Factor Authentication - India\" (single API call approach) and include notes on rate limiting and retries."
+      ],
+      "Phone Formatter": [
+        "Use Phone Formatter to parse +14155552671 and return the international and national formats, along with the detected country details.",
+        "Can you run this number through Phone Formatter: (020) 7946 0958, and give me E.164, international, and national formats plus any country info you can infer?",
+        "Please use Phone Formatter to normalize 0491 570 156 into standard formats (E.164/international/national) and tell me which country it belongs to.",
+        "Use Phone Formatter on +81 3 1234 5678 and output several standard formats, including international and national, plus any extra metadata about the country for valid numbers.",
+        "I have 07123 456789; use Phone Formatter to guess the correct country if needed and return the phone number in international, national, and other common standard formats."
+      ],
+      "TrumpetBox Cloud": [
+        "I want to send appointment reminders via SMS using TrumpetBox Cloud—can you show me how to integrate their API into my website?",
+        "Can you help me set up a two-way texting support inbox using TrumpetBox Cloud so customers can reply and my team can respond?",
+        "I need to migrate our current SMS notifications to TrumpetBox Cloud; what steps and API endpoints should I use to send and track delivery status?",
+        "Please draft a simple implementation plan to use TrumpetBox Cloud for marketing campaigns, including opt-in/opt-out handling and message scheduling.",
+        "How can I use TrumpetBox Cloud to trigger transactional texts (order confirmations and shipping updates) from my backend application?"
+      ],
+      "Eqivo Telephony": [
+        "Can you show me how to use Eqivo Telephony to place an outbound call from my web app and play a prerecorded message when the call is answered?",
+        "I want to build an IVR menu with Eqivo Telephony (press 1 for Sales, 2 for Support); can you provide a simple example flow and the API calls involved?",
+        "Using Eqivo Telephony, how do I receive incoming PSTN calls and forward them to a WebRTC client in the browser with a fallback to voicemail?",
+        "Can you help me set up call recording and real-time call status webhooks using Eqivo Telephony, including what payloads to expect and how to verify signatures?",
+        "I need to send SMS notifications and also make follow-up voice calls via Eqivo Telephony; what’s a clean architecture for handling retries, rate limits, and error handling?"
+      ],
+      "31Events - Send Native Calendar Invites": [
+        "Please use \"31Events - Send Native Calendar Invites\" to send a calendar invite for our product webinar next Thursday at 2:00 PM ET, including the Zoom link and agenda in the description.",
+        "Can you schedule a 45-minute onboarding training and send it via \"31Events - Send Native Calendar Invites\" to all new customers who signed up this week?",
+        "Use \"31Events - Send Native Calendar Invites\" to create and send a seminar invitation for April 22 at 10:00 AM PT, and include a note that accepting the invite completes registration.",
+        "Please send a recurring weekly office hours event using \"31Events - Send Native Calendar Invites\" for the next 6 weeks, and add the support email as the organizer contact.",
+        "I need you to send a rescheduled meeting invitation through \"31Events - Send Native Calendar Invites\" to the client, with the updated time and a short message explaining the change."
+      ]
+    },
+    "Location": {
+      "Egypt API": [
+        "Use Egypt API to look up the latitude, longitude, and full address for “Cairo International Airport” in real time.",
+        "Please use Egypt API to retrieve the coordinates and street address of “Bibliotheca Alexandrina, Alexandria, Egypt.”",
+        "Use Egypt API to find the exact latitude/longitude and formatted address for “Valley of the Kings entrance, Luxor.”",
+        "Can you use Egypt API to get the current coordinates and address for “Aswan High Dam” and return them in a clean JSON format?",
+        "Use Egypt API to resolve “Ras Muhammad National Park, South Sinai” to its latitude, longitude, and most up-to-date address details."
+      ],
+      "GeoSource API": [
+        "Use GeoSource API to list all states/provinces in Canada and include their abbreviations and capitals.",
+        "Can you use GeoSource API to look up the currency code, symbol, and flag for Japan, and return it in a small JSON snippet?",
+        "Please use GeoSource API to validate this ZIP code and tell me the city and state it belongs to: 94107.",
+        "Use GeoSource API to fetch the top 10 largest cities in Brazil with their state/region and coordinates, if available.",
+        "I need a dropdown dataset for my app—use GeoSource API to provide all countries with ISO codes, currencies, and flag URLs."
+      ],
+      "IPinfo by CC": [
+        "Use IPinfo by CC to pinpoint each visitor’s exact location and include their ISP in the analytics report.",
+        "Can you integrate IPinfo by CC so we can identify the company name and domain associated with each incoming IP address?",
+        "Please run an IP enrichment on our access logs using IPinfo by CC and return country, city, ISP, and company domain for every IP.",
+        "Use IPinfo by CC to detect where our signups are coming from worldwide and flag corporate networks by company name and domain.",
+        "I need a lookup endpoint that calls IPinfo by CC to resolve an IP address into precise location details plus ISP and organization/domain."
+      ],
+      "World Time": [
+        "Use World Time to tell me the current local time in Tokyo and include the UTC offset and whether DST is in effect.",
+        "Can you check World Time for New York and London and summarize the time difference between them right now, noting any DST differences?",
+        "Please use World Time to get the current local time in Sydney and also report when DST starts and ends for that timezone.",
+        "Using World Time, fetch the local time for `Europe/Paris` and return it in plain text along with the UTC offset.",
+        "Use World Time to compare `America/Los_Angeles` and `Asia/Kolkata` and tell me what time it is in both places, plus whether either is currently observing DST."
+      ],
+      "NAVITIME Geocoding": [
+        "Use NAVITIME Geocoding to find the full address, latitude/longitude, and postal code for “Tokyo Station, Japan.”",
+        "Please run NAVITIME Geocoding on the keyword “Shinjuku Gyoen National Garden” and return the best match with its coordinates and postal code.",
+        "Can you use NAVITIME Geocoding to look up postal code 100-0005 and return the corresponding address information plus latitude/longitude?",
+        "Use NAVITIME Geocoding reverse geocoding for latitude 35.6895 and longitude 139.6917 to provide the address details and postal code.",
+        "I have coordinates (34.6937, 135.5023); please use NAVITIME Geocoding to reverse geocode them into an address and include the postal code."
+      ],
+      "Nigeria API": [
+        "Use the Nigeria API to look up the coordinates and LGA for “Ikeja, Lagos,” and return the result in a small table.",
+        "Using the Nigeria API, find the nearest public hospitals to “Wuse 2, Abuja” within a 10 km radius and include their addresses and distances.",
+        "Please use the Nigeria API to calculate the driving distance and get turn-by-turn directions from “Port Harcourt” to “Owerri.”",
+        "With the Nigeria API, search for primary schools around “Bodija, Ibadan” and list the top 10 closest facilities with approximate distances.",
+        "Use the Nigeria API to compute the straight-line (geodesic) distance between “Enugu” and “Onitsha,” and also return both cities’ coordinates."
+      ]
+    },
+    "eCommerce": {
+      "Axesso - Amazon Data Service": [
+        "Use Axesso - Amazon Data Service to fetch detailed information for a specific Amazon ASIN, including the product title, manufacturer, available sizes, current price, and review summary.",
+        "Using Axesso - Amazon Data Service, run a keyword search for “wireless noise cancelling headphones” and return up to 20 products with their titles, prices, ratings, and top review highlights.",
+        "With Axesso - Amazon Data Service, pull the full product details and recent reviews for this Amazon product URL, and summarize the main pros/cons customers mention.",
+        "Please use Axesso - Amazon Data Service to get Amazon’s recommended products related to a given ASIN, and list the recommendations with price, rating, and whether multiple size options are available.",
+        "Use Axesso - Amazon Data Service to compare two Amazon ASINs by extracting their key specs, manufacturer, price, available variations (like size), and overall review counts and average ratings."
+      ],
+      "Cryptocurrency APIs": [
+        "I want to use Cryptocurrency APIs to create a new wallet and generate a fresh deposit address for BTC and ETH; can you show me the exact API calls and required parameters?",
+        "Using Cryptocurrency APIs, help me search past transaction data for a specific address over the last 30 days and return the results sorted by timestamp.",
+        "Can you use Cryptocurrency APIs to create a transaction, estimate the network fee, and then track its confirmation status until it is finalized?",
+        "I need to set up webhooks with Cryptocurrency APIs so my app is notified when an incoming payment hits a specific address; what endpoints and payload validation steps should I implement?",
+        "Using Cryptocurrency APIs, can you demonstrate how to create multiple addresses under one wallet and reconcile incoming payments against my eCommerce order IDs?"
+      ],
+      "Ecommerce Backend": [
+        "Use Ecommerce Backend to create a sample shopping portal for development, starting by creating a partner and then sending the returned partnerId (uuidv4) as a header in all subsequent user, product, cart, and images API requests.",
+        "Can you build a minimal end-to-end demo using Ecommerce Backend APIs (user, product, cart, images), where you first create a partner and then include the partnerId (uuidv4) header on every other request?",
+        "Using Ecommerce Backend, generate example requests (curl or Postman) to create a partner and then use the partnerId (uuidv4) header while creating a user, adding products, uploading images, and managing a cart.",
+        "Please scaffold a development-only sample shopping portal workflow with Ecommerce Backend, ensuring you create a partner first and pass the partnerId (uuidv4) in the headers for all user/product/cart/images calls.",
+        "With Ecommerce Backend, show a realistic API sequence for a storefront prototype: create partner, create user, list/create products with images, and create/update cart—always including the partnerId (uuidv4) as a header after partner creation."
+      ],
+      "Jingdong(京东) Data Service": [
+        "Please use Jingdong(京东) Data Service to pull the latest price, stock status, and seller details for a specific JD product URL I provide. Return the results in a clean table with timestamps.",
+        "Use Jingdong(京东) Data Service to search JD for “wireless earbuds” and give me the top 20 listings with price, monthly sales, shop name, and rating. Also highlight the best value options under 300 RMB.",
+        "I need competitor monitoring: use Jingdong(京东) Data Service to track price changes for these 10 JD SKUs over the last 30 days. Summarize trends and flag any sudden drops greater than 10%.",
+        "Use Jingdong(京东) Data Service to extract seller/store information for a list of JD shop links, including store name, location, follower count, and main categories. Output everything as CSV.",
+        "Please use Jingdong(京东) Data Service to find all variants (color/size) for this JD product and list each variant’s current price and availability. If any variant is out of stock, note it explicitly."
+      ],
+      "Pinduoduo(拼多多) Data Service": [
+        "Please use Pinduoduo(拼多多) Data Service to pull product details (title, price, inventory, and sales volume) for a list of product IDs and return the results as a CSV.",
+        "Use Pinduoduo(拼多多) Data Service to search for “wireless earbuds” in the Electronics category and show the top 50 results with price, discount, store name, and ratings.",
+        "Can you use Pinduoduo(拼多多) Data Service to fetch my order list for the last 30 days and summarize fulfillment status, refunds, and total spend?",
+        "Use Pinduoduo(拼多多) Data Service to monitor price changes for these SKUs every hour and alert me when any item drops by more than 10%.",
+        "Please use Pinduoduo(拼多多) Data Service to retrieve shop performance metrics (GMV, conversion rate, traffic sources) for my store and generate a weekly report."
+      ],
+      "Gold Silver live prices": [
+        "Can you use Gold Silver live prices to show the current gold and silver rates in New York and London, updated in real time?",
+        "Please pull the latest spot prices using Gold Silver live prices for gold (24K) and silver in Dubai, and tell me the timestamp of the last update.",
+        "Use Gold Silver live prices to compare today’s live gold and silver prices across Mumbai, Singapore, and Toronto, and summarize which location is cheapest for each metal.",
+        "I’m building a checkout page—can you use Gold Silver live prices to provide the current gold and silver price per gram for Paris and return it in a simple JSON format?",
+        "Could you query Gold Silver live prices for the live gold and silver rates in Sydney and also show the change versus the previous update if available?"
+      ]
+    },
+    "Social": {
+      "Repustate Sentiment and Text Analytics": [
+        "Please use Repustate Sentiment and Text Analytics to analyze the sentiment of these tweets in English and Spanish, and extract the top keywords and key phrases.",
+        "Can you run Repustate Sentiment and Text Analytics on my Facebook comments to determine overall sentiment and pull out recurring themes and phrases?",
+        "Use Repustate Sentiment and Text Analytics to monitor social media mentions of our brand this week and summarize sentiment trends in English, French, and German.",
+        "I have a set of Arabic customer reviews; please process them with Repustate Sentiment and Text Analytics to detect sentiment and extract key terms and phrases.",
+        "Please use Repustate Sentiment and Text Analytics to analyze sentiment across these Instagram captions and comments, then report the most common keywords and phrases driving positive vs. negative reactions."
+      ],
+      "Branch Metrics": [
+        "Can you integrate Branch Metrics in our iOS and Android apps to track sign_up and purchase events and tie them back to the original referral source?",
+        "Please use Branch Metrics to generate share/referral URLs for our invite flow and measure which channels and referrers drive the most installs.",
+        "Can you set up Branch Metrics event tracking so we can attribute user actions (onboarding_complete, trial_start) to the deep link a user came from?",
+        "Use Branch Metrics to create a shareable link for each user’s profile and track downstream conversions from those shares, including who referred whom.",
+        "Can you implement Branch Metrics for our marketing campaigns so we can attribute installs and in-app events to specific campaigns and also create trackable links for sharing?"
+      ],
+      "Twitter Downloader - Download Twitter videos, GIFs, and images": [
+        "Please use \"Twitter Downloader - Download Twitter videos, GIFs, and images\" to fetch the video and any attached images from this tweet URL, and give me the direct download links.",
+        "Can you run \"Twitter Downloader - Download Twitter videos, GIFs, and images\" on this tweet to retrieve its title, description, and the highest-quality media (video/GIF/images) available?",
+        "Use \"Twitter Downloader - Download Twitter videos, GIFs, and images\" to extract the GIF from this tweet and tell me the file type, resolution, and a downloadable URL.",
+        "I’m archiving a thread—please use \"Twitter Downloader - Download Twitter videos, GIFs, and images\" on each tweet link I paste to collect all media URLs plus the tweet title and description.",
+        "Could you use \"Twitter Downloader - Download Twitter videos, GIFs, and images\" to check whether this tweet contains a video or images, and if so return the media metadata and download links?"
+      ],
+      "Twitter AIO": [
+        "Use Twitter AIO to monitor tweets mentioning my brand name in real time and summarize the key themes every hour. Include links, author handles, and engagement stats for the top posts.",
+        "With Twitter AIO, pull the latest tweets from @NASA posted in the last 24 hours and extract any media URLs (images/videos) into a clean table. Also include tweet IDs and timestamps.",
+        "Use Twitter AIO to find all currently live or recently ended Twitter Spaces hosted by a list of specific accounts I provide, and give me the Space title, host, start/end time, and listener count if available.",
+        "Using Twitter AIO, fetch the full profile details for these usernames and flag anything that changed since yesterday (bio, follower count, verification, profile image). Return the results as JSON.",
+        "Use Twitter AIO to search for tweets containing the keyword \"launch delay\" posted in the last 30 minutes, then cluster them by topic and identify the most shared links. Include the top 10 tweets per cluster."
+      ],
+      "TikTok Video No Watermark_v2": [
+        "Can you use \"TikTok Video No Watermark_v2\" to download this TikTok and give me the direct no-watermark video link: https://www.tiktok.com/@user/video/1234567890?",
+        "Please run \"TikTok Video No Watermark_v2\" on this TikTok URL and return the download link without the TikTok logo, plus any available video metadata: https://www.tiktok.com/t/ZTRxxxxxxx/",
+        "Use \"TikTok Video No Watermark_v2\" to fetch a high-quality no-watermark download link for this video and tell me the exact steps you took: https://www.tiktok.com/@creator/video/9876543210",
+        "I’m getting an error with other downloaders—can you try \"TikTok Video No Watermark_v2\" on this TikTok link and share the final working no-watermark download URL: https://www.tiktok.com/t/ZTRyyyyyyy/",
+        "Could you process this TikTok with \"TikTok Video No Watermark_v2\" and provide a clean no-watermark MP4 link (and note if multiple quality options exist): https://www.tiktok.com/@account/video/1928374650"
+      ],
+      "Easy Instagram Automation Service": [
+        "Can you use Easy Instagram Automation Service to automatically follow and unfollow accounts based on a list of target hashtags, while keeping everything anonymous and avoiding blocks?",
+        "Please use Easy Instagram Automation Service to auto-like and comment on recent posts from specific locations and hashtags, and show me a safe schedule that minimizes the chance of getting blocked.",
+        "Use Easy Instagram Automation Service to send automated DMs to new followers with a short welcome message, and implement it in Python with the Instagram Private API workflow.",
+        "I want to use Easy Instagram Automation Service to scrape my own account’s follower/following lists and export them to CSV, using the Instagram Private API from a Node.js script.",
+        "Can you set up Easy Instagram Automation Service so it runs a daily automation routine (likes, follows, story views) from a Rust app on Linux, staying anonymous and avoiding action blocks?"
+      ]
+    }
+  }
+}
