@@ -138,7 +138,9 @@ def main() -> None:
     # 1. Define agent factory (called fresh per seed)
     # ------------------------------------------------------------------
     from agents import (
+        BanditOverrideAgent,
         BanditPriorCoTAgent,
+        FrequencyGreedyAgent,
         InContextMemoryAgent,
         ProfileMemoryAgent,
         PureBanditAgent,
@@ -157,8 +159,10 @@ def main() -> None:
             ZeroShotAgent(model=args.model),
             InContextMemoryAgent(model=args.model, memory_size=5),
             ProfileMemoryAgent(model=args.model),
+            FrequencyGreedyAgent(),
             PureBanditAgent(alpha=1.0),
             BanditPriorCoTAgent(model=args.model, alpha=1.0, temperature=args.temperature),
+            BanditOverrideAgent(model=args.model, alpha=1.0),
         ])
         return agents
 

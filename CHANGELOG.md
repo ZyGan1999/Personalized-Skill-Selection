@@ -4,6 +4,42 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-04-14 — Bandit+Override Agent, Frequency Greedy Baseline & Progress Viewer
+
+### New Agent: Bandit+Override (Proposed Method 2)
+- Bandit makes the default tool selection (greedy UCB argmax, same as Pure-Bandit)
+- LLM is invoked only to check whether the query explicitly names a tool (OOD detection)
+- If yes: LLM overrides the bandit's choice with the named tool
+- If no: bandit's selection is used as-is
+- Design rationale: eliminates LLM selection noise on standard queries while retaining OOD robustness
+- Expected to achieve Pure-Bandit-level accuracy on standard queries + OOD handling
+
+### New Baseline: Frequency Greedy
+- Pure frequency counting — always selects the tool with the highest historical success rate
+- No LLM, no exploration mechanism (greedy after initial round-robin)
+- Demonstrates the value of LinUCB's exploration-exploitation mechanism vs naive statistics
+
+### Softmax Temperature
+- Added `temperature` parameter to `LinUCBBandit.probabilities()` (default 3.0)
+- Higher temperature amplifies score differences, making bandit prior more informative for LLM
+- Added `--temperature` CLI flag
+- Example: UCB [1.21, 1.0, 1.0, 1.0] → temp=1: [29%, 24%, 24%, 24%] → temp=3: [38%, 21%, 21%, 21%]
+
+### Progress Viewer
+- Added `plot_progress.py`: reads mid-seed checkpoint from a running experiment and generates metrics plots
+- Allows monitoring multi-day experiments without waiting for completion
+
+### Oracle Baseline in Rolling Accuracy Plot
+- Added "Oracle" line showing theoretical upper bound accuracy
+- Computed as: fraction of queries where the most frequent true_tool per (user, domain) matches
+
+### Key Experimental Insight
+- With 10 domains × 6 tools and 50 rounds: each (user, domain) gets only ~5 rounds → insufficient for bandit convergence
+- Increased to 500 rounds for proper evaluation
+- Bandit+CoT underperforms Profile-Memory because LLM introduces selection noise even with correct bandit prior; Bandit+Override addresses this
+
+---
+
 ## 2026-04-10 — Benchmark Scaling, Shared Domain Classification, ProfileMemory Baseline & Temperature Tuning
 
 ### Benchmark Scaling: ToolBench Integration

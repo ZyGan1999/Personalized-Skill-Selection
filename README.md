@@ -26,20 +26,24 @@ data_gen.py  →  env.py  →  agents.py  →  metrics.py
 | **RandomAgent** | Uniform random selection (lower bound) |
 | **ZeroShot-LLM** | Pure LLM, no personalization |
 | **InContext-Memory** | LLM with last-K successful selections in prompt |
+| **Profile-Memory** | LLM with structured success-rate profiles (simulates real AI agent memory) |
+| **Freq-Greedy** | Pure frequency counting, no LLM, no exploration |
 | **Pure-Bandit** | LinUCB only, no LLM at test time |
-| **Bandit+CoT** (proposed) | LinUCB prior injected into LLM CoT prompt |
+| **Bandit+CoT** | LinUCB prior injected into LLM CoT prompt |
+| **Bandit+Override** (proposed) | LinUCB selects by default; LLM only overrides for OOD queries |
 
-### Bandit+CoT: Two-Stage Design
+### Bandit+Override: Design
 
-1. **Stage 1 — Domain Inference**: LLM sees all 20 tools with descriptions, infers the query's domain
-2. **Stage 2 — Tool Selection**: LLM sees 4 domain-specific tools with bandit-learned preference percentages, selects the best tool
+1. **Domain Classification** (shared): one LLM call per query, result shared by all agents
+2. **Tool Selection**: LinUCB bandit selects the tool with highest UCB score (same as Pure-Bandit)
+3. **OOD Override**: LLM checks if the query explicitly names a tool; if yes, overrides bandit's choice
 
-The bandit prior gives the LLM a "soft hint" about user preferences. For standard queries, the LLM follows the prior. For OOD queries (where the user explicitly names a different tool), the LLM overrides it.
+This achieves Pure-Bandit-level accuracy on standard queries while retaining OOD robustness via LLM override detection. The key insight: LLM reasoning introduces noise on standard queries, so it should only be invoked when needed (OOD detection), not for every selection.
 
 ### Data
 
-- **5 domains**: financial, food delivery, navigation, shopping, entertainment
-- **4 tools per domain** (20 total), with Chinese market tools (Meituan, Ele.me, DiDi, etc.)
+- **Built-in**: 5 domains × 4 tools = 20 tools (Chinese market apps)
+- **ToolBench**: 10 domains × 6 tools = 60 real APIs from RapidAPI (via `--benchmark`)
 - **Per-user preferences**: one-hot (fixed preferred tool) or soft (Dirichlet-sampled distribution)
 - **OOD queries**: explicitly name a non-preferred tool, testing override ability
 

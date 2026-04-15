@@ -402,7 +402,65 @@ class PureBanditAgent(_AgentBase):
 
 
 # ---------------------------------------------------------------------------
-# Proposed method: Bandit Prior + Test-Time Chain-of-Thought
+# Baseline 5: Frequency Greedy (pure frequency counting, no LLM)
+# ---------------------------------------------------------------------------
+
+
+class FrequencyGreedyAgent(_AgentBase):
+    """
+    Always selects the tool with the highest historical success rate.
+    No LLM, no exploration mechanism — pure greedy frequency counting.
+    Explores randomly only when no data is available.
+    """
+
+    name = "Freq-Greedy"
+
+    def __init__(self):
+        self._stats: Dict[tuple, Dict[str, int]] = defaultdict(_StatsFactory())
+
+    def select_tool(
+        self, query: str, domain: str, user_id: int, tools: List[str]
+    ) -> str:
+        domain_tools = data_gen.DOMAINS[domain]
+        best_tool = None
+        best_rate = -1.0
+        for t in domain_tools:
+            s = self._stats[(user_id, domain, t)]
+            if s["attempts"] == 0:
+                return t  # never tried → explore
+            rate = s["successes"] / s["attempts"]
+            if rate > best_rate:
+                best_rate = rate
+                best_tool = t
+        return best_tool
+
+    def update(
+        self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
+    ) -> None:
+        self._stats[(user_id, domain, selected_tool)]["attempts"] += 1
+        if reward == 1.0:
+            self._stats[(user_id, domain, selected_tool)]["successes"] += 1
+
+    def get_learned_distribution(
+        self,
+        user_id: int,
+        domain: str,
+        tools: List[str],
+        sample_queries: List[str],
+    ) -> Dict[str, float]:
+        domain_tools = data_gen.DOMAINS[domain]
+        rates = {}
+        for t in domain_tools:
+            s = self._stats[(user_id, domain, t)]
+            rates[t] = s["successes"] / max(s["attempts"], 1)
+        total = sum(rates.values())
+        if total > 0:
+            return {t: r / total for t, r in rates.items()}
+        return {t: 1.0 / len(domain_tools) for t in domain_tools}
+
+
+# ---------------------------------------------------------------------------
+# Proposed method 1: Bandit Prior + Test-Time Chain-of-Thought
 # ---------------------------------------------------------------------------
 
 
@@ -453,6 +511,76 @@ class BanditPriorCoTAgent(_AgentBase):
 
         response = _llm_call(prompt, self.model)
         return _extract_tool(response, domain_tools)
+
+    def update(
+        self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
+    ) -> None:
+        self.bandit.update(user_id, domain, query, selected_tool, reward)
+
+    def get_learned_distribution(
+        self,
+        user_id: int,
+        domain: str,
+        tools: List[str],
+        sample_queries: List[str],
+    ) -> Dict[str, float]:
+        domain_tools = data_gen.DOMAINS[domain]
+        return self.bandit.learned_preference_distribution(
+            user_id, domain, domain_tools, sample_queries
+        )
+
+
+# ---------------------------------------------------------------------------
+# Proposed method 2: Bandit selects, LLM only overrides for OOD
+# ---------------------------------------------------------------------------
+
+
+class BanditOverrideAgent(_AgentBase):
+    """
+    Bandit makes the default tool selection (same as PureBandit).
+    LLM is invoked only to check whether the query explicitly names a tool;
+    if so, it overrides the bandit's choice.
+
+    This gets Pure-Bandit-level accuracy on standard queries while retaining
+    OOD robustness via LLM override detection.
+    """
+
+    name = "Bandit+Override"
+
+    def __init__(self, model: str = DEFAULT_MODEL, alpha: float = 1.0):
+        self.model = model
+        self.bandit = LinUCBBandit(alpha=alpha)
+
+    def select_tool(
+        self, query: str, domain: str, user_id: int, tools: List[str]
+    ) -> str:
+        domain_tools = data_gen.DOMAINS[domain]
+
+        # Step 1: Bandit selects (greedy UCB, same as Pure-Bandit)
+        bandit_choice = self.bandit.select(user_id, domain, query, domain_tools)
+
+        # Step 2: LLM checks if query explicitly names a tool (OOD override)
+        prompt = (
+            f"Does this query explicitly request a specific tool by name?\n"
+            f"Available tools: {', '.join(domain_tools)}\n"
+            f"Query: \"{query}\"\n\n"
+            f"If the query mentions a specific tool name, reply: {{\"override\": true, \"tool\": \"<tool name>\"}}\n"
+            f"If not, reply: {{\"override\": false}}"
+        )
+        response = _llm_call(prompt, self.model)
+
+        try:
+            data = json.loads(response)
+            if data.get("override") and data.get("tool"):
+                tool_name = data["tool"]
+                # Validate the tool exists in domain
+                for t in domain_tools:
+                    if t.lower() == tool_name.lower():
+                        return t
+        except (json.JSONDecodeError, AttributeError):
+            pass
+
+        return bandit_choice
 
     def update(
         self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
