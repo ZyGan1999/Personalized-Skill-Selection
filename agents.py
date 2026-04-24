@@ -601,6 +601,89 @@ class BanditOverrideAgent(_AgentBase):
 
 
 # ---------------------------------------------------------------------------
+# Proposed method 3: Frequency Greedy + LLM Override (ablation)
+# ---------------------------------------------------------------------------
+
+
+class FreqOverrideAgent(_AgentBase):
+    """
+    Frequency greedy selection + LLM override for OOD.
+    Ablation of Bandit+Override: replaces LinUCB with simple frequency counting
+    to isolate the value of bandit exploration vs naive statistics.
+    """
+
+    name = "Freq+Override"
+
+    def __init__(self, model: str = DEFAULT_MODEL):
+        self.model = model
+        self._stats: Dict[tuple, Dict[str, int]] = defaultdict(_StatsFactory())
+
+    def select_tool(
+        self, query: str, domain: str, user_id: int, tools: List[str]
+    ) -> str:
+        domain_tools = data_gen.DOMAINS[domain]
+
+        # Step 1: Frequency greedy selection
+        best_tool = None
+        best_rate = -1.0
+        for t in domain_tools:
+            s = self._stats[(user_id, domain, t)]
+            if s["attempts"] == 0:
+                best_tool = t
+                break
+            rate = s["successes"] / s["attempts"]
+            if rate > best_rate:
+                best_rate = rate
+                best_tool = t
+
+        # Step 2: LLM checks for OOD override (same as BanditOverrideAgent)
+        prompt = (
+            f"Does this query explicitly request a specific tool by name?\n"
+            f"Available tools: {', '.join(domain_tools)}\n"
+            f"Query: \"{query}\"\n\n"
+            f"If the query mentions a specific tool name, reply: {{\"override\": true, \"tool\": \"<tool name>\"}}\n"
+            f"If not, reply: {{\"override\": false}}"
+        )
+        response = _llm_call(prompt, self.model)
+
+        try:
+            data = json.loads(response)
+            if data.get("override") and data.get("tool"):
+                tool_name = data["tool"]
+                for t in domain_tools:
+                    if t.lower() == tool_name.lower():
+                        return t
+        except (json.JSONDecodeError, AttributeError):
+            pass
+
+        return best_tool
+
+    def update(
+        self, query: str, domain: str, user_id: int, selected_tool: str, reward: float
+    ) -> None:
+        self._stats[(user_id, domain, selected_tool)]["attempts"] += 1
+        if reward == 1.0:
+            self._stats[(user_id, domain, selected_tool)]["successes"] += 1
+
+    def get_learned_distribution(
+        self,
+        user_id: int,
+        domain: str,
+        tools: List[str],
+        sample_queries: List[str],
+    ) -> Dict[str, float]:
+        domain_tools = data_gen.DOMAINS[domain]
+        rates = {}
+        for t in domain_tools:
+            s = self._stats[(user_id, domain, t)]
+            rates[t] = s["successes"] / max(s["attempts"], 1)
+        total = sum(rates.values())
+        if total > 0:
+            return {t: r / total for t, r in rates.items()}
+        return {t: 1.0 / len(domain_tools) for t in domain_tools}
+
+
+# ---------------------------------------------------------------------------
 # Agent registry
 # ---------------------------------------------------------------------------
 

@@ -4,6 +4,34 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-04-17 — Freq+Override Ablation, Color Scheme, Train/Test Split
+
+### New Baseline: Freq+Override (Ablation)
+- Added `FreqOverrideAgent`: frequency greedy selection + LLM OOD override
+- Serves as an ablation of `BanditOverrideAgent` to isolate the value of LinUCB exploration vs naive frequency counting
+- Key finding: in one-hot preferences the two are nearly tied (differ by ~3 regret), but in soft preferences (concentration=0.3) Bandit+Override pulls meaningfully ahead, demonstrating bandit's value under uncertainty
+
+### Unified Color Scheme
+- Agents are now grouped and colored by category for easier visual comparison:
+  - **No learning** (gray): Random
+  - **Statistical only** (blues): Freq-Greedy, Pure-Bandit
+  - **LLM only** (oranges/reds): ZeroShot-LLM, InContext-Memory, Profile-Memory
+  - **Statistical + LLM hybrid** (greens/purples): Bandit+CoT, Freq+Override, Bandit+Override (proposed)
+- Colors are consistent across all plots (regret, rolling accuracy, OOD, test accuracy, etc.)
+
+### Held-Out Test Set Evaluation
+- `UserPersona` gained `test_pool` field (independent from training `query_pool`)
+- Added `evaluate_test()` in `env.py`: agents select but do NOT update on test queries
+- `SeedResult` gained `test_results` field with per-agent accuracy and OOD accuracy
+- Added `plot_test_accuracy()`: bar chart showing test set accuracy (overall + OOD)
+- Added `--test-pool-size` CLI flag (default: 50, set 0 to disable)
+- Provides a proper train/test split — eliminates the concern that online evaluation uses the same queries seen during training
+
+### Progress Viewer Update
+- `plot_progress.py` now handles `test_results` field (skips test plot for in-progress seeds)
+
+---
+
 ## 2026-04-14 — Bandit+Override Agent, Frequency Greedy Baseline & Progress Viewer
 
 ### New Agent: Bandit+Override (Proposed Method 2)

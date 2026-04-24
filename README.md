@@ -23,14 +23,24 @@ data_gen.py  →  env.py  →  agents.py  →  metrics.py
 
 | Agent | Description |
 |-------|-------------|
-| **RandomAgent** | Uniform random selection (lower bound) |
-| **ZeroShot-LLM** | Pure LLM, no personalization |
-| **InContext-Memory** | LLM with last-K successful selections in prompt |
-| **Profile-Memory** | LLM with structured success-rate profiles (simulates real AI agent memory) |
-| **Freq-Greedy** | Pure frequency counting, no LLM, no exploration |
-| **Pure-Bandit** | LinUCB only, no LLM at test time |
-| **Bandit+CoT** | LinUCB prior injected into LLM CoT prompt |
-| **Bandit+Override** (proposed) | LinUCB selects by default; LLM only overrides for OOD queries |
+Agents are grouped by category (each category uses a distinct color family in plots):
+
+**No learning** (gray)
+- **RandomAgent** — Uniform random selection (lower bound)
+
+**Statistical only** (blues)
+- **Freq-Greedy** — Pure frequency counting, no LLM, no exploration
+- **Pure-Bandit** — LinUCB only, no LLM at test time
+
+**LLM only** (oranges/reds)
+- **ZeroShot-LLM** — Pure LLM, no personalization
+- **InContext-Memory** — LLM with last-K successful selections in prompt
+- **Profile-Memory** — LLM with structured success-rate profiles (simulates real AI agent memory)
+
+**Statistical + LLM hybrid** (greens/purples)
+- **Bandit+CoT** — LinUCB prior injected into LLM CoT prompt
+- **Freq+Override** — Frequency greedy + LLM OOD override (ablation of Bandit+Override)
+- **Bandit+Override** (**proposed**) — LinUCB selects by default; LLM only overrides for OOD queries
 
 ### Bandit+Override: Design
 
@@ -106,7 +116,10 @@ python env.py           # smoke test with a random dummy agent
 | `--ood-ratio` | 0.10 | Fraction of OOD queries |
 | `--pool-size` | 200 | Queries per user pool |
 | `--soft-preferences` | off | Use Dirichlet soft preferences |
-| `--concentration` | 2.0 | Dirichlet concentration (higher = more peaked) |
+| `--concentration` | 2.0 | Dirichlet concentration (lower = more peaked, closer to one-hot) |
+| `--temperature` | 3.0 | Softmax temperature for bandit prior (higher = sharper) |
+| `--benchmark` | none | Path to benchmark config JSON (e.g., `benchmark_data/toolbench_60.json`) |
+| `--test-pool-size` | 50 | Held-out test queries per user (0 to disable) |
 | `--resume` | off | Enable checkpoint/resume |
 | `--output-dir` | {model}/ | Results directory |
 | `--dry-run` | off | Skip LLM agents for fast debugging |

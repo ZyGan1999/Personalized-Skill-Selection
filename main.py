@@ -103,6 +103,10 @@ def parse_args() -> argparse.Namespace:
         "--temperature", type=float, default=3.0,
         help="Softmax temperature for bandit prior (higher = sharper, default: 3.0)",
     )
+    parser.add_argument(
+        "--test-pool-size", type=int, default=50,
+        help="Queries per user for held-out test evaluation (default: 50, 0 to disable)",
+    )
     return parser.parse_args()
 
 
@@ -140,6 +144,7 @@ def main() -> None:
     from agents import (
         BanditOverrideAgent,
         BanditPriorCoTAgent,
+        FreqOverrideAgent,
         FrequencyGreedyAgent,
         InContextMemoryAgent,
         ProfileMemoryAgent,
@@ -162,6 +167,7 @@ def main() -> None:
             FrequencyGreedyAgent(),
             PureBanditAgent(alpha=1.0),
             BanditPriorCoTAgent(model=args.model, alpha=1.0, temperature=args.temperature),
+            FreqOverrideAgent(model=args.model),
             BanditOverrideAgent(model=args.model, alpha=1.0),
         ])
         return agents
@@ -188,6 +194,7 @@ def main() -> None:
         concentration=args.concentration,
         output_dir=output_dir if args.resume else None,
         shared_domain_model=shared_domain,
+        test_pool_size=args.test_pool_size,
     )
     elapsed = time.time() - t0
     print(f"  Done in {elapsed:.1f}s  "
@@ -220,6 +227,7 @@ def main() -> None:
         plot_preference_recovery,
         plot_rolling_accuracy_ci,
         plot_domain_classification_accuracy,
+        plot_test_accuracy,
         print_summary,
         significance_test,
     )
@@ -234,6 +242,7 @@ def main() -> None:
     plot_per_domain_accuracy(multi)
     plot_preference_alignment(multi)
     plot_domain_classification_accuracy(multi)
+    plot_test_accuracy(multi)
 
     print_summary(multi)
 

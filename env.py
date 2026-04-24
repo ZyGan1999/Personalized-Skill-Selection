@@ -74,6 +74,8 @@ class SeedResult:
     trained_agents: List                # list of agent objects
     # Domain classification predictions (true_domain, inferred_domain) — tracked at env level
     domain_predictions: List = field(default_factory=list)
+    # Test evaluation results: {agent_name: {"accuracy": float, "ood_accuracy": float, ...}}
+    test_results: Optional[Dict] = field(default=None)
 
 
 @dataclass
@@ -331,6 +333,64 @@ def run_simulation(
 
 
 # ---------------------------------------------------------------------------
+# Test evaluation (no agent updates)
+# ---------------------------------------------------------------------------
+
+
+def evaluate_test(
+    agents,
+    users: List[UserPersona],
+    shared_domain_model: Optional[str] = None,
+    verbose: bool = False,
+) -> Dict[str, Dict[str, float]]:
+    """
+    Evaluate trained agents on held-out test queries. Agents select but do NOT update.
+
+    Returns {agent_name: {"accuracy": float, "ood_accuracy": float, "n_total": int, "n_ood": int}}
+    """
+    stats = {
+        a.name: {"correct": 0, "total": 0, "ood_correct": 0, "ood_total": 0}
+        for a in agents
+    }
+
+    for user in users:
+        if not user.test_pool:
+            continue
+        for query, domain, is_ood, true_tool in user.test_pool:
+            if shared_domain_model:
+                agent_domain = _classify_domain(query, shared_domain_model)
+            else:
+                agent_domain = domain
+
+            for agent in agents:
+                selected = agent.select_tool(query, agent_domain, user.user_id,
+                                             data_gen.ALL_TOOLS)
+                correct = 1 if selected == true_tool else 0
+                stats[agent.name]["correct"] += correct
+                stats[agent.name]["total"] += 1
+                if is_ood:
+                    stats[agent.name]["ood_correct"] += correct
+                    stats[agent.name]["ood_total"] += 1
+
+    results = {}
+    for name, s in stats.items():
+        results[name] = {
+            "accuracy": s["correct"] / max(s["total"], 1),
+            "ood_accuracy": s["ood_correct"] / max(s["ood_total"], 1),
+            "n_total": s["total"],
+            "n_ood": s["ood_total"],
+        }
+
+    if verbose:
+        print("  Test evaluation:")
+        for name, r in results.items():
+            print(f"    {name:<22}: acc={r['accuracy']:.1%}, ood={r['ood_accuracy']:.1%} "
+                  f"({r['n_total']} queries, {r['n_ood']} OOD)")
+
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Multi-seed experiment runner
 # ---------------------------------------------------------------------------
 
@@ -343,6 +403,7 @@ def run_experiment(
     ood_ratio: float = 0.10,
     pool_size: int = 200,
     verbose: bool = False,
+    test_pool_size: int = 50,
     soft_preferences: bool = False,
     concentration: float = 2.0,
     output_dir: Optional[str] = None,
@@ -400,10 +461,12 @@ def run_experiment(
             users = generate_users_soft(
                 n_users=n_users, seed=seed, pool_size=pool_size,
                 ood_ratio=ood_ratio, concentration=concentration,
+                test_pool_size=test_pool_size,
             )
         else:
             users = generate_users(
-                n_users=n_users, seed=seed, pool_size=pool_size, ood_ratio=ood_ratio
+                n_users=n_users, seed=seed, pool_size=pool_size, ood_ratio=ood_ratio,
+                test_pool_size=test_pool_size,
             )
 
         # Fresh agents (clean state — no cross-seed contamination)
@@ -411,7 +474,7 @@ def run_experiment(
         if agent_names is None:
             agent_names = [a.name for a in agents]
 
-        # Run simulation (with mid-seed checkpoint support)
+        # Run training simulation (with mid-seed checkpoint support)
         agent_results, domain_preds = run_simulation(
             agents=agents, users=users, T=T, seed=seed, verbose=verbose,
             output_dir=output_dir,
@@ -424,12 +487,22 @@ def run_experiment(
             n_total = sum(len(ar.records) for ar in agent_results)
             print(f"  Done in {elapsed:.1f}s | overall acc: {n_correct / n_total:.1%}")
 
+        # Test evaluation on held-out queries (no agent updates)
+        test_res = None
+        if test_pool_size > 0 and any(u.test_pool for u in users):
+            if verbose:
+                print("  Running test evaluation ...", flush=True)
+            test_res = evaluate_test(
+                agents, users, shared_domain_model=shared_domain_model, verbose=verbose,
+            )
+
         sr = SeedResult(
             seed=seed,
             agent_results=agent_results,
             users=users,
             trained_agents=agents,
             domain_predictions=domain_preds,
+            test_results=test_res,
         )
         seed_results.append(sr)
 

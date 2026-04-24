@@ -368,8 +368,10 @@ class UserPersona:
     # Optional soft preferences (Dirichlet-sampled probability distribution)
     # None for standard one-hot users
     soft_preferences: Optional[Dict[str, Dict[str, float]]]
-    # Pre-generated query pool: (query_text, domain, is_ood, true_tool)
+    # Pre-generated query pool for training: (query_text, domain, is_ood, true_tool)
     query_pool: List[Tuple[str, str, bool, str]] = field(default_factory=list)
+    # Independent test pool (agents select but do NOT update)
+    test_pool: List[Tuple[str, str, bool, str]] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -503,6 +505,7 @@ def generate_users(
     pool_size: int = 200,
     ood_ratio: float = 0.10,
     domains: Optional[Dict[str, List[str]]] = None,
+    test_pool_size: int = 50,
 ) -> List[UserPersona]:
     """
     Generate n_users synthetic user personas with one-hot preferences.
@@ -516,8 +519,10 @@ def generate_users(
     for uid in range(n_users):
         prefs = _assign_preferences(domains)
         pool = _generate_query_pool(prefs, domains, pool_size=pool_size, ood_ratio=ood_ratio)
+        test = _generate_query_pool(prefs, domains, pool_size=test_pool_size, ood_ratio=ood_ratio) if test_pool_size > 0 else []
         users.append(
-            UserPersona(user_id=uid, preferences=prefs, soft_preferences=None, query_pool=pool)
+            UserPersona(user_id=uid, preferences=prefs, soft_preferences=None,
+                        query_pool=pool, test_pool=test)
         )
     return users
 
@@ -529,6 +534,7 @@ def generate_users_soft(
     ood_ratio: float = 0.10,
     concentration: float = 2.0,
     domains: Optional[Dict[str, List[str]]] = None,
+    test_pool_size: int = 50,
 ) -> List[UserPersona]:
     """
     Generate users with Dirichlet-sampled soft preferences.
@@ -545,8 +551,10 @@ def generate_users_soft(
         # Hard label = argmax of soft distribution
         prefs = {domain: max(tool_probs, key=tool_probs.get) for domain, tool_probs in soft.items()}
         pool = _generate_query_pool_soft(soft, domains, pool_size=pool_size, ood_ratio=ood_ratio, rng=np_rng)
+        test = _generate_query_pool_soft(soft, domains, pool_size=test_pool_size, ood_ratio=ood_ratio, rng=np_rng) if test_pool_size > 0 else []
         users.append(
-            UserPersona(user_id=uid, preferences=prefs, soft_preferences=soft, query_pool=pool)
+            UserPersona(user_id=uid, preferences=prefs, soft_preferences=soft,
+                        query_pool=pool, test_pool=test)
         )
     return users
 

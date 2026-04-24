@@ -130,6 +130,7 @@ def main():
         plot_ood_robustness,
         plot_per_domain_accuracy,
         plot_domain_classification_accuracy,
+        plot_test_accuracy,
         print_summary,
     )
 
@@ -139,6 +140,9 @@ def main():
     plot_ood_robustness(multi)
     plot_per_domain_accuracy(multi)
     plot_domain_classification_accuracy(multi)
+    # Test accuracy: only available for fully completed seeds
+    if any(sr.test_results for sr in seed_results if hasattr(sr, 'test_results')):
+        plot_test_accuracy(multi)
     print_summary(multi)
     print("Done.")
 

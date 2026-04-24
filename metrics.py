@@ -73,11 +73,32 @@ def _save(fig: plt.Figure, filename: str) -> str:
     return pdf_path
 
 
-# Colour palette (consistent across all plots)
+# Colour palette: grouped by category
+# - Gray: no learning
+# - Blues: statistical only (no LLM)
+# - Oranges/reds: LLM only (no/weak statistics)
+# - Greens/purples: statistical + LLM hybrids (proposed = bold)
+_AGENT_COLORS = {
+    # No learning
+    "Random":           "#AAAAAA",
+    # Statistical only (no LLM) — cool blues
+    "Freq-Greedy":      "#6BAED6",
+    "Pure-Bandit":      "#2171B5",
+    # LLM only — warm oranges/reds
+    "ZeroShot-LLM":     "#FD8D3C",
+    "InContext-Memory":  "#E6550D",
+    "Profile-Memory":   "#D62728",
+    # Hybrid: statistical + LLM — greens/purples
+    "Bandit+CoT":       "#9467BD",
+    "Freq+Override":    "#78C679",
+    "Bandit+Override":  "#238B45",
+}
 _PALETTE = plt.cm.tab10(np.linspace(0, 0.9, 10))
 
 
-def _agent_color(idx: int) -> np.ndarray:
+def _agent_color(idx: int, name: str = "") -> np.ndarray:
+    if name in _AGENT_COLORS:
+        return _AGENT_COLORS[name]
     return _PALETTE[idx % len(_PALETTE)]
 
 
@@ -192,7 +213,7 @@ def plot_cumulative_regret_ci(
         arr = regret_data[name]          # (n_seeds, T)
         mean = arr.mean(axis=0)
         lo, hi = _ci95(arr)
-        color = _agent_color(idx)
+        color = _agent_color(idx, name)
         ax.plot(rounds, mean, label=name, color=color, linewidth=2)
         ax.fill_between(rounds, lo, hi, alpha=0.15, color=color)
 
@@ -255,7 +276,7 @@ def plot_rolling_accuracy_ci(
         arr = rolling_data[name]         # (n_seeds, T_eff)
         mean = arr.mean(axis=0)
         lo, hi = _ci95(arr)
-        color = _agent_color(idx)
+        color = _agent_color(idx, name)
         ax.plot(rounds, mean, label=name, color=color, linewidth=2)
         ax.fill_between(rounds, lo, hi, alpha=0.15, color=color)
 
@@ -300,7 +321,7 @@ def plot_ood_robustness(
         stds.append(float(np.std(accs, ddof=1)) if len(accs) > 1 else 0.0)
 
     x = np.arange(len(multi.agent_names))
-    colors = [_agent_color(i) for i in range(len(multi.agent_names))]
+    colors = [_agent_color(i, n) for i, n in enumerate(multi.agent_names)]
 
     fig, ax = plt.subplots(figsize=(8, 4))
     bars = ax.bar(x, means, yerr=stds, capsize=5, color=colors,
@@ -349,7 +370,7 @@ def plot_preference_recovery(
             return v.get("recovery_rate", 0.0) if isinstance(v, dict) else float(v)
         vals = [_get_rate(recovery_rates.get(name, 0.0)) for name in agent_names]
         x = np.arange(len(agent_names))
-        colors = [_agent_color(i) for i in range(len(agent_names))]
+        colors = [_agent_color(i, n) for i, n in enumerate(agent_names)]
 
         fig, ax = plt.subplots(figsize=(8, 4))
         bars = ax.bar(x, vals, color=colors, edgecolor="black", linewidth=0.8)
@@ -379,7 +400,7 @@ def plot_preference_recovery(
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
     x = np.arange(len(agent_names))
-    colors = [_agent_color(i) for i in range(len(agent_names))]
+    colors = [_agent_color(i, n) for i, n in enumerate(agent_names)]
 
     for ax, (key, ylabel, ylim, higher_better, fmt) in zip(axes, metric_configs):
         def _get_metric(v, k=key):
@@ -520,7 +541,69 @@ def plot_domain_classification_accuracy(
 
 
 # ---------------------------------------------------------------------------
-# Plot 7: Preference Alignment Heatmap (per-user, per-domain)
+# Plot 7: Test Set Accuracy (bar chart)
+# ---------------------------------------------------------------------------
+
+
+def plot_test_accuracy(
+    multi: MultiSeedResult,
+    filename: str = "test_accuracy.pdf",
+) -> str:
+    """
+    Bar chart showing accuracy on held-out test queries (no agent updates during test).
+    Two groups of bars: overall accuracy and OOD accuracy.
+    """
+    # Collect test results across seeds
+    agent_acc = {n: [] for n in multi.agent_names}
+    agent_ood = {n: [] for n in multi.agent_names}
+
+    for sr in multi.seed_results:
+        if not sr.test_results:
+            continue
+        for name in multi.agent_names:
+            if name in sr.test_results:
+                agent_acc[name].append(sr.test_results[name]["accuracy"])
+                agent_ood[name].append(sr.test_results[name]["ood_accuracy"])
+
+    if not any(agent_acc[n] for n in multi.agent_names):
+        return ""
+
+    acc_means = [float(np.mean(agent_acc[n])) if agent_acc[n] else 0.0 for n in multi.agent_names]
+    ood_means = [float(np.mean(agent_ood[n])) if agent_ood[n] else 0.0 for n in multi.agent_names]
+
+    x = np.arange(len(multi.agent_names))
+    width = 0.35
+    colors = [_agent_color(i, n) for i, n in enumerate(multi.agent_names)]
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+    bars1 = ax.bar(x - width / 2, acc_means, width, label="Overall Accuracy",
+                    color=colors, edgecolor="black", linewidth=0.8)
+    bars2 = ax.bar(x + width / 2, ood_means, width, label="OOD Accuracy",
+                    color=colors, edgecolor="black", linewidth=0.8, alpha=0.6)
+
+    for bar, v in zip(bars1, acc_means):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
+                f"{v:.1%}", ha="center", va="bottom", fontsize=8, fontweight="bold")
+    for bar, v in zip(bars2, ood_means):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
+                f"{v:.1%}", ha="center", va="bottom", fontsize=8)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(multi.agent_names, fontsize=9, rotation=15, ha="right")
+    ax.set_ylim(0, 1.15)
+    ax.set_ylabel("Accuracy", fontsize=12)
+    ax.set_title(
+        f"Test Set Accuracy (held-out queries, no learning)\n"
+        f"({multi.n_users} users, {multi.n_seeds} seeds)",
+        fontsize=12,
+    )
+    ax.legend(fontsize=10)
+    ax.grid(True, axis="y", linestyle="--", alpha=0.4)
+    return _save(fig, filename)
+
+
+# ---------------------------------------------------------------------------
+# Plot 8: Preference Alignment Heatmap (per-user, per-domain)
 # ---------------------------------------------------------------------------
 
 
