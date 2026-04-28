@@ -1,6 +1,7 @@
 import os, requests
 api_key = os.getenv("OPENAI_API_KEY")
-api_base = os.getenv("OPENAI_API_BASE")
+api_base = os.getenv("OPENAI_API_BASE", "https://api.packyapi.com/v1")
+
 
 print("Testing API key:", "Present" if api_key else "Missing")
 print("Testing API endpoint:", api_base)

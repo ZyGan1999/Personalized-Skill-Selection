@@ -236,6 +236,7 @@ def run_simulation(
     verbose: bool = False,  # noqa: ARG001 (kept for API compatibility)
     output_dir: Optional[str] = None,
     shared_domain_model: Optional[str] = None,
+    wandb_run=None,
 ) -> tuple:
     """
     Run the online evaluation loop for one set of agents and users.
@@ -327,6 +328,21 @@ def run_simulation(
                 user_idx + 1, rng.getstate(),
             )
 
+        # Log per-user metrics to wandb (if configured)
+        if wandb_run is not None:
+            log_dict = {"user_idx": user_idx + 1, "seed": seed}
+            for ar in results:
+                if not ar.records:
+                    continue
+                # Cumulative regret = sum of (1 - reward) over all rounds so far
+                total_regret = sum(1.0 - r.reward for r in ar.records)
+                # Rolling accuracy: last 50 rounds (1 user worth)
+                window = min(50, len(ar.records))
+                recent_acc = sum(r.reward for r in ar.records[-window:]) / window
+                log_dict[f"regret/{ar.agent_name}"] = total_regret
+                log_dict[f"rolling_acc/{ar.agent_name}"] = recent_acc
+            wandb_run.log(log_dict)
+
     if pbar is not None:
         pbar.close()
     return results, domain_predictions
@@ -353,6 +369,13 @@ def evaluate_test(
         for a in agents
     }
 
+    total_queries = sum(len(u.test_pool) for u in users)
+    try:
+        from tqdm import tqdm
+        pbar = tqdm(total=total_queries, unit="query", desc="test_eval", leave=False)
+    except ImportError:
+        pbar = None
+
     for user in users:
         if not user.test_pool:
             continue
@@ -371,6 +394,12 @@ def evaluate_test(
                 if is_ood:
                     stats[agent.name]["ood_correct"] += correct
                     stats[agent.name]["ood_total"] += 1
+
+            if pbar is not None:
+                pbar.update(1)
+
+    if pbar is not None:
+        pbar.close()
 
     results = {}
     for name, s in stats.items():
@@ -403,6 +432,9 @@ def run_experiment(
     ood_ratio: float = 0.10,
     pool_size: int = 200,
     verbose: bool = False,
+    wandb_project: Optional[str] = None,
+    wandb_run_name: Optional[str] = None,
+    wandb_config: Optional[Dict] = None,
     test_pool_size: int = 50,
     soft_preferences: bool = False,
     concentration: float = 2.0,
@@ -456,6 +488,24 @@ def run_experiment(
             print(f"\n[Seed {seed}] ({i + 1}/{len(seeds)})", flush=True)
         t0 = time.time()
 
+        # Initialize wandb run for this seed (if configured)
+        wandb_run = None
+        if wandb_project:
+            try:
+                import wandb
+                run_name = (wandb_run_name or "exp") + f"-seed{seed}"
+                cfg = dict(wandb_config or {})
+                cfg.update({"seed": seed, "n_users": n_users, "T": T})
+                wandb_run = wandb.init(
+                    project=wandb_project,
+                    name=run_name,
+                    config=cfg,
+                    reinit=True,
+                )
+            except Exception as e:
+                print(f"  [wandb] init failed: {e}", flush=True)
+                wandb_run = None
+
         # Fresh users with this seed's preference assignments
         if soft_preferences:
             users = generate_users_soft(
@@ -479,6 +529,7 @@ def run_experiment(
             agents=agents, users=users, T=T, seed=seed, verbose=verbose,
             output_dir=output_dir,
             shared_domain_model=shared_domain_model,
+            wandb_run=wandb_run,
         )
 
         elapsed = time.time() - t0
@@ -510,6 +561,25 @@ def run_experiment(
         if output_dir is not None:
             _save_seed_checkpoint(output_dir, seed, sr)
             _remove_mid_seed_checkpoint(output_dir, seed)
+
+        # Finalize wandb run for this seed
+        if wandb_run is not None:
+            try:
+                # Log final test results and summary metrics
+                final_log = {}
+                if test_res:
+                    for name, r in test_res.items():
+                        final_log[f"test_acc/{name}"] = r["accuracy"]
+                        final_log[f"test_ood_acc/{name}"] = r["ood_accuracy"]
+                # Log domain classification accuracy
+                if domain_preds:
+                    correct = sum(1 for true_d, pred_d in domain_preds if true_d == pred_d)
+                    final_log["domain_classification_acc"] = correct / len(domain_preds)
+                if final_log:
+                    wandb_run.log(final_log)
+                wandb_run.finish()
+            except Exception as e:
+                print(f"  [wandb] finish failed: {e}", flush=True)
 
     return MultiSeedResult(
         seed_results=seed_results,

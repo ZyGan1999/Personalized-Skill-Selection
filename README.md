@@ -96,6 +96,16 @@ python main.py --ood-ratio 0.20 --output-dir ood20
 python main.py --ood-ratio 0.50 --output-dir ood50
 ```
 
+### Paper Experiments (Multi-Model)
+
+```bash
+export OPENAI_API_KEY=sk-...
+export OPENAI_API_BASE=https://www.packyapi.com/v1
+bash run_main_experiments.sh
+```
+
+Runs all models × (one-hot + soft c=0.3) × 3 seeds with results in `paper-exp/`.
+
 ### Module-Level Tests
 
 ```bash
@@ -103,6 +113,7 @@ python data_gen.py      # prints sample users with query pool stats
 python bandits.py       # shows LinUCB prior shift after updates
 python agents.py        # runs one select_tool call per agent (requires API key)
 python env.py           # smoke test with a random dummy agent
+python test_packy.py    # check connectivity to packyapi.com models
 ```
 
 ## CLI Reference
@@ -120,6 +131,8 @@ python env.py           # smoke test with a random dummy agent
 | `--temperature` | 3.0 | Softmax temperature for bandit prior (higher = sharper) |
 | `--benchmark` | none | Path to benchmark config JSON (e.g., `benchmark_data/toolbench_60.json`) |
 | `--test-pool-size` | 50 | Held-out test queries per user (0 to disable) |
+| `--wandb-project` | none | W&B project name (enables wandb logging) |
+| `--wandb-run-name` | output-dir name | Base name for wandb runs (appended with `-seed{N}`) |
 | `--resume` | off | Enable checkpoint/resume |
 | `--output-dir` | {model}/ | Results directory |
 | `--dry-run` | off | Skip LLM agents for fast debugging |

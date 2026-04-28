@@ -107,6 +107,14 @@ def parse_args() -> argparse.Namespace:
         "--test-pool-size", type=int, default=50,
         help="Queries per user for held-out test evaluation (default: 50, 0 to disable)",
     )
+    parser.add_argument(
+        "--wandb-project", type=str, default=None,
+        help="W&B project name (e.g., 'tool-call-bandit'). If unset, wandb is disabled",
+    )
+    parser.add_argument(
+        "--wandb-run-name", type=str, default=None,
+        help="Base name for the wandb run (will be appended with '-seed{N}')",
+    )
     return parser.parse_args()
 
 
@@ -182,6 +190,21 @@ def main() -> None:
 
     print(f"\n[1/3] Running {len(args.seeds)}-seed experiment …")
     t0 = time.time()
+    # Build wandb config to log all run parameters
+    wandb_config = {
+        "model": args.model,
+        "users": args.users,
+        "rounds": args.rounds,
+        "ood_ratio": args.ood_ratio,
+        "soft_preferences": args.soft_preferences,
+        "concentration": args.concentration,
+        "temperature": args.temperature,
+        "test_pool_size": args.test_pool_size,
+        "benchmark": args.benchmark or "default",
+    }
+    # Default wandb run name from output dir
+    wandb_run_name = args.wandb_run_name or os.path.basename(output_dir.rstrip("/"))
+
     multi = run_experiment(
         build_agents_fn=build_agents_fn,
         n_users=args.users,
@@ -195,6 +218,9 @@ def main() -> None:
         output_dir=output_dir if args.resume else None,
         shared_domain_model=shared_domain,
         test_pool_size=args.test_pool_size,
+        wandb_project=args.wandb_project,
+        wandb_run_name=wandb_run_name,
+        wandb_config=wandb_config,
     )
     elapsed = time.time() - t0
     print(f"  Done in {elapsed:.1f}s  "

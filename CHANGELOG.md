@@ -4,6 +4,39 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-04-28 — Wandb Integration, Improved Retry, Experiment Scripts
+
+### Wandb Integration
+- `run_experiment()` now accepts `wandb_project`, `wandb_run_name`, `wandb_config` parameters
+- Per-user metrics logged during training: cumulative regret and rolling accuracy per agent
+- Final test accuracy and domain classification accuracy logged at seed end
+- Added `--wandb-project` and `--wandb-run-name` CLI flags to `main.py`
+- `run_main_experiments.sh` passes `--wandb-project` and `--wandb-run-name` automatically
+
+### Improved API Retry Logic
+- Increased retry attempts from 5 → 12 to survive longer API outages
+- 5xx errors now use exponential backoff: 30s → 60s → 120s → 240s → 300s (capped at 5 min)
+- Non-5xx errors use shorter backoff: 1s → 2s → 4s → ... (capped at 30s)
+- Added 504 Gateway Timeout to the 5xx detection set
+- Retry log line now includes the error message (truncated to 80 chars) for diagnosis
+
+### Paper Experiment Runner
+- Added `run_main_experiments.sh`: orchestrates multi-model × multi-condition experiments for paper
+- Runs all models × (one-hot + soft c=0.3) × 3 seeds in sequence
+- Model name sanitization: `/` → `_` to avoid creating nested directories
+- Unsets `OPENAI_CHAT_URL` to prevent stale env var from overriding `OPENAI_API_BASE`
+- Uses `--no-capture-output` and `python -u` for real-time terminal output through conda
+
+### API Connectivity Test
+- Added `test_packy.py`: quick check for reachability of packyapi.com models
+- Tests multiple candidate URL patterns and prints a pass/fail summary table
+- Default models: glm-5, kimi-k2.5, minimax-m2.5, qwen3-max (configurable via `--models`)
+
+### Experiment Documentation
+- Added `EXPERIMENTS.md`: complete plan for paper experiments including model list, rationale, and findings to date
+
+---
+
 ## 2026-04-17 — Freq+Override Ablation, Color Scheme, Train/Test Split
 
 ### New Baseline: Freq+Override (Ablation)

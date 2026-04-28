@@ -70,7 +70,8 @@ def _llm_call(prompt: str, model: str) -> str:
     }
 
     last_exc: Exception = RuntimeError("no attempts made")
-    for attempt in range(5):
+    max_attempts = 12
+    for attempt in range(max_attempts):
         try:
             resp = requests.post(url, headers=headers, json=payload, timeout=120)
             # Retry on 5xx server errors (502 Bad Gateway, 503 Service Unavailable, etc.)
@@ -92,10 +93,15 @@ def _llm_call(prompt: str, model: str) -> str:
                 requests.exceptions.ChunkedEncodingError,
                 requests.exceptions.JSONDecodeError) as e:
             last_exc = e
-            # Longer wait for 502/503 errors (upstream issues)
-            is_5xx = "502" in str(e) or "503" in str(e) or "500" in str(e)
-            wait = 30 if is_5xx else min(2 ** attempt, 15)
-            print(f"\n  [LLM] attempt {attempt + 1}/5 failed ({type(e).__name__}), retrying in {wait}s…", flush=True)
+            # 5xx (upstream API issues): exponential backoff capped at 5 minutes
+            # other errors: shorter backoff
+            is_5xx = "502" in str(e) or "503" in str(e) or "500" in str(e) or "504" in str(e)
+            if is_5xx:
+                # 30s, 60s, 120s, 240s, 300s, 300s, ... (cap at 5 min)
+                wait = min(30 * (2 ** attempt), 300)
+            else:
+                wait = min(2 ** attempt, 30)
+            print(f"\n  [LLM] attempt {attempt + 1}/{max_attempts} failed ({type(e).__name__}: {str(e)[:80]}), retrying in {wait}s…", flush=True)
             time.sleep(wait)
     raise last_exc
 
