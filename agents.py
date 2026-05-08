@@ -86,12 +86,20 @@ def _llm_call(prompt: str, model: str) -> str:
                     f"{resp.status_code} Empty response body",
                     response=resp,
                 )
-            return resp.json()["choices"][0]["message"]["content"].strip()
+            body = resp.json()
+            if "choices" not in body:
+                body_str = str(body)[:300]
+                # Auth errors are permanent — fail immediately instead of retrying
+                if "auth" in body_str.lower() or "unauthorized" in body_str.lower():
+                    raise RuntimeError(f"Auth error (check OPENAI_API_KEY): {body_str}")
+                raise ValueError(f"No 'choices' in response: {body_str}")
+            return body["choices"][0]["message"]["content"].strip()
         except (requests.exceptions.Timeout,
                 requests.exceptions.ConnectionError,
                 requests.exceptions.HTTPError,
                 requests.exceptions.ChunkedEncodingError,
-                requests.exceptions.JSONDecodeError) as e:
+                requests.exceptions.JSONDecodeError,
+                ValueError) as e:
             last_exc = e
             # 5xx (upstream API issues): exponential backoff capped at 5 minutes
             # other errors: shorter backoff
