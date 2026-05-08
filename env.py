@@ -21,6 +21,7 @@ import os
 import pickle
 import random
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
@@ -29,6 +30,11 @@ import numpy as np
 
 import data_gen
 from data_gen import UserPersona, generate_users, generate_users_soft, sample_query
+
+
+def _agent_uses_llm(agent) -> bool:
+    """LLM-using agents have a `model` attribute (set in their __init__)."""
+    return hasattr(agent, "model")
 
 
 # ---------------------------------------------------------------------------
@@ -282,69 +288,102 @@ def run_simulation(
     except ImportError:
         pbar = None
 
-    for user_idx, user in enumerate(users):
-        if user_idx < start_user_idx:
-            continue
+    # Thread pool for parallel LLM-agent select_tool calls within a round.
+    # Non-LLM agents (Random, Pure-Bandit, Freq-Greedy) stay sequential to preserve
+    # global RNG state ordering (RandomAgent uses random.choice on the global module).
+    # LLM agents do not touch the global RNG, so their order is irrelevant; only the
+    # post-selection update() phase, which mutates state, runs sequentially.
+    llm_indices = [i for i, a in enumerate(agents) if _agent_uses_llm(a)]
+    nonllm_indices = [i for i, a in enumerate(agents) if not _agent_uses_llm(a)]
+    pool = ThreadPoolExecutor(max_workers=max(len(llm_indices), 1)) if llm_indices else None
 
-        for t in range(T):
-            query, domain, is_ood, true_tool = sample_query(user, rng)
-            tools = data_gen.ALL_TOOLS  # agents select from the full pool across all domains
+    try:
+        for user_idx, user in enumerate(users):
+            if user_idx < start_user_idx:
+                continue
 
-            # Shared domain classification: one LLM call, result shared by all agents
-            if shared_domain_model:
-                inferred_domain = _classify_domain(query, shared_domain_model)
-                domain_predictions.append((domain, inferred_domain))
-                agent_domain = inferred_domain
-            else:
-                agent_domain = domain  # ground truth fallback
+            for t in range(T):
+                query, domain, is_ood, true_tool = sample_query(user, rng)
+                tools = data_gen.ALL_TOOLS  # agents select from the full pool across all domains
 
-            for agent_idx, agent in enumerate(agents):
-                selected = agent.select_tool(query, agent_domain, user.user_id, tools)
-                reward = 1.0 if selected == true_tool else 0.0
+                # Shared domain classification: one LLM call, result shared by all agents
+                if shared_domain_model:
+                    inferred_domain = _classify_domain(query, shared_domain_model)
+                    domain_predictions.append((domain, inferred_domain))
+                    agent_domain = inferred_domain
+                else:
+                    agent_domain = domain  # ground truth fallback
 
-                results[agent_idx].records.append(RoundRecord(
-                    round_idx=t,
-                    user_id=user.user_id,
-                    domain=domain,
-                    query=query,
-                    is_ood=is_ood,
-                    true_tool=true_tool,
-                    selected_tool=selected,
-                    reward=reward,
-                ))
-                agent.update(query, agent_domain, user.user_id, selected, reward)
+                # Phase 1: non-LLM agents — sequential, preserves global RNG ordering
+                selections: List[Optional[str]] = [None] * len(agents)
+                for idx in nonllm_indices:
+                    selections[idx] = agents[idx].select_tool(
+                        query, agent_domain, user.user_id, tools
+                    )
 
-            if pbar is not None:
-                recent = results[0].records[-min(10, len(results[0].records)):]
-                acc = sum(r.reward for r in recent) / len(recent)
-                pbar.set_postfix({"acc": f"{acc:.0%}", "user": user.user_id})
-                pbar.update(1)
+                # Phase 2: LLM agents — parallel select_tool (HTTP overlap)
+                if pool is not None:
+                    futures = {
+                        idx: pool.submit(
+                            agents[idx].select_tool,
+                            query, agent_domain, user.user_id, tools,
+                        )
+                        for idx in llm_indices
+                    }
+                    for idx, fut in futures.items():
+                        selections[idx] = fut.result()
 
-        # Checkpoint after each user completes
-        if output_dir is not None:
-            _save_mid_seed_checkpoint(
-                output_dir, seed, agents,
-                [r.records for r in results],
-                user_idx + 1, rng.getstate(),
-            )
+                # Phase 3: sequential — record + update in original agent order
+                for agent_idx, agent in enumerate(agents):
+                    selected = selections[agent_idx]
+                    reward = 1.0 if selected == true_tool else 0.0
 
-        # Log per-user metrics to wandb (if configured)
-        if wandb_run is not None:
-            log_dict = {"user_idx": user_idx + 1, "seed": seed}
-            for ar in results:
-                if not ar.records:
-                    continue
-                # Cumulative regret = sum of (1 - reward) over all rounds so far
-                total_regret = sum(1.0 - r.reward for r in ar.records)
-                # Rolling accuracy: last 50 rounds (1 user worth)
-                window = min(50, len(ar.records))
-                recent_acc = sum(r.reward for r in ar.records[-window:]) / window
-                log_dict[f"regret/{ar.agent_name}"] = total_regret
-                log_dict[f"rolling_acc/{ar.agent_name}"] = recent_acc
-            wandb_run.log(log_dict)
+                    results[agent_idx].records.append(RoundRecord(
+                        round_idx=t,
+                        user_id=user.user_id,
+                        domain=domain,
+                        query=query,
+                        is_ood=is_ood,
+                        true_tool=true_tool,
+                        selected_tool=selected,
+                        reward=reward,
+                    ))
+                    agent.update(query, agent_domain, user.user_id, selected, reward)
 
-    if pbar is not None:
-        pbar.close()
+                if pbar is not None:
+                    recent = results[0].records[-min(10, len(results[0].records)):]
+                    acc = sum(r.reward for r in recent) / len(recent)
+                    pbar.set_postfix({"acc": f"{acc:.0%}", "user": user.user_id})
+                    pbar.update(1)
+
+            # Checkpoint after each user completes
+            if output_dir is not None:
+                _save_mid_seed_checkpoint(
+                    output_dir, seed, agents,
+                    [r.records for r in results],
+                    user_idx + 1, rng.getstate(),
+                )
+
+            # Log per-user metrics to wandb (if configured)
+            if wandb_run is not None:
+                log_dict = {"user_idx": user_idx + 1, "seed": seed}
+                for ar in results:
+                    if not ar.records:
+                        continue
+                    # Cumulative regret = sum of (1 - reward) over all rounds so far
+                    total_regret = sum(1.0 - r.reward for r in ar.records)
+                    # Rolling accuracy: last 50 rounds (1 user worth)
+                    window = min(50, len(ar.records))
+                    recent_acc = sum(r.reward for r in ar.records[-window:]) / window
+                    log_dict[f"regret/{ar.agent_name}"] = total_regret
+                    log_dict[f"rolling_acc/{ar.agent_name}"] = recent_acc
+                wandb_run.log(log_dict)
+    finally:
+        if pool is not None:
+            pool.shutdown(wait=True)
+        if pbar is not None:
+            pbar.close()
+
     return results, domain_predictions
 
 
@@ -376,30 +415,54 @@ def evaluate_test(
     except ImportError:
         pbar = None
 
-    for user in users:
-        if not user.test_pool:
-            continue
-        for query, domain, is_ood, true_tool in user.test_pool:
-            if shared_domain_model:
-                agent_domain = _classify_domain(query, shared_domain_model)
-            else:
-                agent_domain = domain
+    # Same parallelization pattern as run_simulation: LLM agents in a pool,
+    # non-LLM agents (Random uses global random.choice) sequential.
+    llm_indices = [i for i, a in enumerate(agents) if _agent_uses_llm(a)]
+    nonllm_indices = [i for i, a in enumerate(agents) if not _agent_uses_llm(a)]
+    pool = ThreadPoolExecutor(max_workers=max(len(llm_indices), 1)) if llm_indices else None
 
-            for agent in agents:
-                selected = agent.select_tool(query, agent_domain, user.user_id,
-                                             data_gen.ALL_TOOLS)
-                correct = 1 if selected == true_tool else 0
-                stats[agent.name]["correct"] += correct
-                stats[agent.name]["total"] += 1
-                if is_ood:
-                    stats[agent.name]["ood_correct"] += correct
-                    stats[agent.name]["ood_total"] += 1
+    try:
+        for user in users:
+            if not user.test_pool:
+                continue
+            for query, domain, is_ood, true_tool in user.test_pool:
+                if shared_domain_model:
+                    agent_domain = _classify_domain(query, shared_domain_model)
+                else:
+                    agent_domain = domain
 
-            if pbar is not None:
-                pbar.update(1)
+                selections: List[Optional[str]] = [None] * len(agents)
+                for idx in nonllm_indices:
+                    selections[idx] = agents[idx].select_tool(
+                        query, agent_domain, user.user_id, data_gen.ALL_TOOLS
+                    )
+                if pool is not None:
+                    futures = {
+                        idx: pool.submit(
+                            agents[idx].select_tool,
+                            query, agent_domain, user.user_id, data_gen.ALL_TOOLS,
+                        )
+                        for idx in llm_indices
+                    }
+                    for idx, fut in futures.items():
+                        selections[idx] = fut.result()
 
-    if pbar is not None:
-        pbar.close()
+                for agent_idx, agent in enumerate(agents):
+                    selected = selections[agent_idx]
+                    correct = 1 if selected == true_tool else 0
+                    stats[agent.name]["correct"] += correct
+                    stats[agent.name]["total"] += 1
+                    if is_ood:
+                        stats[agent.name]["ood_correct"] += correct
+                        stats[agent.name]["ood_total"] += 1
+
+                if pbar is not None:
+                    pbar.update(1)
+    finally:
+        if pool is not None:
+            pool.shutdown(wait=True)
+        if pbar is not None:
+            pbar.close()
 
     results = {}
     for name, s in stats.items():

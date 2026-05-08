@@ -50,6 +50,10 @@ Agents are grouped by category (each category uses a distinct color family in pl
 
 This achieves Pure-Bandit-level accuracy on standard queries while retaining OOD robustness via LLM override detection. The key insight: LLM reasoning introduces noise on standard queries, so it should only be invoked when needed (OOD detection), not for every selection.
 
+### Parallel LLM Calls
+
+Within each round, the LLM-using agents (up to 6) call the API concurrently via a thread pool, while non-LLM agents (Random, Pure-Bandit, Freq-Greedy) stay sequential to preserve global RNG order. Records and `update()` calls happen in original agent order after all selections — bit-identical results to sequential execution but ~3-4× wall-clock speedup at `temperature=0.0`.
+
 ### Data
 
 - **Built-in**: 5 domains × 4 tools = 20 tools (Chinese market apps)

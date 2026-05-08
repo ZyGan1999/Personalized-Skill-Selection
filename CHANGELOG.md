@@ -4,6 +4,22 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-05-08 — Parallel LLM Calls per Round
+
+### Parallelized Agent LLM Calls
+- Within each `(user, round)`, the up-to-6 LLM-using agents now call `select_tool` concurrently via `ThreadPoolExecutor` instead of sequentially
+- Non-LLM agents (`Random`, `Pure-Bandit`, `Freq-Greedy`) remain sequential to preserve global RNG ordering (`RandomAgent` uses `random.choice` on the global module)
+- Records are appended and `agent.update()` is invoked in original agent order after all selections complete — preserves identical state-evolution and record order
+- Same change applied to `evaluate_test`
+- Auto-detects LLM agents via `hasattr(agent, "model")`
+
+### Compatibility
+- Pickle/checkpoint format unchanged — existing mid-seed checkpoints resume cleanly
+- Results are bit-identical to sequential execution (LLMs are called at `temperature=0.0`, agent state is read-only during selection)
+- Expected speedup: each round's ~30s of sequential LLM calls collapses to ~5s of overlapped HTTP, roughly 3-4× wall-clock speedup
+
+---
+
 ## 2026-05-08 — API Error Handling Fixes & Seed Merge Utility
 
 ### Robust API Response Parsing
