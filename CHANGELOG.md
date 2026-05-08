@@ -4,6 +4,19 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-05-08 — API Error Handling Fixes & Seed Merge Utility
+
+### Robust API Response Parsing
+- Fixed crash when API returns HTTP 200 but without a `choices` field (e.g. rate limit, model temporarily unavailable): now treated as a retryable error and logs the actual response body for diagnosis
+- Auth errors (`auth_unavailable`) now raise `RuntimeError` immediately instead of retrying 12 times — avoids a ~30-minute wait on a permanent credential failure
+
+### Seed Merge Utility
+- Added `merge_seeds.py`: load `seed_N.pkl` checkpoints from arbitrary directories and regenerate all metrics/plots as a unified `MultiSeedResult`
+- Automatically detects and excludes agents with incomplete records within a seed (with a warning), avoiding biased metrics
+- Supports `--ckpts` (explicit file paths) or `--dirs` (scan directories), `--soft-preferences`, `--benchmark`, `--export-csv`
+
+---
+
 ## 2026-04-28 — Wandb Integration, Improved Retry, Experiment Scripts
 
 ### Wandb Integration
