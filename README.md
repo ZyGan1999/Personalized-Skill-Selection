@@ -186,6 +186,8 @@ In soft preference mode, additional heatmaps are generated:
 |----------|-------------|
 | `OPENAI_API_KEY` | API key for OpenAI models |
 | `OPENAI_API_BASE` | Custom API base URL (for proxies) |
+| `OPENAI_CHAT_URL` | Complete endpoint URL (takes priority over `OPENAI_API_BASE`); auto-detects Responses format when ending with `/responses` |
+| `OPENAI_API_FORMAT` | `chat` (default) or `responses` — selects between `/v1/chat/completions` and `/v1/responses` payload formats |
 | `ANTHROPIC_API_KEY` | API key for Anthropic models (via litellm) |
 | `AGENT_MODEL` | Override model (same as `--model`) |
 

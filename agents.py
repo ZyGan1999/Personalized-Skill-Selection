@@ -22,7 +22,7 @@ import json
 import os
 import random
 from collections import defaultdict, deque
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from bandits import LinUCBBandit
 import data_gen
@@ -32,18 +32,45 @@ import data_gen
 # (allows dry-run / bandit-only experiments without openai/litellm installed)
 # ---------------------------------------------------------------------------
 
+def _extract_responses_text(body: dict) -> Optional[str]:
+    """Extract assistant text from a /v1/responses payload. Returns None if not found."""
+    # Convenience field: many implementations include the concatenated text directly
+    if isinstance(body.get("output_text"), str) and body["output_text"]:
+        return body["output_text"]
+    # Fall back to walking the structured output array
+    output = body.get("output")
+    if isinstance(output, list):
+        for item in output:
+            if not isinstance(item, dict):
+                continue
+            if item.get("type") != "message":
+                continue
+            for content_item in item.get("content", []) or []:
+                if not isinstance(content_item, dict):
+                    continue
+                if content_item.get("type") in ("output_text", "text"):
+                    text = content_item.get("text")
+                    if isinstance(text, str) and text:
+                        return text
+    return None
+
+
 def _llm_call(prompt: str, model: str) -> str:
     """
     Call an LLM via raw HTTP (requests library).
 
     Environment variables:
-      OPENAI_API_KEY    = your platform API key
-      OPENAI_CHAT_URL   = complete chat endpoint URL, e.g.
-                          https://www.right.codes/claude-aws/v1/chat/completions
-                          (takes priority over OPENAI_API_BASE)
-      OPENAI_API_BASE   = base URL without path; /chat/completions is appended
-                          e.g. https://api.openai.com/v1  (fallback)
-      AGENT_MODEL       = model name the platform expects
+      OPENAI_API_KEY      = your platform API key
+      OPENAI_CHAT_URL     = complete endpoint URL (takes priority over OPENAI_API_BASE).
+                            Example: https://www.right.codes/claude-aws/v1/chat/completions
+                            If the URL ends with /responses, the Responses API format
+                            is auto-detected.
+      OPENAI_API_BASE     = base URL without path; suffix is appended automatically
+                            (default: https://api.openai.com/v1)
+      OPENAI_API_FORMAT   = "chat" (default) or "responses" — selects between
+                            /v1/chat/completions and /v1/responses formats.
+                            Auto-set to "responses" if URL ends with /responses.
+      AGENT_MODEL         = model name the platform expects
     """
     import time
     import requests
@@ -51,23 +78,38 @@ def _llm_call(prompt: str, model: str) -> str:
     api_key = os.getenv("OPENAI_API_KEY", "")
     bare_model = model.removeprefix("openai/")
 
+    # Resolve format and URL
+    api_format = os.getenv("OPENAI_API_FORMAT", "").lower()
     chat_url = os.getenv("OPENAI_CHAT_URL")
     if chat_url:
         url = chat_url
     else:
         api_base = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1").rstrip("/")
-        url = f"{api_base}/chat/completions"
+        suffix = "/responses" if api_format == "responses" else "/chat/completions"
+        url = f"{api_base}{suffix}"
+
+    # Auto-detect format from URL when not explicitly set
+    if not api_format:
+        api_format = "responses" if url.rstrip("/").endswith("/responses") else "chat"
 
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
     }
-    payload = {
-        "model": bare_model,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.0,
-        "max_tokens": 256,
-    }
+    if api_format == "responses":
+        payload = {
+            "model": bare_model,
+            "input": prompt,
+            "temperature": 0.0,
+            "max_output_tokens": 256,
+        }
+    else:
+        payload = {
+            "model": bare_model,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.0,
+            "max_tokens": 256,
+        }
 
     last_exc: Exception = RuntimeError("no attempts made")
     max_attempts = 12
@@ -87,6 +129,14 @@ def _llm_call(prompt: str, model: str) -> str:
                     response=resp,
                 )
             body = resp.json()
+            if api_format == "responses":
+                text = _extract_responses_text(body)
+                if text is None:
+                    body_str = str(body)[:300]
+                    if "auth" in body_str.lower() or "unauthorized" in body_str.lower():
+                        raise RuntimeError(f"Auth error (check OPENAI_API_KEY): {body_str}")
+                    raise ValueError(f"No parseable text in /responses payload: {body_str}")
+                return text.strip()
             if "choices" not in body:
                 body_str = str(body)[:300]
                 # Auth errors are permanent — fail immediately instead of retrying

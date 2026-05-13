@@ -4,6 +4,18 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-05-09 — Support OpenAI Responses API (`/v1/responses`)
+
+### New API Format
+- `_llm_call` now supports the OpenAI Responses API format in addition to Chat Completions
+- Auto-detected when `OPENAI_CHAT_URL` ends with `/responses`; can also be forced via `OPENAI_API_FORMAT=responses`
+- Sends `input` instead of `messages` and `max_output_tokens` instead of `max_tokens`
+- Parses `output_text` (convenience field) or walks the structured `output[].content[].text` payload
+- Same retry/auth-error logic as Chat Completions — no other code paths affected
+- Enables running GPT experiments via cheaper API providers that only expose `/v1/responses`
+
+---
+
 ## 2026-05-08 — Parallel LLM Calls per Round
 
 ### Parallelized Agent LLM Calls
