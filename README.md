@@ -120,6 +120,24 @@ python env.py           # smoke test with a random dummy agent
 python test_packy.py    # check connectivity to packyapi.com models
 ```
 
+### Aggregating Results for the Paper
+
+`compute_test_acc.py` scans completed experiment directories under
+`paper-exp/` and prints mean ± std tables (test accuracy, online OOD,
+cumulative regret, and preference-recovery metrics) in a LaTeX-friendly form:
+
+```bash
+# Scan everything in paper-exp/
+conda run -n tool-call python compute_test_acc.py
+
+# A single experiment, with per-seed breakdown
+conda run -n tool-call python compute_test_acc.py \
+    --dir paper-exp/main-soft0.3-qwen3-30b-a3b-instruct-2507 --per-seed
+
+# Dump everything to CSV
+conda run -n tool-call python compute_test_acc.py --csv all_results.csv
+```
+
 ## CLI Reference
 
 | Argument | Default | Description |

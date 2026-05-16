@@ -4,6 +4,28 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-05-16 — Test-Set Aggregation Script and Paper Outline
+
+### Test-Set Aggregation
+- Added `compute_test_acc.py`: scans `paper-exp/` (or a list of directories) and
+  emits per-experiment tables in mean ± std form, ready to paste into LaTeX
+  (`X.X ($\pm$ Y.Y)`), with no math-mode markers when only the mean is available
+- Reads aggregated regret, online OOD accuracy, and preference-recovery metrics
+  from `summary.json` (already mean ± std, ddof=1); pulls held-out test accuracy
+  from each `seed_N.pkl` so the same ddof=1 convention is applied uniformly
+- No benchmark JSON needs to be loaded — fully avoids the slow per-seed
+  recomputation of `compute_preference_recovery`
+- Auto-detects soft vs one-hot mode and emits the appropriate recovery columns
+  (recovery_rate for one-hot, cosine / KL / Spearman for soft)
+- Optional `--per-seed`, `--csv`, `--seeds`, and `--dir` flags
+
+### Paper Outline
+- Added `PAPER_OUTLINE.md`: paper-organized synthesis of motivation, problem
+  formulation, method, experimental setup, main results, and analysis —
+  intended as a planning document for writing the actual paper
+
+---
+
 ## 2026-05-09 — Support OpenAI Responses API (`/v1/responses`)
 
 ### New API Format
