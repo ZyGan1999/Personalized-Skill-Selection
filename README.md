@@ -128,14 +128,24 @@ cumulative regret, and preference-recovery metrics) in a LaTeX-friendly form:
 
 ```bash
 # Scan everything in paper-exp/
-conda run -n tool-call python compute_test_acc.py
+conda run -n tool-call python scripts/compute_test_acc.py
 
 # A single experiment, with per-seed breakdown
-conda run -n tool-call python compute_test_acc.py \
+conda run -n tool-call python scripts/compute_test_acc.py \
     --dir paper-exp/main-soft0.3-qwen3-30b-a3b-instruct-2507 --per-seed
 
 # Dump everything to CSV
-conda run -n tool-call python compute_test_acc.py --csv all_results.csv
+conda run -n tool-call python scripts/compute_test_acc.py --csv all_results.csv
+```
+
+`plot_test_accuracy.py` produces a publication-quality grouped-bar chart of
+held-out test-set accuracy (Overall vs Explicit-Query) for a single
+experiment, ready to paste into LaTeX:
+
+```bash
+conda run -n tool-call python scripts/plot_test_accuracy.py \
+    --dir paper-exp/main-soft0.3-qwen3-30b-a3b-instruct-2507
+# → <dir>/images/test_accuracy_pub.{pdf,png}
 ```
 
 ## CLI Reference

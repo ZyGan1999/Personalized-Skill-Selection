@@ -10,19 +10,19 @@ test-set accuracy from each `seed_N.pkl`, which is not in summary.json.
 Usage
 -----
 # All paper-exp subdirectories
-python compute_test_acc.py
+python scripts/compute_test_acc.py
 
 # A specific run
-python compute_test_acc.py --dir paper-exp/main-soft0.3-qwen3-30b-a3b-instruct-2507
+python scripts/compute_test_acc.py --dir paper-exp/main-soft0.3-qwen3-30b-a3b-instruct-2507
 
 # Per-seed numbers (verify the std yourself)
-python compute_test_acc.py --dir <...> --per-seed
+python scripts/compute_test_acc.py --dir <...> --per-seed
 
 # Dump everything to CSV
-python compute_test_acc.py --csv all.csv
+python scripts/compute_test_acc.py --csv all.csv
 
 # Filter seeds (e.g. include only 0, 1)
-python compute_test_acc.py --dir <...> --seeds 0 1
+python scripts/compute_test_acc.py --dir <...> --seeds 0 1
 """
 from __future__ import annotations
 
@@ -30,9 +30,15 @@ import argparse
 import csv
 import json
 import os
+import sys
+
+# Ensure the project root is importable so that pickles referencing
+# `env.SeedResult`, `data_gen.UserPersona`, agent classes, etc. deserialise.
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 import pickle
 import re
-import sys
 from glob import glob
 from typing import Dict, List, Optional
 

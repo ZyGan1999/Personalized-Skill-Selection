@@ -4,6 +4,34 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-05-16 — Repo Restructure and Publication-Quality Test-Accuracy Figure
+
+### Repo Restructure
+- Utility scripts moved into `scripts/`: `compute_test_acc.py`,
+  `merge_seeds.py`, `plot_progress.py`, `run_main_experiments.sh`,
+  `extract_tools.py`, `test_packy.py`, `test_request.py`
+- Both Python aggregation/plot scripts prepend the project root to `sys.path`
+  so that pickled `SeedResult` objects (referencing `env`, `data_gen`, agent
+  classes) deserialize from the new `scripts/` location
+- Stale single-seed experiment artifacts removed from the repo root (the
+  authoritative experiment outputs live under `paper-exp/`, which is
+  gitignored)
+
+### Publication-Quality Test-Accuracy Plot
+- Added `scripts/plot_test_accuracy.py`: renders a grouped-bar figure of
+  Overall Accuracy vs. Explicit Query Accuracy across all nine agents,
+  using camera-ready display names (Bandit-as-Override, Freq-as-Override,
+  Bandit-as-Context) and the paper's canonical agent ordering
+- Aesthetics: serif font (Times), family-grouped restrained palette,
+  saturated bars for the primary metric and a lighter same-hue version
+  for the secondary metric (no hatching), error bars at ±1 sample std
+  (ddof=1), legend above the axes to avoid colliding with tall bars,
+  per-bar numeric labels on by default (`--no-annotate` to suppress)
+- Outputs both `.pdf` (vector, Type-42 fonts) and `.png` (300 dpi) to
+  `<experiment-dir>/images/test_accuracy_pub.{pdf,png}`
+
+---
+
 ## 2026-05-16 — Test-Set Aggregation Script and Paper Outline
 
 ### Test-Set Aggregation
