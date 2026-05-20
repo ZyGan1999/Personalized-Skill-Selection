@@ -1,0 +1,1172 @@
+{
+  "name": "toolbench_100",
+  "description": "100 tools across 10 categories from ToolBench/RapidAPI",
+  "domains": {
+    "Data": [
+      "Medium",
+      "Chain49",
+      "UK Real Estate Rightmove",
+      "Location and Time",
+      "Fresh LinkedIn Profile Data",
+      "Zillow Data v2",
+      "Company Data",
+      "Car Models and Data",
+      "Zillow.com",
+      "Africa-Api "
+    ],
+    "Tools": [
+      "Anything Domain",
+      "Hash Functions",
+      "Helper Function",
+      "String Methods and Functions - Manipulate text",
+      "DropChain",
+      "ViewDNS",
+      "OneHourTranslation",
+      "The Numerology API",
+      "PDF4me",
+      "Online Code Converter"
+    ],
+    "Business": [
+      "Integral2uMoney",
+      "Integral2uInventory",
+      "Dock API",
+      "PetStoreAPI2.0",
+      "PowerTools Developer Edition",
+      "TEXTKING Translation",
+      "Timeneye Time Tracking",
+      "bracketPy",
+      "CatalogAPI",
+      "Chartbeat"
+    ],
+    "Finance": [
+      "Quotient",
+      "ChangeNOW crypto exchange",
+      "Balanced",
+      "EOD Historical Data",
+      "Portfolio Performance and Risk Analytics - Basic",
+      "Tradier",
+      "Afterbanks PSD2 payments and bank reader",
+      "Chaingateway.io",
+      "YNAB - You Need a Budget",
+      "Crowdsense"
+    ],
+    "Text Analysis": [
+      "Job Opening Analyzer",
+      "Personality Quest",
+      "Linguist",
+      "Ontology",
+      "Ginger",
+      "Job and Resume Matching For HR Management Systems",
+      "Twinword Text Analysis Bundle",
+      "RChilli Search and Match",
+      "Gerwin AI Beta",
+      "Feedback Analysis API"
+    ],
+    "eCommerce": [
+      "Pinduoduo(拼多多) Data Service",
+      "Swagger PetStore",
+      "Magic AliExpress",
+      "Ali Express Data Service",
+      "Jingdong(京东) Data Service",
+      "ECart",
+      "EcartAPI",
+      "salesngine",
+      "International Bridge Blue Sandbox",
+      "Cryptocurrency APIs"
+    ],
+    "Entertainment": [
+      "Book Discovery by ReadsOmnia",
+      "Quotel - Quotes",
+      "Imgur",
+      "Euro Millions",
+      "Riddlie ",
+      "Web - Novel API",
+      "Movies and Serials Torrent",
+      "Hummingbird APIv1",
+      "Humor-Jokes-and-Memes",
+      "humm"
+    ],
+    "Artificial Intelligence Machine Learning": [
+      "Stock, Ticker, Security and Company Search database",
+      "Vision API",
+      "LemurBot",
+      "OPEN AI ",
+      "AI 1001FX Functions",
+      "Mad GPT Api",
+      "OpenNLP API",
+      "AI-writer",
+      "MaskMaker",
+      "LokingAI-Text"
+    ],
+    "Sports": [
+      "BaseballApi",
+      "Metrx Factory",
+      "MotorsportApi",
+      "Divanscore",
+      "TransferMarkt DB",
+      "MMAAPI",
+      "ViperScore",
+      "AllSportsApi",
+      "Soccerway Feed",
+      "CricketAPI2"
+    ],
+    "Social": [
+      "Linkedin Company Data",
+      "RocketAPI for Instagram",
+      "Repustate Sentiment and Text Analytics",
+      "TikTok Video No Watermark_v2",
+      "Easy Instagram Automation Service",
+      "Scoreoid",
+      "YouTube Private",
+      "TokApi - mobile version",
+      "TwttrAPI",
+      "Pinterest Downloader - Download Pinterest image Video and reels"
+    ]
+  },
+  "tool_metadata": {
+    "Medium": "This Unofficial Medium API helps you get data from Medium (medium.com), quickly and reliably. You can gather data related to users, publications, articles, latestposts, top writers, etc...  Try our endpoints below! Visit our website, mediumapi.com, and feel free to email us at nishu@mediumapi.com for any query.",
+    "Chain49": "Kickstart your next crypto project - extended trezor/blockbook API with 10+ blockchains available instantly and 50+ possible on request running on the finest hardware in Germany's best datacenters at Hetzner\n\nWebsocket only via api.chain49.com endpoint possible (RapidAPI does not support it yet)",
+    "UK Real Estate Rightmove": "Real-time data, unofficial API rightmove co uk\n\nRightmove is a leading UK Real Estate website in the United Kingdom. With the aim of providing detailed and reliable information about various types of properties, Rightmove has become an important destination for individuals looking to buy, sell, or rent property in the UK",
+    "Location and Time": "A collection of location and time utilities. You can search for country/city information worldwide, find out distance between two locations/cities, get location data from IP address, solve any time questions regarding different timezones, get sunrise/sunset times at any location, get holiday information worldwide, and much more!",
+    "Fresh LinkedIn Profile Data": "Reliable API for all LinkedIn Scraping Needs: profiles, companies, activities/posts, and job posts. This API scrapes data directly from LinkedIn upon request so that you'll get real-time data. Say goodbye to stale data!\n\nWe're active and responsive on this platform, please don't hesitate to drop a message in the Discussions or PM channels.",
+    "Zillow Data v2": "Real-time data, unofficial API Zillow com, search for-sale and rental listings\n\nZillow is a leading real estate website in the United States that provides information on buying, selling, renting, and investing in properties such as homes, apartments, and condos.",
+    "Company Data": "Data over 200M+ companies. Including firmographics, technographics, financial performance, web presence, growth indicators and more. Discover detailed information on loans, assets, domain technologies, workforce trends and more, Along with access to 4,000+ signals.\n\nAPI Key: Get your API key by signing up here: https://explorium.ai/signup\n\nMonthly Quota: 500 free enrichments per month\n\nFull Documentation: https://developers.explorium.ai",
+    "Car Models and Data": "Transform your automotive applications with our powerful Car Data and Maker API. With access to 130,000+ car models, our API delivers all the necessary basic and technical information you need to power your applications. From HSN and TSN codes to performance specs and more, our API is regularly updated and improved every week to ensure your data is always up-to-date. Don't settle for less. Get started with our Car Data and Maker API today!",
+    "Zillow.com": "Unofficial Zillow API. US and CA real-time real estate data. Search by coordinates and MLS. Get similar properties for sale or sold property, Zestimate (rent estimate) and other data from Zillow. Highly maintained API. Check out our Tutorial tab.",
+    "Africa-Api ": "Africa-Api is a comprehensive project that provides a vast range of data about Africa, including countries, languages, tourism destinations, colonial history, and much more. This project offers a user-friendly interface that enables users to easily access and retrieve data about different African countries and their respective histories, languages, and cultures.  The Africa-Api project is an invaluable resource for individuals or organizations looking to learn more about the African continent...",
+    "Anything Domain": "API to detect disposable domains to help companies reject disposable emails which has created LEAD GENERATION nightmare in recent times,detect fake email address, Generate common domain,unique domain names, generate custom email addresses using domain name, check whois of a domain and alot more.",
+    "Hash Functions": "Generate hashes using many popular hashing functions including md2, md4, md5, sha1, sha224, sha256, sha384, sha512, ripemd128, ripemd160, ripemd256, ripemd320, whirlpool, tiger128,3, tiger160,3, tiger192,3, tiger128,4, tiger160,4, tiger192,4, snefru, snefru256, gost, adler32, crc32, crc32b, fnv132, fnv164, joaat.",
+    "Helper Function": "Helper functions that might be useful for you to use such as UUID Generator, Base64, JSON, Array, String manipulation, Hash MD5, SHA1, SHA256, SHA512, Aragon2, Bcrypt\n#ascii #encoder #decoder #uuid #slug #converter\nI'm on telegram chat me if there a problem/request\nhttps://t.me/iiyann25",
+    "String Methods and Functions - Manipulate text": "Empower your applications with a collection of powerful string manipulation functions and methods. Perform actions such as string formatting, searching, trimming, case conversions, URL parsing, and more. Streamline your string handling tasks with this comprehensive set of tools designed to make your development process smoother and more efficient.\"",
+    "DropChain": "Effortlessly Upgrade Your Web2 App to Web3.\n\nDropChain is the web3 developer toolkit that provides everything you need to build fully functional web3 products using the frameworks you already know. Step into the world of web3 using RESTful API integrations or existing no-code tools.\n\nDropChain is a web2.5 bridge that turns your web2 apps into robust web3 experiences, built for web2 natives.",
+    "ViewDNS": "Your one source for DNS related tools! dns, info, reverse ip, pagerank, portscan, port scan, lookup, records, whois, ipwhois, dnstools, web hosting, hosting, traceroute, dns report, dnsreport, ip location, ip location finder, spam, spam database, dnsbl, propagation, dns propagation checker, checker, china, chinese, firewall, great firewall, is my site down, is site down, site down, down, dns propagate",
+    "OneHourTranslation": "Hassle free translation and localization for your business.  One Hour Translation API exposes various methods and services delivered by One Hour Translation and allows external systems to securely launch, monitor and communicate with translation jobs",
+    "The Numerology API": "The Numerology API allows you to calculate information about; Attitude/Sun Number, Balance Number, Challenge Number, Karmic Debt Number, Karmic Lesson Numbers, Life Period Cycle Numbers, Lucky Numbers, Personality Number, Personal Year Number, Rational Thought Number, Soul Expression/Destiny Number, Soul Urge Number, Analyze a person's phone number, and determine the Life Path based on a person's date of birth. The API supports the Pythagorean  numerology method.",
+    "PDF4me": "Document API to manipulate PDFs, Convert to PDF, Optimize PDF, Convert with OCR, Convert documents to eBook formats, Rotate pages, Split PDF by page number, Split PDf with Barcode, Convert from PDF to Office documents like Word, Excel, PowerPoint.",
+    "Online Code Converter": "An online code converter is a powerful tool that allows users to convert code snippets or data from one format to another. Whether it's converting JSON to HTML, Base64 to ASCII, or any other code conversion, an online code converter simplifies the process and saves developers valuable time.  With an online code converter, users can easily input their code or data in a specific format and quickly obtain the converted output in the desired format. This can be especially helpful when working wit...",
+    "Integral2uMoney": "<a href=\"https://github.com/Integral2u/Integral2uApi\"> Integral2u </a> Sales ERP Tools.\nProvides enterprise resource planning tools for planing prices, costs, markups and dealing with money.\nRe-price Quotes by value.\nPlanned Pro+ \nCustomer discount planner to achive margin based on sales",
+    "Integral2uInventory": "<a href=\"https://github.com/Integral2u/Integral2uApi\"> Integral2u </a> Inventory ERP Tools. Provides inventory management  enterprise resource planning tools to aid in planning and achieving optimal inventory.  Great for determining and forcasting inventory requirements.\nAlgorithmic Best Case Per SKU profiling.\nRecommended ordering advice.",
+    "Dock API": "Dock's API easily integrates with your system and data sources, working in the background to make your data fraud-proof and instantly verifiable. With this API, developers can easily leverage Verifiable Credentials (VCs) and Decentralized Identifiers (DIDs) in their applications. VCs and DIDs are interoperable with other wallets and verification services using the same W3C open standards.",
+    "PetStoreAPI2.0": "This is a sample server Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
+    "PowerTools Developer Edition": "Apptigent PowerTools (Developer Edition) is a powerful suite of API endpoints for custom applications running on any stack. Manipulate text, modify collections, format dates and times, convert currency, perform advanced mathematical calculations, shorten URL's, encode strings, convert text to speech, translate content into multiple languages, process images, and more. PowerTools is the ultimate developer toolkit.",
+    "TEXTKING Translation": "The TEXTKING Translation API is a RESTful web service to access and manage translation projects on https://www.textking.com. You can use the translation API to integrate high quality human translation into your own software and streamline your translation workflow.",
+    "Timeneye Time Tracking": "Timeneye Time Tracking is a time tracking and reporting web app meant to be extremely simple and usable even for the most recalcitrant user.\r\n\r\nTimeneye can be used from the web (http://app.timeneye.com) or from the Android mobile app. An iOS version is currently in development.\r\n\r\nTimeneye integrates with Basecamp, allowing users to track time directly from Basecamp commenting on their to-dos with the time spent on them.",
+    "bracketPy": "bracketPy can help you build innovative applications which can leverage the power of natural language processing and machine learning. It enables you to retrieve information from web and build predictive models, topic models and recommendation engines.",
+    "CatalogAPI": "Catalog API is a service that ties your application to our catalog and order support department. With minimal integration, you can receive data feeds easily scoped to your demographics to provide exciting, up-to-date, and motivating catalogs. Your pa",
+    "Chartbeat": "Chartbeat collects various metrics about each visitor on your site. Some of this is reported basically raw (like number of readers on an article), and some data is mashed up and modified before being reported (like understanding that a visitor that c",
+    "Quotient": "Market data API for intraday (1-minutes) data, end-of-day data, options data, crypto, forex, live prices, fundamental data, trading signal, and much more, on various assets (Stocks, ETFs, Funds, Indices, Forex, Cryptocurrencies, etc), on worldwide stock exchanges (us, canada, australia, uk and europe).",
+    "ChangeNOW crypto exchange": "Empower your business by letting your customers buy, sell, and exchange crypto. You will earn % on every transaction. 400+ cryptocurrencies and 75+ fiats are available. IMPORTANT: You should get your API key by creating a partner's account here: changenow.io/affiliate. Or email us: partners@changenow.io.",
+    "Balanced": "Payment processing, escrow, and payouts in one simple API.  Accept credit cards and debit bank accounts for your business. Proceeds are available immediately.  Use with any card processor or as a stand-alone service for same-day bank deposits.  Combine card processing and bank payouts with escrow.",
+    "EOD Historical Data": "The comprehensive financial APIs with more than 30+ years of Live/Delayed, Fundamental Data APIs, Technical APIs, and End of Day historical prices for stocks, ETFs and Mutual Funds for more than 60 exchanges around the world eodhistoricaldata.com. Read more in our documentation eodhistoricaldata.com/financial-apis.",
+    "Portfolio Performance and Risk Analytics - Basic": "Portfolio Performance & Risk Analytics API is a collection of functions for portfolio performance and risk analysis. Built on a serverless architecture and a microservice framework, this package aims to improve data warehouse ETL / ELT speed/accuracy and firms' real-time reporting capabilities.",
+    "Tradier": "Tradier is a brokerage platform for equity and options trading. It is designed to provide simple, intuitive, and inexpensive ways for users to place trades, check their balances, and transfer money. Tradier provides a RESTful API for accessing the platform's trading functions, account services, and real-time and historical market data.",
+    "Afterbanks PSD2 payments and bank reader": "API standardization for a real-time connection to bank accounts.\nConnection with all banks in Europe: United Kingdom, Austria, Italy, Belgium, Latvia, Bulgaria, Lithuania, Croatia, Luxembourg, Cyprus, Malta, Czechia, Netherlands, Denmark, Poland, Estonia, Portugal, Finland, Romania, France, Slovakia, Germany, Slovenia, Greece, Spain, Hungary, Sweden, Ireland.",
+    "Chaingateway.io": "Blockchain API to connect Web 2.0 with Web 3.0 in an easy way. We provide all tools you need to manage non custody wallets, send and receive transactions, use web hooks to receive notifications on deposits or check balances of tokens in an automatic way. All major blockchains are supported, as well as the tokens on them. Our API is secure and made in Germany.",
+    "YNAB - You Need a Budget": "Our API uses a REST based design, leverages the JSON data format, and relies upon HTTPS for transport. We respond with meaningful HTTP response codes and if an error occurs, we include error details in the response body.  API Documentation is at https://api.youneedabudget.com",
+    "Crowdsense": "The most comprehensive real-time alpha-generating data feed API for cryptocurrencies, that analyzes social media sentiment, weighted sentiment, mentions, reach, top coins, spikes, influencer posts, and other chatter updates. Based on 100,000,000s of feeds per day from billions of unique sources across Twitter, Telegram, and Reddit for 1000+ cryptocurrencies. Start now for free...",
+    "Job Opening Analyzer": "This API enables developers to search for online jobs and companies, as well as analyze job openings and resumes. With our API, developers can leverage advanced Natural Language Processing and Machine Learning algorithms to extract valuable insights from job postings and resumes. The API supports texts in English and French.",
+    "Personality Quest": "The \"Personality Quest\" API allows developers to integrate personality assessment and analysis functionalities into their applications. By leveraging this API, developers can provide users with valuable insights into their personalities, helping them gain self-awareness, make informed decisions, and enhance their personal growth and relationships.",
+    "Linguist": "Linguist packs all features you need to process text including Counters,  Article Parser, Part of Speech (POS) Tagger, Tokenizer, Stemmer, Bad Words Remover, Stop Words Remover, Sentence Segmentation, Spellchecker, Text Summarizer, Definition and Synonyms, Word Frequency, Lemmatize, Pluralize, Singularize, Rhymes, Sounds Like, Spells Like, and Writing Suggestions.",
+    "Ontology": "Access a the largest multilingual encyclopedic knowledge base in the area of occupation data, in particular, jobs, job classifications, hard and soft skills, training/qualifications, etc. Covering classifications systems like O*Net, ESCO, DISCO II, UK skills taxonomy from Nesta, among others. The Ontology's data is integrated and updated by domain curators on a daily basics.",
+    "Ginger": "Ginger goes beyond spelling and grammar. It takes into account full sentences to suggest context-based corrections. This drastically speeds up your writing - especially for long emails or documents!. This API can also translate to the extensive language list backed by Google Translator and Bing Translator which Uses AI and Deep Neural Networks to improve translations.",
+    "Job and Resume Matching For HR Management Systems": "This API is a package of Natural Language Processing (NLP) and Artificial Intelligence (AI) tools that allow to extract relevant information and insights from resumes, job openings and employee feedback.",
+    "Twinword Text Analysis Bundle": "One API for all your text analysis needs. Sentiment Analysis, Topic Tagging, Lemmatizer, and much more. Various NLP tools all with one plan. Use natural language processing to analyze and understand human sentences.",
+    "RChilli Search and Match": "RChilli Search &amp; Match API allows you to search and match candidates and jobs with great relevancy and accuracy than simple database searching and matching algorithms.",
+    "Gerwin AI Beta": "Tools for copywriting. Writing (generation) of texts, text rewriting, writing content for social networks. Creating advertisements and real estate listings and more",
+    "Feedback Analysis API": "Get the clustered analytical data from your users feedback using advanced NLP and text analysis. Get names of people, numbers, emoticons, emojis, places and organizations from your feedback data. Convenient APIs to help you analyze your users' feedback.",
+    "Pinduoduo(拼多多) Data Service": "Pinduoduo Data Service API offers a comprehensive suite of functions to enable seamless integration and interaction with the Pinduoduo e-commerce platform. Designed to provide developers with powerful tools, this API empowers applications to leverage the full potential of Pinduoduo's vast product catalog and features.",
+    "Swagger PetStore": "This is a sample server Petstore server.  You can find out more about     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).      For this sample, you can use the api key `special-key` to test the authorization     filters.",
+    "Magic AliExpress": "Increase your e-commerce business with this API, we offer all services that you **need**<br>1.  product detail from product ID<br>2.  shipping information<br>3.  detect the new future nuggets<br>4.  trend and hitoric of sales and price on more than **80000** products (best products)<br>5.  Request the products by categories filter by **brands** and **attributes**<br>",
+    "Ali Express Data Service": "Our Ali Express commodity data API provides you with easy access to valuable product, and seller data from the popular e-commerce platform. Our endpoints are designed to provide you with fast, accurate data without the need to create a scraper or subscribe to the official Ali Express API. With easy-to-understand documentation, error handling, and response status codes, our API is built to help you make the most of your data. Choose from our flexible pricing plans to suit your needs and start ...",
+    "Jingdong(京东) Data Service": "Our JD commodity data API provides you with easy access to valuable product, and seller data from the popular Chinese e-commerce platform. Our endpoints are designed to provide you with fast, accurate data without the need to create a scraper or subscribe to the official JD API. With easy-to-understand documentation, error handling, and response status codes, our API is built to help you make the most of your data. Choose from our flexible pricing plans to suit your needs and start exploring ...",
+    "ECart": "API to every E-commerce platform. Connect your business with 40+ ecommerce systems through Ecart API. Integrations inlcude Wix, Shopify, Amazon, Mercado Libre, Unicommerce, SAP Commerce and more. https://docs.ecartapi.com",
+    "EcartAPI": "Connect with 40 + eCommerce solutions in just one API, and start making requests in under 15 min. Integrations inlcude Wix, Shopify, Amazon, Mercado Libre, Unicommerce, SAP Commerce and more. https://docs.ecartapi.com",
+    "salesngine": "Endpoints to get price and meta data for Alibaba, Aliexpress, Amazon, Asos, farfetch, Fashion Nova, H&M, Jiji, Jumia, Konga, Pakcosmetics, Polly, shein, Superdrugs, Zara",
+    "International Bridge Blue Sandbox": "testing environment for creating shipping labels using different carriers, calculating shipping prices, manifesting, carrier pickup, eVS & ePostage certified.",
+    "Cryptocurrency APIs": "Through the integrated cryptocurrency API service, it is possible to create addresses, wallets, search past data, create and track transactions, and webhooks.  Developer documentation : https://docs.blocksdk.com",
+    "Book Discovery by ReadsOmnia": "Get access to the Internet’s best-curated selection of must-read books. Search up-to-date databases and/or directly access the data via numerous API endpoints, including: Top-of-the-charts bestsellers, new and trending fiction and nonfiction, Critically acclaimed & Award-winning titles and authors, Top Reade'r suggestions, and more.",
+    "Quotel - Quotes": "The Quotel - Quotes api gives you easy access to 1.000.000+ quotes by 30.000+ authors, scientists, celebrities, musicians, politicians, athletes, famous people from history and many more with features such as Quote of the day, random quote, full text search, quotes categorised into over 100 topics like \"love\", \"wisdom\" and \"inspirational\",  and many more.",
+    "Imgur": "Imgur's API exposes the entire Imgur infrastructure via a standardized programmatic interface. Using Imgur's API, you can do just about anything you can do on imgur.com, while using your programming language of choice. If you're familiar with the APIs of Twitter, Amazon's S3, del.icio.us, or a host of other web services, you'll feel right at home.\n\nThe full documentation is available at: https://apidocs.imgur.com/",
+    "Euro Millions": "A rich API to get EuroMillions results. With this API you can consult the last result, submit the numbers of one or more bets and check how many numbers you hit. As it has a track record since 2004, you can even get statistics on the numbers that have been drawn the most, check if your lucky numbers have ever come out in previous draws or consult the results of a specific draw. For the most recent draws, you can find out how many bets matched the numbers and how much money each one received. ...",
+    "Riddlie ": "API that provides access to a collection of thousands of riddles (and growing). Fetch a random riddle or a riddle of the day. You can build a perfect app to entertain kids and families for dinner times. You can also pull riddles by their ID, difficulty level and keyword of your interest. API also collects feedback such as upvotes, and flags to fine-tune the library of riddles. I will constantly be adding more riddles to the API as I come across them. \nThe Basic plan is completely FREE with a ...",
+    "Web - Novel API": "Looking for the latest and greatest in Korean, Chinese, and Japanese web novels? Look no further than Web - Novel API! Our platform offers access to thousands of titles and millions of chapters, all translated into English for your reading pleasure. We provide metadata, ratings, and other important information to help you find the perfect web novel. Our content is carefully crawled and formatted using Mozilla Readability to ensure the best reading experience possible. Join us today and discov...",
+    "Movies and Serials Torrent": "Movies And Serials Torrent is a web-service that let you access movies and serials and its torrent that available on YTS.mx  and Oneom.is. You can search movies/serials, get latest movies/serials, get movies/serials details, etc.",
+    "Hummingbird APIv1": "APIv1 is the old Hummingbird API that is already implemented in multiple applications, its syntax and functionality will surely not change in the future so it is recommended to use this for any long-running projects.",
+    "Humor-Jokes-and-Memes": "Humor API lets you search through 50,000 jokes, over 200,000 memes, and gifs. From Chuck Norris, over Knock Knock to Yo Mama jokes, you'll find something for every occasion.",
+    "humm": "humm is a ready-made, open, and fully catalogued “white label” index of online music, offered to developers through our ground-breaking API. humm enables developers to create their own innovative — and 100% legal — music solutions, and businesses to build music into their services. In a word, we aim to be the Android of Music Services.",
+    "Stock, Ticker, Security and Company Search database": "Lookup active tickers using fuzzy Security name search from exchanges worldwide.\nGet the Security name from the ticker.\nCheck if a company is in the S&P 500 or get a list of all SP500 companies.\nGet the historical Price and Volume of security.\nGet the sentiment of companies mentioned in an article.",
+    "Vision API": "The Wizart Vision API offers powerful photo analysis capabilities for home interiors, providing comprehensive data for windows, doors, walls, ceiling, floor, and more. Access detailed information on individual surfaces or obtain a holistic overview of the entire interior in one request.",
+    "LemurBot": "Meet Lemurbot - Your Personal AI Chatbot Companion! With advanced features like creating, training and chatting, Lemurbot makes it easy and fun for users to interact and learn from an intelligent conversationalist. Plus, with ChatGPT integration and the ability to create multiple bots, the possibilities for learning and entertainment are endless!",
+    "OPEN AI ": "Harness the potential of ChatGPT ( with internet access ), Google BARD AI (PALM 2) , LLAMA 2 70b , MPT 30b  (Open source LLMs  , Large Language Models ) , Falcon , AI coder , AI Chat bot APIs  ,Text to Image (DALL-E) , Text to Speech ( TTS ) .  Also get question answer , sentiment analysis, spam detection, summarization, text to headline (title), Paraphrasing, Embedding, NER ( named entity recognition ) and message completions ( text completion, Text prediction ) . Empower your applications ...",
+    "AI 1001FX Functions": "Introducing our AI-powered API for automating human thinking, which offers a wide range of functions to analyze and process text, images, and more. Utilize features like mood detection, object recognition in pictures, OCR text extraction from images, language translation, image generation, content summarization, contact information extraction, content policy checking, language detection, and entity recognition. Empower your applications with cutting-edge AI capabilities and enhance user exper...",
+    "Mad GPT Api": "Enhance your AI-powered applications with a feature-rich proxy API powered by the latest GPT 3.5, offering rate limiting, caching, error handling, analytics, language support, preprocessing options, customization, and insightful outputs.",
+    "OpenNLP API": "This API provides natural language processing (NLP) services, including language detection, sentence detection, tokenization, name finding, part-of-speech tagging, chunking, and parsing. It supports multiple languages, including English, German, Dutch, Danish, Portuguese, and Swedish.",
+    "AI-writer": "Antherica A.I. Writer Is a set of powerful APIs to provide a comprehensive suite of tools for content creation, translation, text revision, newsletter writing, keyword and hashtag searching, and QR code generation. With the assistance of AI algorithms, users can streamline their content-related tasks and achieve professional-level results efficiently.",
+    "MaskMaker": "Convenient  Mask Layer Image Generation -  Beta\nThis API generates image mask layers for use in conjunction with AI image editing tools, such as, but not limited to openai DALL·E 2.",
+    "LokingAI-Text": "APIs collectively providing functionalities such as classification, sentiment analysis, summarization, question answering, labeling, and mask filling for various text processing tasks. They allow users to extract meaningful information from text data and perform different types of analyses and transformations.",
+    "BaseballApi": "Check baseball live scores on BaseballAPi every game in real time. BaseballApi covers all major leagues and offers information and odds for each. Follow most popular leagues such as MLB, LMB, Pro Yakyu - NPB and others.\nFor increased rates and more sports, please look at: https://rapidapi.com/fluis.lacasse/api/allsportsapi2/",
+    "Metrx Factory": "Predictive football analytics API. Get expected scores from quantitative models and statistically fair odds for upcoming and historical matches. Find discrepancies by comparing ratings to final results and market prices. Quantify team performance and trends using the Metrx Index algorithm.",
+    "MotorsportApi": "MotorsportApi has live coverage for most popular motorsports including MotoGP, Nascar, World Rally Championship, Moto2, Moto3, Superbike and Deutsche Tourenwagen Meisterschaft (DTM). \nFor increased rates and more sports, please look at: https://rapidapi.com/fluis.lacasse/api/allsportsapi2/",
+    "Divanscore": "The most powerful sports API for live scores and football scores, results and stats. And not just football – choose from more than 20+ sports, 5000+ leagues and tournaments, millions of events and many esports competitions. Analyze almost any live score and statistics on the planet ... This API helps to create a sporting site/application",
+    "TransferMarkt DB": "Transfermarkt / Transfermarket - The football website for transfers, market values, rumours, stats, scores, results, news and fixtures.  https://www.transfermarkt.com/ **Support**:  [tipsters@rapi.one](mailto:tipsters@rapi.one) / t.me/api_tipsters **Other sports api:** https://rapi.one",
+    "MMAAPI": "MMAAPI is your ultimate source for the latest updates, scores, and results from the world of mixed martial arts. Our API covers all major MMA organizations, including UFC, Bellator, KSW, PFL, and many more.Our live scoring and real-time statistics provide a comprehensive view of every fight, making MMAAPI the go-to API to get MMA scores worldwide.",
+    "ViperScore": "ViperScore is the cheapest sports API for all hobby and business projects with over 25 endpoints, 20+ sports and 5100+ leagues! We serve comprehensive data blazing fast with a clear structure and a well thought out scheme. You get the best live results and fast information for every game and we constantly develop the API further and include more data.",
+    "AllSportsApi": "AllSportsApi offers real-time football, esports, motorsport, ice hockey, basketball, tennis, baseball, cricket and american football scores. It covers hundreds of sports leagues, cups and tournaments with live updated results, statistics, league tables, video highlights and fixtures.Check our specific sport API's: https://rapidapi.com/user/fluis.lacasse",
+    "Soccerway Feed": "Soccerway covers over 1000 football leagues & cups from 134+ countries. It is the world’s largest football database. Data without delay, instant update. Historical data since 1901.  **Site:** [soccerway.com](https://int.soccerway.com/)  **Support**:  [tipsters@rapi.one](mailto:tipsters@rapi.one) / t.me/api_tipsters **Other sports api:** https://rapi.one",
+    "CricketAPI2": "Cricket live score service at CricketApi allows you to follow real time cricket results, standings and fixtures. Live matches from cricket leagues has ball by ball coverage for every inning and detailed tables for fall of the wicket and partnership.\nFor increased rates and more sports, please look at: https://rapidapi.com/fluis.lacasse/api/allsportsapi2/",
+    "Linkedin Company Data": "Given a company's webpage, or linkedin company url this rest API returns 25+ fields about the company including Crunchbase funding info, three to four employee profiles from the company, and recent company LinkedIn posts. Postman documentation available here: https://documenter.getpostman.com/view/10812513/UVeGpQqo",
+    "RocketAPI for Instagram": "🚀 Fast and stable Instagram API. Scrape any information from IG: user infos, media, stories, comments and more. Don't miss! Custom plans and crypto payments are available on request – feel free to contact us https://t.me/rocketapi or contact@rocketapi.io. We will be happy to help you integrate the API into your system.",
+    "Repustate Sentiment and Text Analytics": "Repustate's sentiment analysis and text analytics API allows you to extract key words and phrases and determine social media sentiment in one of many languages. These languages include English, Arabic, German, French and Spanish. Monitor social media as well using our API and retrieve your data all with simple API calls.",
+    "TikTok Video No Watermark_v2": "The API helps you to download and get the video download link without the Tiktok logo quickly, completely and in detail. Contact me: phamvandienofficial@gmail.com if you are interested in the source code\n***\nIf you encounter any errors, please contact me so I can fix it quickly.\n***\nContact me: phamvandienofficial@gmail.com",
+    "Easy Instagram Automation Service": "Automate your instagram anonymously without blocks! -use the Instagram Private API on any operating system from any programming language (C++, C#, F#, D, Golang, Erlang, Elixir, Nim, Haskell, Lisp, Closure, Julia, R, Java, Kotlin, Scala, OCaml, JavaScript, Crystal, Ruby, Rust, Swift, Objective-C, Visual Basic, .NET, Pascal, Perl, Lua, PHP and others) to automate the work of your accounts.",
+    "Scoreoid": "Truly cross platform, highly scalable gaming backend as service and real-time marketing platform that powers engagement and monetization.\r\n\r\nGamify your apps with Scoreoid's gaming backend as a service. \r\n\r\nIncrease retention, engagement and sales in real-time using Scoreoid Live.  Scoreoid Live enables brands, studios, publishers and app developers to interact and engage with their users in\r\nreal-time.",
+    "YouTube Private": "Unlock the Power of YouTube with the Private API! Gain exclusive access to YouTube's advanced features and data, enabling seamless integration into your applications. Customize interactions, retrieve in-depth analytics, and create personalized experiences to elevate your content strategy. The Private API offers unparalleled control and insights for developers looking to enhance their YouTube-related projects.",
+    "TokApi - mobile version": "Highly available tiktok **mobile** API. We are doing our best for make your life easy.Bigger API plans and **additional functionality** are available on request.  Feel free to contact us on Telegram: [https://t.me/somjik_tokapi](https://t.me/somjik_tokapi) #tiktok #tik #tok #tik-tok #video #music #user #feed #hashtag #challenge #trending #trend #comments #comment #image #photo #media #search #scrapper #grabber",
+    "TwttrAPI": "(Discord server: https://discord.gg/TKJJYppYKj) TwttrAPI is an unofficial X (Twitter) API with various features for easy access to X data. It supports X Login + 2FA, tweet retrieval, user and search results, content interaction, tweet creation/deletion, and direct message access. It's ideal for scraping public data or building X API-based applications. Reach us at contact@twttrapi.com for custom plans and inquiries.",
+    "Pinterest Downloader - Download Pinterest image Video and reels": "This API allows you to retrieve information about a specific pin on Pinterest. You can use it to retrieve details such as the pin’s title, description, image, video, gif, reel. With the Pinterest Downloader API, you can easily access and leverage the wealth of information available on Pinterest.\n\ntelegram DM: https://t.me/justmobicode"
+  },
+  "standard_queries": {
+    "Data": [
+      "Get the 50 most recent articles by a given author on a major blogging platform, including title, tags, read time, and canonical URL.",
+      "For a specific publication handle, list this week's top articles with summaries, tags, and engagement metrics.",
+      "Search a blogging platform for posts mentioning \"Rust vs Go\" in the past 30 days and sort results by popularity.",
+      "Retrieve full transaction history and current balance for an Ethereum address, including ERC‑20 transfers in the last 90 days.",
+      "Stream new Bitcoin mempool transactions over websocket and filter for amounts greater than 1 BTC.",
+      "Check the status of a Polygon transaction hash and return confirmations, fee paid, and block timestamp.",
+      "Find 2‑bedroom flats for rent within 1 mile of SW1A 1AA with a maximum budget of £2,500 pcm, sorted by newest.",
+      "Get historical price changes and time‑on‑market for a 3‑bed house for sale near Manchester city center.",
+      "Search single‑family homes for sale in Austin, TX between $500k–$700k with lot size over 0.25 acre and include estimated market value and price history.",
+      "Return similar properties to a given listing ID and include recently sold comparables within 1 mile.",
+      "Convert 2026‑04‑15 09:00 from Tokyo to New York and London time zones and indicate local daylight‑saving status.",
+      "List all public holidays in Germany for 2026 with dates and whether they are federal or state‑specific.",
+      "From an IP address, detect the user’s city, country, latitude/longitude, and local time.",
+      "Provide sunrise and sunset times for Nairobi for the next 7 days.",
+      "Given a public profile URL on a professional networking site, return current title, company, location, skills, and follower count.",
+      "Scrape the latest posts from a company page on a professional network and extract text, hashtags, links, and engagement stats.",
+      "Enrich this company domain with firmographics (employee range, revenue band), tech stack, and recent funding signals.",
+      "For a company name and country, return registration details, website, employee growth trend, and risk indicators.",
+      "List all trims for the 2018–2021 Toyota Corolla with engine specs, transmission type, and fuel economy.",
+      "For Nigeria, provide major languages, currency, bordering countries, a short colonial history timeline, and top tourist destinations."
+    ],
+    "Tools": [
+      "Check if this email domain is disposable and suggest a few legitimate alternatives I could allowlist.",
+      "Generate SHA-256 and MD5 hashes for this text and return them in hex and base64.",
+      "Create 100 UUID v4 values and provide them as a newline-separated list.",
+      "Base64-encode this JSON payload and also give me the URL-safe variant.",
+      "Parse this URL and extract scheme, host, port, path, query params, and fragment.",
+      "Convert this string to snake_case, kebab-case, camelCase, and Title Case.",
+      "Run a WHOIS lookup for this domain and show registrar, creation, expiry, and name servers.",
+      "Check global DNS propagation for this hostname's A and TXT records and highlight any mismatches.",
+      "Find all domains hosted on this server IP and include reverse DNS if available.",
+      "Translate this paragraph from English to Japanese and give me a cost estimate and delivery time.",
+      "Create a translation job for these product descriptions into Spanish and French, then return a job ID to monitor status.",
+      "Generate a numerology report for this name and birth date, including Life Path and Soul Urge numbers.",
+      "Generate 20 professional email address suggestions for the domain example.com for a marketing team.",
+      "Convert this Word document to PDF, optimize for web, and add OCR so the text is searchable.",
+      "Split this PDF after page 5 and rotate pages 2-4 by 90 degrees clockwise.",
+      "Convert this JSON array to an HTML table and also export it as CSV.",
+      "Create a bcrypt hash for this password with cost 12 and return the salt.",
+      "Detect common typos and confusing lookalike domains for this brand and suggest unique, brandable domain ideas.",
+      "Check if this website is down from multiple regions and run a traceroute if it fails.",
+      "I have a REST app that needs to mint an NFT for a user; outline an API flow using custodial wallets and webhooks."
+    ],
+    "Business": [
+      "Can you help me calculate optimal pricing for a product line to hit a 35% gross margin after fees and shipping?",
+      "I need to bulk reprice existing sales quotes based on a new cost baseline and minimum margin rules; any API for that?",
+      "Looking for a discount planning tool that suggests tiered customer discounts while preserving target profit by segment.",
+      "I want an API that forecasts inventory levels per SKU using sales history and lead times, and recommends reorder quantities.",
+      "We need automated purchase order suggestions that consider seasonality, MOQs, and warehouse capacity.",
+      "Is there a service that profiles SKUs to identify best-sellers vs. long-tail and proposes stocking strategies?",
+      "I need to issue verifiable employee credentials and let partners instantly verify them without contacting us.",
+      "We want to verify customer-provided documents using decentralized identifiers and standard-compliant verifiable credentials.",
+      "Looking for a mock e-commerce API to prototype order, customer, and inventory flows with API key authentication.",
+      "I need a currency conversion endpoint to normalize multi-currency invoices and return formatted amounts by locale.",
+      "Can I get an API to translate marketing copy into multiple languages with human review and workflow tracking?",
+      "We need time tracking endpoints for our team that tie entries to projects and generate weekly utilization reports.",
+      "Looking for text analytics to categorize and summarize customer support tickets and detect sentiment trends.",
+      "I want an API that creates product recommendation lists based on user behavior and content similarity.",
+      "We need a catalog feed service that filters products by demographic segments and provides pricing and availability updates.",
+      "Is there an analytics API that shows real-time reader engagement on articles and highlights content at risk of churn?",
+      "I need a tool to shorten and track URLs in email campaigns and export click metrics for reporting.",
+      "Can we automate quote approvals by validating margins, discounts, and tax rules before sending to customers?",
+      "Looking for an API to convert long-form text to speech for accessibility in our product listings.",
+      "We need to verify educational certificates our applicants submit and store proofs we can audit later."
+    ],
+    "Finance": [
+      "I need an API to pull 1-minute intraday OHLCV for a US stock for the last 30 days, adjusted for splits and dividends.",
+      "I want historical end-of-day prices for all constituents of an index going back 30 years in CSV, plus split/dividend history.",
+      "Please provide an endpoint to stream real-time quotes and trades for a list of tickers, with a fallback to delayed data if live is unavailable.",
+      "I need complete options chains with Greeks and implied volatility for a symbol, and the ability to query unusual volume by expiration.",
+      "Get live and historical forex rates (tick or 1-minute) for EURUSD and USDJPY with timezone-aware timestamps.",
+      "Pull real-time crypto prices and 1-minute candles for BTC and ETH across multiple exchanges, plus a WebSocket for updates.",
+      "I want a crypto social sentiment feed that scores coins by weighted sentiment, mentions, and spikes, with alert webhooks for sudden changes.",
+      "I need an API to accept credit cards and ACH, hold funds in escrow, then release payouts to multiple recipients the same day.",
+      "Set up payment tokenization, refunds, and dispute webhooks, with PCI-friendly client-side capture.",
+      "Connect to EU bank accounts via PSD2 to fetch balances and 90 days of transactions, with categories and merchant enrichment.",
+      "Initiate a SEPA payment from a linked bank account and return strong customer authentication status and proof.",
+      "Expose brokerage endpoints to place equity and multi-leg options orders, check buying power, and retrieve positions and balances.",
+      "Subscribe to order status, fills, and account events via webhooks or streaming, and support cash transfers between accounts.",
+      "Create and manage non-custodial wallets on major blockchains, send transactions, and check token balances with confirmation webhooks.",
+      "Estimate network fees and build signer-ready transactions for Ethereum and Bitcoin, including ERC-20 transfers.",
+      "Provide a fiat-to-crypto exchange API where users can buy, sell, or swap 400+ coins, and let us set an affiliate commission.",
+      "I need portfolio performance analytics: time-weighted and money-weighted returns, rolling Sharpe ratio, drawdown, and VaR from daily returns.",
+      "Accept a positions file and trade history and return factor exposures, contribution to return, and risk decomposition by asset and sector.",
+      "Pull fundamental data and financial statements for global equities, including ratios, sector, and upcoming corporate events.",
+      "I need budget management endpoints to read budgets, create transactions, and sync categories across accounts with delta-based pagination."
+    ],
+    "Text Analysis": [
+      "Can you extract key skills, responsibilities, and required experience from this job posting and return structured data?",
+      "Match these resumes to the attached job description and rank candidates by best fit, explaining the top reasons.",
+      "Analyze this French job ad and provide an English summary plus a list of inferred skills and seniority level.",
+      "Given an employee’s self-description text, infer their personality traits and provide strengths and growth suggestions.",
+      "Tokenize and part-of-speech tag this paragraph, then lemmatize the verbs and remove stop words for downstream analysis.",
+      "Clean this user-generated content by removing profanity and typos, and suggest clearer, grammatically correct phrasing.",
+      "Classify this feedback into topics, detect sentiment, and surface the most common keywords and phrases.",
+      "Summarize this long article into 3 bullet points and generate a short title.",
+      "From this resume, extract education, work history, skills (hard/soft), and certifications in JSON.",
+      "Find jobs similar to this role title and skill set, and provide standardized occupation codes and related skills.",
+      "Translate this paragraph into Spanish and correct grammar while preserving tone.",
+      "Given this product review dataset, cluster comments by theme and highlight emerging issues using named entities and emojis.",
+      "Suggest synonyms and definitions for these words and generate example sentences; include rhymes for the last term.",
+      "Check spelling and grammar in this email, then rewrite it to sound more professional but concise.",
+      "Compute word frequencies and bigrams from this corpus, with stop words removed and words stemmed.",
+      "Score the cultural and values alignment between this candidate profile and our company description, citing evidence from text.",
+      "Provide “sounds like” and “spells like” suggestions for this brand name to brainstorm alternatives.",
+      "Segment this text into sentences and return per-sentence sentiment and subjectivity scores.",
+      "Map this training program description to relevant job families, required competencies, and certifications across regions.",
+      "Generate three variations of a social media post based on this brief, optimizing for clarity and engagement."
+    ],
+    "eCommerce": [
+      "I need an API to retrieve product details, images, and variations by SKU or product ID from a major marketplace.",
+      "Is there a service that returns real-time shipping rates and lets me purchase and print labels across multiple carriers?",
+      "I want historical price and sales trends for popular items; do you provide endpoints for time-series analytics?",
+      "Can I search products by category and filter by brand, attributes, price range, and ship-to country?",
+      "I need to sync orders, customers, and inventory across several storefronts through one integration; what do you recommend?",
+      "Do you support package tracking with status webhooks and estimated delivery updates?",
+      "I’m looking to fetch seller profiles, ratings, and store performance metrics for competitive analysis; is that available?",
+      "Is there an endpoint to detect emerging trending products in my niche with volume and growth indicators?",
+      "I want to create and update product listings in bulk, including variants, images, and stock levels; which endpoints handle this?",
+      "Can your API generate customs forms, shipping manifests, and schedule carrier pickups for outbound shipments?",
+      "Do you offer a sandbox to test label creation, manifesting, and returns without incurring charges?",
+      "Is there a single API that connects to multiple e-commerce platforms so I can manage catalogs, orders, and fulfillment centrally?",
+      "Can I get price comparisons and availability across several retailers for a given product URL or identifier?",
+      "Do you provide access to product reviews, Q&A, and star ratings with pagination and sentiment metadata?",
+      "I need to calculate taxes, duties, and cross-border shipping options for international orders; is there an endpoint for that?",
+      "Can your service return top-converting products within a category along with inventory status and recent price changes?",
+      "I want to accept cryptocurrency payments, create wallets, and receive webhook notifications when transactions confirm.",
+      "Is there a way to subscribe to flash deals or price-drop alerts for specific keywords or SKUs?",
+      "I need shipping time estimates and available methods for a specific origin, destination, weight, and dimensions; how can I query that?",
+      "Can I get incremental product feed updates (new, out-of-stock, price change) via webhooks or delta polling?"
+    ],
+    "Entertainment": [
+      "I need an API to fetch up-to-date bestseller lists by genre and format, plus weekly movers and debut titles.",
+      "Is there a service where I can search critically acclaimed and award-winning books and get rich author metadata?",
+      "Can I get a “quote of the day” endpoint along with random quotes and topic filters like wisdom or inspirational?",
+      "I’m looking for a quotes API that supports full-text search, author lookups, and safe-for-work filtering.",
+      "I want to programmatically upload images and albums, get shareable links and thumbnails, and manage rate limits.",
+      "Is there an image service where I can query galleries by tag, sort by hot/top, and pull comments and votes?",
+      "I need an API to check my lottery numbers against the latest draw and show the prize tier if there’s a match.",
+      "Can I pull historical lottery stats since 2004, like most frequent numbers and overdue numbers?",
+      "I’d like a random kid-friendly riddle endpoint with the answer hidden and support for user upvotes/flags.",
+      "Is there a way to fetch riddles filtered by difficulty and keyword, plus a daily riddle at a set time?",
+      "I’m looking for an API to discover translated web novels with metadata, ratings, tags, and reading links.",
+      "Can I request the latest chapters for a given web novel and get a cleaned chapter excerpt for previews?",
+      "I need to search movies by title/year/quality and retrieve torrent details like magnet links and seeds.",
+      "Is there an API to list the newest TV series releases with episode info and torrent availability?",
+      "I want to look up anime by title, get series details, and sync a user’s watchlist via OAuth scopes.",
+      "Can I fetch a random joke or meme with category filters (e.g., knock-knock, dad jokes) and NSFW controls?",
+      "I’m looking for a way to search memes and GIFs by keyword and return mobile-friendly URLs.",
+      "Is there a music catalog API to search artists/tracks/albums, get ISRCs, and stream short previews?",
+      "I need to generate mood-based playlists (e.g., “chill study”) with tags and return track IDs plus audio features.",
+      "Can I schedule a daily “quote of the day” to post to Slack and email with attribution and source links?"
+    ],
+    "Artificial Intelligence Machine Learning": [
+      "Given a partial company name like \"Microsof\", look up the best-matching active ticker and tell me if it's in the S&P 500.",
+      "Fetch daily historical price and volume for TSLA from 2019-01-01 to 2021-12-31 and return it as CSV.",
+      "Analyze this news article URL and return sentiment for each company mentioned, with tickers if possible.",
+      "Provide the full current list of S&P 500 companies with tickers and company names in JSON.",
+      "From this living room photo, identify walls, windows, doors, ceiling, and floor and return segmentation data or masks.",
+      "Given multiple interior photos, produce a per-room summary of surfaces and flag missing or occluded windows/doors.",
+      "I want to create and train a personal chatbot on my PDFs; give endpoints for file upload, training status, and chat.",
+      "Create multiple chatbots with different system personas and languages and let me switch sessions via an API.",
+      "Offer a text-to-image endpoint to generate product mockups from prompts and return PNGs plus the seed.",
+      "Provide text-to-speech that converts up to 30 seconds of text into MP3 with selectable voices and SSML support.",
+      "Expose a chat completion API with streaming tokens, function calling, and response moderation hooks.",
+      "Detect sentiment and mood in customer feedback, extract emails/phones, and translate everything to English in one pipeline.",
+      "Run OCR on this receipt image, parse line items and totals, and return normalized JSON.",
+      "For a block of text, detect the language, tokenize, tag parts of speech, and extract person/organization names.",
+      "Generate a weekly newsletter draft from these links, rewrite in a friendly tone, and suggest subject lines and hashtags.",
+      "Provide a paraphrasing endpoint that rewrites content at multiple creativity levels while preserving key terms.",
+      "From this portrait photo, create a binary mask that isolates the subject's face and hair for editing.",
+      "From an interior image, generate separate masks for the floor and each wall, matching the original image dimensions.",
+      "Classify incoming support tickets by topic, summarize each in one sentence, and detect sentiment polarity.",
+      "Given a paragraph with a [MASK] token, predict the top replacement candidates with probabilities."
+    ],
+    "Sports": [
+      "I need real-time baseball scores and odds for MLB games, including inning updates and starting pitchers.",
+      "Can I get an API that predicts expected scores and fair odds for upcoming football matches with historical backtesting?",
+      "I’m looking for live timing and results for MotoGP, including qualifying sessions, lap-by-lap data, and flag events.",
+      "Where can I pull live football scores with detailed stats, lineups, substitutions, and disciplinary cards across many leagues?",
+      "How do I fetch current market values, transfer rumors, and contract details for professional football players and clubs?",
+      "I want live MMA fight results with round-by-round scoring, significant strikes, and full event schedules.",
+      "Do you have a budget-friendly multi-sport API that returns fast live results across thousands of leagues?",
+      "I need a single feed for live scores, standings, fixtures, and video highlights across football, basketball, tennis, and hockey.",
+      "Where can I get a comprehensive football database with instant updates and historical results dating back to the early 1900s?",
+      "Can I access real-time cricket data with ball-by-ball commentary, partnerships, and fall-of-wicket tables?",
+      "I’m looking for webhooks or push notifications for goals, red cards, and full-time results across multiple leagues.",
+      "I need odds movement and closing line data to compare against my soccer model and spot pricing discrepancies.",
+      "Can you provide match-level xG/xA timelines and shot maps for the top five European leagues?",
+      "I want live basketball play-by-play, box scores, and player on/off splits for NBA and EuroLeague games.",
+      "How can I fetch upcoming fixtures, probable lineups, and injury or suspension reports for weekend football matches?",
+      "I need schedules and results for NASCAR and DTM with stage results, cautions, and driver standings.",
+      "Where can I retrieve historical MLB seasons with team standings, advanced metrics, and postseason series outcomes?",
+      "I’m looking for live tennis scores with tiebreak details and set-by-set statistics.",
+      "Do you offer esports match results and live coverage with league, tournament, and team metadata?",
+      "I need an API for embedding live scores that supports pagination, rate limit headers, and flexible filtering."
+    ],
+    "Social": [
+      "Given a company website URL, return a structured company profile with industry, size, HQ, funding rounds, sample employee profiles, and recent posts.",
+      "I need an API to fetch detailed Instagram user info, follower stats, latest media, stories, and recent comments.",
+      "Can you provide a TikTok video download by link that returns an MP4 without any watermark along with thumbnail and caption?",
+      "Analyze the sentiment of social comments in English, Arabic, and French and extract the top keywords and entities per post.",
+      "I want to automate Instagram actions (follow, like, comment, DM) from a server, with reliable session handling and anti-block measures.",
+      "Given a LinkedIn company page, enrich it into 25+ fields like employee count range, founded date, specialties, and website.",
+      "Monitor brand mentions across social platforms and deliver daily sentiment trends and topic clusters.",
+      "Pull YouTube channel analytics (views, subscribers, top videos) and fetch all comments and replies for moderation.",
+      "I need programmatic access to post and delete on X, retrieve a user's timeline and mentions, and read DMs with 2FA login support.",
+      "From a Pinterest pin URL, get high-resolution image or video download links and full metadata including title and description.",
+      "Provide mobile-style TikTok endpoints for user feed, hashtag feed, comments, and user profile data with cursor-based pagination.",
+      "Fetch the latest posts from a company's social page along with engagement metrics like reactions, comments, and shares.",
+      "Perform aspect-based sentiment on product reviews and social posts and return scores for attributes like price, quality, and support.",
+      "Set up webhooks to notify when a specific Instagram account publishes a new story or reel and supply direct media URLs.",
+      "Scrape all comments from a given YouTube video, including timestamps, like counts, author info, and threaded replies.",
+      "Given a list of company domains, batch-enrich them with firmographics, founders, headquarters, and links to their social profiles.",
+      "Retrieve posts, search results, and user details from X with robust pagination and rate limit handling.",
+      "Bulk download TikTok videos for a given hashtag without watermarks and return author handles, captions, and audio info.",
+      "Automate content uploads to multiple Instagram accounts from a headless environment while minimizing blocks and device fingerprints.",
+      "Enable real-time user engagement by triggering targeted in-app messages based on social activity and campaign interactions."
+    ]
+  },
+  "ood_queries": {
+    "Data": {
+      "Medium": [
+        "Using Medium, fetch the latest posts from the publication \"Towards Data Science\" and return each title, author, and URL.",
+        "From Medium, get the top writers for the \"AI\" topic and provide their usernames and follower counts.",
+        "Use Medium to pull the profile for user @paulgraham and list their five most recent articles with links.",
+        "Query Medium for articles matching \"LLM evaluation\" published in the last 30 days and return title, author, date, and link.",
+        "With Medium, retrieve the latest posts from the \"UX Collective\" publication and include title, clap count, and reading time."
+      ],
+      "Chain49": [
+        "Use Chain49 to stream real-time Bitcoin and Ethereum balances via the websocket at api.chain49.com.",
+        "Please integrate Chain49 into our app to monitor new transactions across multiple blockchains; use the websocket endpoint since RapidAPI doesn’t support it.",
+        "With Chain49, fetch historical UTXOs and token transfers for these addresses across supported chains.",
+        "Set up a service that subscribes to pending transactions on Polygon and BSC using Chain49’s extended Trezor/Blockbook API over websockets.",
+        "Add Chain49 to our backend and confirm if we can request support for additional blockchains beyond the default 10+."
+      ],
+      "UK Real Estate Rightmove": [
+        "Please use UK Real Estate Rightmove to find 2-bedroom flats to rent in London Zone 2 under GBP 2,000 pcm, ideally near the Jubilee line.",
+        "Using UK Real Estate Rightmove, show me 3-bedroom houses for sale in Bristol with a garden and off-street parking, up to GBP 450,000.",
+        "On UK Real Estate Rightmove, can you list recent price reductions for Manchester city centre apartments added in the last 14 days?",
+        "Use UK Real Estate Rightmove to compare average monthly rents for 1-bed flats in Birmingham B1 vs B15 and share current listings.",
+        "Via UK Real Estate Rightmove, find new-build properties in Edinburgh with parking and an EPC rating of B or better, available this month."
+      ],
+      "Location and Time": [
+        "Using Location and Time, what’s the current local time in Tokyo and New York, and what’s the time difference between them?",
+        "Please use Location and Time to find the distance in kilometers between San Francisco and Honolulu.",
+        "With Location and Time, give me the sunrise and sunset times for Reykjavík on June 21.",
+        "Use Location and Time to identify the country and nearest major city for the IP address 8.8.8.8.",
+        "Using Location and Time, list the public holidays in Canada for October 2026 and which provinces observe them."
+      ],
+      "Fresh LinkedIn Profile Data": [
+        "Use Fresh LinkedIn Profile Data to pull the latest profile details (headline, experience, skills) for Jane Doe at Acme Corp.",
+        "With Fresh LinkedIn Profile Data, fetch John Smith’s recent activities and posts in real time and summarize the key themes.",
+        "Please use Fresh LinkedIn Profile Data to get current company information and employee count for OpenAI, plus a list of similar companies.",
+        "Leverage Fresh LinkedIn Profile Data to compare my profile’s title, location, and experience against 24 hours ago and list any changes.",
+        "Using Fresh LinkedIn Profile Data, retrieve Stripe’s current job posts in New York and extract role, seniority, and posting date."
+      ],
+      "Zillow Data v2": [
+        "Use Zillow Data v2 to find for-sale single-family homes in Seattle under $900k with 3+ bedrooms and open houses this weekend.",
+        "With Zillow Data v2, pull real-time rental listings in Miami Beach under $3,000 that allow pets and include parking.",
+        "Query Zillow Data v2 for condos for sale in Chicago’s River North with HOA fees under $600 and include their 12‑month price history.",
+        "Using Zillow Data v2, get new Phoenix listings from the last 48 hours that have a pool and a lot size over 7,000 sq ft.",
+        "Please use Zillow Data v2 to compare median list price and days on market for 2-bedroom apartments in Brooklyn vs. Queens over the past 30 days."
+      ],
+      "Company Data": [
+        "Using Company Data, enrich this list of company domains with firmographics and technographics, including employee count, revenue, HQ location, and key web technologies.",
+        "With Company Data, find US SaaS companies that have 100–1,000 employees and show strong recent hiring signals, then return their websites and growth indicators.",
+        "Use Company Data to identify which of these retailers run on Shopify or Magento and include traffic estimates, tech stack, and social presence.",
+        "Using Company Data, surface companies similar to Snowflake and Databricks by industry, size, funding stage, and tech stack, and rank them by web growth signals.",
+        "With Company Data, check if any of these firms took new loans in the last 12 months and provide assets, financial performance metrics, and relevant risk signals."
+      ],
+      "Car Models and Data": [
+        "Please use Car Models and Data to fetch horsepower, torque, curb weight, and dimensions for the 2021–2024 Toyota RAV4 trims.",
+        "Using Car Models and Data, list all BMW 3 Series models from 2010 onward and include their HSN and TSN codes.",
+        "From Car Models and Data, retrieve engine and transmission specs for the 2017 Volkswagen Golf 1.4 TSI and provide key performance figures.",
+        "Build a make/model autocomplete using Car Models and Data and return the selected model’s basic and technical details.",
+        "Compare the 2022 Tesla Model 3 Long Range and the 2022 Hyundai Ioniq 5 using Car Models and Data, focusing on battery capacity, range, and acceleration."
+      ],
+      "Zillow.com": [
+        "Use Zillow.com to find 3-bedroom single-family homes for sale in Austin, TX under $600k near top-rated schools, sorted by newest.",
+        "Pull the Zestimate, rent estimate, and recent price history from Zillow.com for 123 Main St, San Jose, CA 95112, and list comparable sales within 1 mile.",
+        "From Zillow.com, get 2-bedroom apartments for rent in downtown Seattle with in-unit laundry and parking, budget up to $3,000.",
+        "Use Zillow.com to search around coordinates 37.7749, -122.4194 for condos with HOA fees under $500/month and include similar active listings.",
+        "Look up MLS #OC24012345 on Zillow.com and provide full property details plus similar homes for sale nearby."
+      ],
+      "Africa-Api ": [
+        "Using Africa-Api to list all African countries with their capitals and latest population estimates.",
+        "Please query Africa-Api for the major languages spoken in Kenya, Nigeria, and Ethiopia, including approximate speaker counts.",
+        "With Africa-Api fetch the top tourism destinations in Morocco and South Africa along with short descriptions and best visiting months.",
+        "Use Africa-Api to retrieve a concise timeline of colonial history for Ghana and Algeria, including colonizing powers and independence dates.",
+        "From Africa-Api get cultural highlights for Ethiopia such as staple cuisines, notable festivals, and regional music styles."
+      ]
+    },
+    "Tools": {
+      "Anything Domain": [
+        "Please use Anything Domain to scan this list of signups and flag any disposable or risky domains, then return a cleaned CSV.",
+        "With Anything Domain, generate 25 unique, brandable domain name ideas for a sustainable fashion marketplace, prioritizing .com and .eco.",
+        "Use Anything Domain to check if these emails are fake or disposable (john+promo@gmail.com, foo@tempmail.xyz) and explain the result briefly.",
+        "Using Anything Domain, create professional custom email address suggestions for the domain \"acme.co\" for sales, support, HR, and founders.",
+        "Please run a WHOIS lookup with Anything Domain for \"nova-bank.com\" and summarize registrar, creation/expiry dates, and contact status."
+      ],
+      "Hash Functions": [
+        "Please use Hash Functions to generate a SHA-256 hash of the text \"hello world\" and show the output.",
+        "Using Hash Functions, compute the MD5 and SHA1 hashes for the file at ./downloads/sample.zip and return both values.",
+        "With Hash Functions, create SHA-512 and RIPEMD-160 hashes for the string \"MySecret123\" and confirm they’re different.",
+        "Use Hash Functions to verify the integrity of archive.zip by computing its CRC32 and Adler32 checksums.",
+        "Please batch-hash all files in the ./images folder with Hash Functions using SHA-256 and provide a list of filenames to hashes."
+      ],
+      "Helper Function": [
+        "Please use Helper Function to generate 5 UUID v4 values and return them as a JSON array.",
+        "Use Helper Function to Base64-encode the text 'Launch at 10:00 UTC', then decode it to verify the same string comes back.",
+        "With Helper Function, convert the title 'Design System: Buttons, Forms & State' into a URL slug.",
+        "Using Helper Function, compute the MD5, SHA1, SHA256, and SHA512 hashes of the string 'correct horse battery staple'.",
+        "Please use Helper Function to bcrypt-hash the password 'Summer2026!' with cost 10 and show the resulting hash."
+      ],
+      "String Methods and Functions - Manipulate text": [
+        "Using String Methods and Functions - Manipulate text, trim leading/trailing whitespace, collapse multiple spaces to one, and convert this sentence to Title Case: \"   hello   world from  codex   \".",
+        "Please use String Methods and Functions - Manipulate text to parse this URL and return the domain, path, and query params: https://example.com/a/b?x=1&y=2.",
+        "With String Methods and Functions - Manipulate text, format this template \"Hello, {name}! You have {count} new messages.\" with name=Riley and count=3, then uppercase the result.",
+        "Use String Methods and Functions - Manipulate text to find all occurrences of \"foo\" and replace them with \"bar\" ignoring case in: \"Foo fighters and foo bars.",
+        "Can you apply String Methods and Functions - Manipulate text to slugify \"Cafe Deja Vu - Specials!\" and also return a snake_case version?"
+      ],
+      "DropChain": [
+        "Help me upgrade my existing Node.js e‑commerce app to web3 using DropChain, adding on-chain payments and verifiable order receipts via its REST API.",
+        "Using DropChain, set up token-gated content on my WordPress site and issue NFT access passes to subscribers.",
+        "Can you integrate DropChain into my React app for walletless onboarding now and optional wallet connection later, without changing my backend?",
+        "I want to mint and airdrop NFTs to a CSV list from my current web2 admin dashboard; please implement this with DropChain’s no-code tools.",
+        "Using DropChain, create REST endpoints that log key user actions on-chain and make that data queryable from my existing web2 app."
+      ],
+      "ViewDNS": [
+        "Can you use ViewDNS to run a WHOIS lookup on example.com and tell me the registrar and expiration date?",
+        "Please use ViewDNS to check DNS propagation for the new A record on example.com across global resolvers.",
+        "Use ViewDNS to perform a reverse IP lookup on 203.0.113.10 and list any domains hosted on that server.",
+        "Run a port scan with ViewDNS on example.com and report any open common ports you find.",
+        "With ViewDNS, check if example.com is reachable worldwide and whether it’s blocked by the Great Firewall of China."
+      ],
+      "OneHourTranslation": [
+        "Please use OneHourTranslation to translate the attached product catalog from English into Spanish and French, and return the localized files.",
+        "Submit these marketing emails to OneHourTranslation for localization into German and Italian, and share the job status updates.",
+        "I need OneHourTranslation to translate a legal contract from English to Japanese with a certified translator; can you launch the job and monitor it?",
+        "Use the OneHourTranslation API to translate our app strings JSON into Brazilian Portuguese, preserving keys and placeholders.",
+        "Please send this website copy to OneHourTranslation for full localization into Arabic and Hebrew, including proofreading and QA."
+      ],
+      "The Numerology API": [
+        "Use The Numerology API to calculate my Life Path number and Soul Urge number from my birth date 1990-07-14 and name \"Alex Morgan.",
+        "Please call The Numerology API to analyze my phone number +1-415-555-0198 and tell me what it signifies.",
+        "With The Numerology API, can you give me my Personal Year Number for 2026 and Lucky Numbers based on the Pythagorean method?",
+        "Ask The Numerology API to compute my Challenge Numbers and Karmic Lesson Numbers using the name \"Priya Desai\" and DOB 1988-03-22.",
+        "Use The Numerology API to provide my Attitude (Sun) Number, Personality Number, and Rational Thought Number from the name \"Christopher Lee\" and birth date 1976-11-02."
+      ],
+      "PDF4me": [
+        "Please use PDF4me to convert this Word document into a PDF and optimize it for smaller file size.",
+        "Using PDF4me, run OCR on this scanned PDF and return a searchable, selectable-text PDF.",
+        "With PDF4me, split this PDF at pages 3, 7, and 12, and rotate page 5 by 90 degrees clockwise.",
+        "Use PDF4me to detect barcodes in this PDF and split it into separate files named by the barcode values.",
+        "Please use PDF4me to convert this PDF into an editable Excel file, or alternatively convert it to an EPUB eBook."
+      ],
+      "Online Code Converter": [
+        "Please use Online Code Converter to turn this JSON into CSV so I can import it into Excel.",
+        "Can Online Code Converter decode this Base64 string to ASCII and show me the plain text?",
+        "Use Online Code Converter to convert my XML config into YAML, keeping the structure intact.",
+        "Could Online Code Converter generate SQL INSERT statements from this CSV file?",
+        "Please use Online Code Converter to URL-decode this string and then pretty-print the resulting JSON."
+      ]
+    },
+    "Business": {
+      "Integral2uMoney": [
+        "Use Integral2uMoney to re-price this quote by value so we hit a 35% margin and keep unit prices rounded to .99.",
+        "In Integral2uMoney, set up Planned Pro+ to plan costs, markups, and target prices for our Q3 catalog.",
+        "Please use Integral2uMoney to build a customer discount plan that achieves a 25% margin across these SKUs based on current sales.",
+        "Use Integral2uMoney to simulate price changes and show the impact on margin and revenue for this product bundle.",
+        "With Integral2uMoney, import these existing quotes and automatically reprice them using our updated costs and markup rules."
+      ],
+      "Integral2uInventory": [
+        "Can you use Integral2uInventory to forecast next quarter demand per SKU and suggest optimal reorder points?",
+        "Please run an Algorithmic Best Case Per SKU profile in Integral2uInventory and recommend purchase orders for understocked items.",
+        "Use Integral2uInventory to analyze our current stock levels and generate recommended ordering advice for the next 8 weeks.",
+        "With Integral2uInventory, evaluate safety stock and lead time for my top 50 SKUs and produce a replenishment plan.",
+        "Can Integral2uInventory ingest last year’s sales and produce a per-SKU forecast along with reorder quantities and dates?"
+      ],
+      "Dock API": [
+        "Can you integrate Dock API to issue and verify employee credentials in our HR portal?",
+        "Use Dock API to create decentralized identifiers for our users and enable passwordless sign-in.",
+        "Build a microservice with Dock API that verifies KYC documents and returns a signed verifiable credential.",
+        "How do we connect our student database to Dock API to issue diplomas as VCs and let partners verify them?",
+        "Please wire Dock API into our supply chain app so vendors can present VCs and we can verify provenance in real time."
+      ],
+      "PetStoreAPI2.0": [
+        "Using PetStoreAPI2.0, list all pets with status \"available\" and include their IDs and names.",
+        "Add a new pet named \"Milo\" (dog) with status \"available\" via PetStoreAPI2.0 and show me the created pet ID.",
+        "With PetStoreAPI2.0, place an order for pet ID 12345 with quantity 2 and return the order confirmation.",
+        "Use PetStoreAPI2.0 to update pet ID 9876 to status \"sold\" and confirm the change.",
+        "Through PetStoreAPI2.0, authenticate with the api key \"special-key\" and fetch the store inventory counts."
+      ],
+      "PowerTools Developer Edition": [
+        "Please use PowerTools Developer Edition to translate this paragraph from English to Spanish and return both the original and translated text.",
+        "Use PowerTools Developer Edition to convert these amounts (EUR 49.99, JPY 1200, GBP 15) into USD and format them as US currency with two decimals.",
+        "With PowerTools Developer Edition, parse the date-time \"03/04/2026 14:30 CET\" and output it in ISO 8601 UTC.",
+        "Using PowerTools Developer Edition, shorten these URLs and return a CSV mapping of original to shortened links.",
+        "Please use PowerTools Developer Edition to convert this text into an MP3 via text-to-speech and provide a download link."
+      ],
+      "TEXTKING Translation": [
+        "Please use TEXTKING Translation to create a new project translating our Terms of Service from English to German and French, and share the ETA.",
+        "Submit these two files (marketing_brochure.pdf and pricing_faq.docx) to TEXTKING Translation for Spanish and set the subject field to Marketing.",
+        "Can you integrate our app with TEXTKING Translation so new support articles are automatically sent for human translation and retrieved when complete?",
+        "Use the TEXTKING Translation API to get a quote for 12,000 words into Japanese with a technical specialization, then place the order if the cost is under $800.",
+        "Create a JSON-based job on TEXTKING Translation for our en.json keys, preserve placeholders like {name}, and download the translated fr.json when ready."
+      ],
+      "Timeneye Time Tracking": [
+        "Set up Timeneye Time Tracking for my team and connect it to our Basecamp projects so we can log time from to-do comments.",
+        "Using Timeneye Time Tracking, how do I start a timer on Android and sync it with the web app?",
+        "In Timeneye Time Tracking, create projects and tags for design and QA, then generate a weekly report by user and export it to CSV.",
+        "Help me migrate our existing time entries into Timeneye Time Tracking and configure permissions for managers versus members.",
+        "With Timeneye Time Tracking, how do I add time directly from Basecamp and view totals per to-do on a dashboard?"
+      ],
+      "bracketPy": [
+        "Can you use bracketPy to retrieve recent web articles about electric vehicles and build a topic model that highlights the main themes?",
+        "Using bracketPy, train a predictive model to forecast customer churn from our customers.csv and report the key drivers and accuracy.",
+        "Please build a product recommendation engine with bracketPy that suggests items based on user browsing and purchase history.",
+        "With bracketPy, scrape competitor pricing from the web and generate a weekly forecast plus alerts when prices change more than 10%.",
+        "Create a small Q&A app with bracketPy that retrieves trustworthy web sources and answers user questions with citations."
+      ],
+      "CatalogAPI": [
+        "Can you integrate CatalogAPI into our app to fetch a daily product feed tailored to our target demographics?",
+        "Please set up CatalogAPI so we can pull the latest catalog items and availability for our region.",
+        "Use CatalogAPI to generate a weekly catalog of new arrivals and send it to our merchandising dashboard.",
+        "Could you call CatalogAPI to retrieve order support data and map it to our existing product schema?",
+        "Hook up CatalogAPI to provide real-time catalog updates and push them to our recommendations service."
+      ],
+      "Chartbeat": [
+        "Can you set up Chartbeat on our site to track real-time readership for each article?",
+        "Using Chartbeat, pull yesterday’s top articles and summarize engaged time, scroll depth, and traffic sources.",
+        "Please create a Chartbeat dashboard showing concurrent users by section and average engaged time.",
+        "Audit our Chartbeat implementation to ensure SPA route changes are tracked as pageviews.",
+        "Export a weekly report from Chartbeat with engagement metrics segmented by device and referral channel."
+      ]
+    },
+    "Finance": {
+      "Quotient": [
+        "Using Quotient, pull 1-minute intraday OHLCV for AAPL for the last 5 trading days, including pre/post-market if available.",
+        "With Quotient, fetch the full TSLA options chain expiring next Friday, including Greeks and implied volatility.",
+        "Can Quotient stream live forex quotes for EUR/USD and notify me on each 1-second price change?",
+        "Use Quotient to retrieve end-of-day prices and adjusted close for all FTSE 100 constituents over the past 12 months.",
+        "From Quotient, get MSFT fundamentals (income statement, balance sheet, key ratios) and its latest trading signal."
+      ],
+      "ChangeNOW crypto exchange": [
+        "Please use ChangeNOW crypto exchange to swap 2 BTC to ETH and send the ETH to my wallet; show me the fees and ETA.",
+        "Integrate ChangeNOW crypto exchange into our checkout so customers can buy crypto with USD and EUR, and tell me which API endpoints and auth flow we should use.",
+        "Using ChangeNOW crypto exchange, set up an automatic rule to convert incoming USDT (TRC20) to USDC on Ethereum whenever the balance exceeds $1,000.",
+        "Can you embed the ChangeNOW crypto exchange widget on our site and style it to match our brand colors and fonts?",
+        "Please use ChangeNOW crypto exchange to get the best rate to buy $500 of SOL with a Visa card and estimate the total, including network fees."
+      ],
+      "Balanced": [
+        "Can you integrate Balanced into our checkout to accept credit cards and debit bank accounts, with proceeds available immediately?",
+        "Set up Balanced as our payment gateway and enable same-day bank deposits for payouts.",
+        "Use Balanced to manage escrow for our marketplace and release funds to sellers after delivery confirmation.",
+        "Migrate us to Balanced (or run it alongside our current processor) so we can do card processing and bank payouts through one API.",
+        "Implement recurring billing using Balanced and route vendor payouts to their bank accounts the same day."
+      ],
+      "EOD Historical Data": [
+        "Using EOD Historical Data, fetch 30 years of end-of-day adjusted OHLCV for AAPL and return it as a CSV.",
+        "Pull the latest fundamental profile and full financial statements for MSFT from EOD Historical Data and summarize key valuation ratios.",
+        "From EOD Historical Data, get the current ETF constituents for SPY along with their weights and sector classifications.",
+        "Use EOD Historical Data to retrieve daily prices for TSLA and compute a 50/200-day SMA crossover backtest with performance metrics.",
+        "Query EOD Historical Data for all LSE-listed stocks with dividend yield above 4% and include upcoming ex-dividend dates."
+      ],
+      "Portfolio Performance and Risk Analytics - Basic": [
+        "Using Portfolio Performance and Risk Analytics - Basic, compute time-weighted return, money-weighted return, max drawdown, and Sharpe ratio for my portfolio vs the S&P 500 over the last 24 months.",
+        "Please run Portfolio Performance and Risk Analytics - Basic to produce daily volatility, beta to QQQ, and 95% historical VaR for this holdings list and price history.",
+        "With Portfolio Performance and Risk Analytics - Basic, generate sector and asset-class performance attribution for YTD and identify the top 5 contributors and detractors.",
+        "Use Portfolio Performance and Risk Analytics - Basic to backfill monthly returns from my transaction ledger and benchmark them against MSCI World, then export a summary CSV.",
+        "Invoke Portfolio Performance and Risk Analytics - Basic to compute rolling 12-month returns, tracking error vs my benchmark, and an IRR since inception report."
+      ],
+      "Tradier": [
+        "Using Tradier, place a market order to buy 10 shares of AAPL and confirm the execution details.",
+        "Fetch my Tradier account balance, buying power, and most recent transactions.",
+        "Via the Tradier API, stream real-time quotes for SPY and TSLA and alert me if SPY moves more than 1%.",
+        "With Tradier, submit a limit order to sell 1 AAPL 200 call expiring next month at $1.25 and cancel it if unfilled after 5 minutes.",
+        "Connect to Tradier and transfer $500 into my brokerage account, then list all my open option positions."
+      ],
+      "Afterbanks PSD2 payments and bank reader": [
+        "Can you integrate our app with Afterbanks PSD2 payments and bank reader to fetch real-time balances and transactions from multiple EU banks?",
+        "Set up a payment initiation flow using Afterbanks PSD2 payments and bank reader, including SCA redirection and callback handling for successful and failed payments.",
+        "Using Afterbanks PSD2 payments and bank reader, build a daily reconciliation job that pulls statements and matches payouts to invoices.",
+        "Please create a dashboard that uses Afterbanks PSD2 payments and bank reader to connect UK, Germany, and Spain accounts and show real-time cash positions.",
+        "How do we migrate from our current aggregator to Afterbanks PSD2 payments and bank reader while keeping existing IBAN whitelists and webhook endpoints?"
+      ],
+      "Chaingateway.io": [
+        "Use Chaingateway.io to create non-custodial wallets for my app; show how to generate a new Ethereum address and fetch its balance via the API.",
+        "Integrate Chaingateway.io into our Node.js backend to send USDC on Ethereum and receive transaction status callbacks, with example code and best practices.",
+        "Set up Chaingateway.io webhooks so we get deposit notifications across BTC, ETH, and Solana, and show how to verify and log them securely.",
+        "Using Chaingateway.io, build an automated job that checks token balances across multiple wallets hourly and alerts when thresholds are crossed.",
+        "Migrate our payment flow to Chaingateway.io to handle token transfers and gas management without custody; outline required API endpoints and rate limits."
+      ],
+      "YNAB - You Need a Budget": [
+        "Using YNAB - You Need a Budget, fetch my list of budgets and show their IDs and names.",
+        "With YNAB - You Need a Budget, create a new budget called \"2026 Household\" and add categories for Rent, Groceries, and Utilities.",
+        "Use YNAB - You Need a Budget to import the attached CSV transactions into the \"Checking\" account of my \"Personal\" budget and skip duplicates.",
+        "In YNAB - You Need a Budget, set monthly targets of $1,200 for Rent and $500 for Groceries in my main budget, and report any categories overspent last month.",
+        "Through YNAB - You Need a Budget, sync all account balances, reconcile cleared transactions, and produce a summary of cash flow for the past 30 days."
+      ],
+      "Crowdsense": [
+        "Use Crowdsense to pull real-time weighted sentiment, mentions, reach, and spike alerts for BTC and ETH over the last 24 hours, and summarize the top influencer posts.",
+        "Connect to Crowdsense and set an alert when Solana’s weighted sentiment flips negative and mentions spike above the 95th percentile.",
+        "With Crowdsense, get the top 10 cryptocurrencies by positive sentiment momentum this week and include mentions, reach, and key influencer accounts.",
+        "Please integrate Crowdsense to stream Twitter/Telegram/Reddit chatter for Dogecoin and plot sentiment versus price with notable spikes annotated.",
+        "Using Crowdsense, build a watchlist dashboard for XRP, ADA, and AVAX showing real-time sentiment, spikes, and reach trends; kick it off with the free tier."
+      ]
+    },
+    "Text Analysis": {
+      "Job Opening Analyzer": [
+        "Use Job Opening Analyzer to compare my resume with this data scientist job posting and highlight any missing skills and keywords.",
+        "Can Job Opening Analyzer scan recent remote software engineer roles and summarize the top required technologies and frameworks?",
+        "Run Job Opening Analyzer on this French marketing job ad and return an English summary of responsibilities and required experience.",
+        "With Job Opening Analyzer, match me to the best three product manager openings at fintech companies and explain the fit for each.",
+        "Use Job Opening Analyzer to extract salary clues, seniority level, and company size from this job posting."
+      ],
+      "Personality Quest": [
+        "Can you run my journal entry through Personality Quest to generate a personality profile and key traits?",
+        "Use Personality Quest to analyze my recent messages and give me insights and growth suggestions based on my personality.",
+        "I'd like to compare my personality with my partner's using Personality Quest; can you check our compatibility and suggest communication tips?",
+        "Please use Personality Quest to evaluate my professional bio and recommend roles and work styles that fit my personality.",
+        "Using Personality Quest, analyze my social posts and tell me the strengths and blind spots I should focus on improving."
+      ],
+      "Linguist": [
+        "Use Linguist to parse this URL, extract the main article text, summarize it in 3 sentences, and list the top five keywords by word frequency.",
+        "With Linguist, remove bad words and stop words from this product review, then return the cleaned text and its total token count.",
+        "Using Linguist, tokenize this paragraph, tag each token with its POS, and lemmatize all verbs.",
+        "Linguist, spellcheck this draft and suggest fixes, then flag any sentences that would benefit from writing suggestions.",
+        "With Linguist, find rhymes and sounds-like words for \"innovation,\" and provide definitions and synonyms for the best five candidates."
+      ],
+      "Ontology": [
+        "Use Ontology to map the job titles \"Data Analyst\", \"QA Engineer\", and \"Marketing Manager\" to ESCO and O*NET occupation codes and list their top skills.",
+        "With Ontology, extract the hard and soft skills for \"Cybersecurity Analyst\" and suggest recognized training/qualifications linked to those skills across ESCO and O*NET.",
+        "Using Ontology, align my \"Data Engineering\" course syllabus to relevant occupations and highlight any missing competencies against ESCO/O*NET.",
+        "Leverage Ontology to crosswalk the UK Nesta skills taxonomy to ESCO for \"Product Manager\" and surface equivalent and broader/narrower concepts.",
+        "Via Ontology, parse the following job ad to identify occupations and skills, then return normalized IDs, preferred labels, and multilingual variants."
+      ],
+      "Ginger": [
+        "Can you run my email through Ginger to suggest context-based corrections and improve the tone?",
+        "Use Ginger to proofread this report for grammar, word choice, and clarity, and flag any awkward sentences.",
+        "Please use Ginger to translate this paragraph into Spanish and ensure the idioms sound natural.",
+        "Feed this long document into Ginger and return a corrected version plus brief notes on the biggest fixes.",
+        "With Ginger, rewrite this cover letter to be more concise and professional while preserving my intent."
+      ],
+      "Job and Resume Matching For HR Management Systems": [
+        "Please use Job and Resume Matching For HR Management Systems to parse these resumes and extract core skills, years of experience, and education into JSON.",
+        "Using Job and Resume Matching For HR Management Systems, match this Senior Data Engineer job opening against the provided resumes and return ranked candidates with match scores and skill gaps.",
+        "Run Job and Resume Matching For HR Management Systems to compare this candidate’s resume to our Product Manager role and summarize alignment plus missing qualifications.",
+        "With Job and Resume Matching For HR Management Systems, analyze these employee feedback comments and surface common themes, sentiment, and actionable insights.",
+        "Use Job and Resume Matching For HR Management Systems to normalize job titles across these resumes and cluster similar profiles for sourcing."
+      ],
+      "Twinword Text Analysis Bundle": [
+        "Please use the Twinword Text Analysis Bundle to run sentiment analysis on these product reviews and highlight the most negative comments.",
+        "Use the Twinword Text Analysis Bundle to topic tag and categorize our customer support tickets, and surface the top recurring issues.",
+        "With the Twinword Text Analysis Bundle, lemmatize this blog post and extract the top keywords so I can optimize SEO.",
+        "Can you use the Twinword Text Analysis Bundle to detect the language and analyze the overall tone of these tweets?",
+        "Use the Twinword Text Analysis Bundle to extract keywords and topic tags from these meeting notes and provide sentiment scores."
+      ],
+      "RChilli Search and Match": [
+        "Use RChilli Search and Match to find the top 10 candidates for this Senior Backend Engineer job description, prioritizing Go, microservices, and AWS.",
+        "With RChilli Search and Match, match these five resumes against the Product Manager role and return relevance scores with key skill gaps.",
+        "Please run a semantic search via RChilli Search and Match to locate candidates similar to this profile across our database, emphasizing fintech and AML experience.",
+        "Using RChilli Search and Match, recommend the best job openings for this candidate’s resume and explain why each job aligns.",
+        "Leverage RChilli Search and Match to build a ranked shortlist for these 200 applicants against the Data Scientist role, weighting Python and NLP most heavily."
+      ],
+      "Gerwin AI Beta": [
+        "Use Gerwin AI Beta to rewrite this paragraph for clarity and a friendly tone: “Our platform facilitates cross-functional collaboration to optimize KPIs.”",
+        "Can Gerwin AI Beta draft five Instagram captions for a neighborhood coffee shop grand opening, playful and emoji-friendly?",
+        "Have Gerwin AI Beta create a compelling real estate listing for a renovated 2-bedroom condo in Austin with a balcony, parking, and near public transit.",
+        "Ask Gerwin AI Beta to generate three Google Ads headlines and descriptions for a bookkeeping SaaS, focusing on trust and ease of use.",
+        "With Gerwin AI Beta, write a 400-word blog intro about remote team productivity and include a concise meta description."
+      ],
+      "Feedback Analysis API": [
+        "Please use the Feedback Analysis API to cluster last quarter's customer reviews and extract people, places, organizations, numbers, emojis, and emoticons.",
+        "Run our support tickets through the Feedback Analysis API and return the main themes with entity lists (names, locations, organizations) and emoji usage.",
+        "With the Feedback Analysis API, analyze this CSV of survey comments and give me clustered topics plus counts of numbers and detected emoticons/emojis.",
+        "Use the Feedback Analysis API to identify named entities and group similar feedback from our beta users, then highlight any spikes by topic.",
+        "Can you call the Feedback Analysis API on our app store reviews to extract people, places, organizations, numbers, emojis, and group the feedback by theme?"
+      ]
+    },
+    "eCommerce": {
+      "Pinduoduo(拼多多) Data Service": [
+        "Can you use the Pinduoduo(拼多多) Data Service to search the catalog for trending home appliances and return prices, ratings, and top sellers?",
+        "Please integrate with the Pinduoduo(拼多多) Data Service to fetch real-time inventory and pricing for specific SKUs across all sellers.",
+        "Using the Pinduoduo(拼多多) Data Service, pull category-level sales metrics for the last 30 days and export them as a CSV.",
+        "Set up a product sync with the Pinduoduo(拼多多) Data Service to update my app hourly with new listings, images, and attributes.",
+        "Call the Pinduoduo(拼多多) Data Service to retrieve coupon and promotion details for selected products and alert me to the best deals."
+      ],
+      "Swagger PetStore": [
+        "Use Swagger PetStore to fetch all available pets and list their id, name, and category.",
+        "With Swagger PetStore, add a new pet named \"Mochi\" (cat) marked as available, then show the created record.",
+        "Query Swagger PetStore for the inventory by status and summarize the counts per status.",
+        "Using Swagger PetStore, place an order for pet id 7 with quantity 3 and return the order confirmation.",
+        "Authenticate to Swagger PetStore with the api key \"special-key\" and update pet id 12 to status sold, showing the response."
+      ],
+      "Magic AliExpress": [
+        "Use Magic AliExpress to fetch the full product detail (title, specs, images, variations) for product ID 123456789.",
+        "With Magic AliExpress, check shipping methods, costs, and delivery times to Germany for product ID 987654321, comparing standard vs expedited.",
+        "Use Magic AliExpress to detect the new future nuggets in smart home gadgets this month and list the top 10 with brief reasons.",
+        "Pull the 12‑month sales and price trend history on Magic AliExpress for product IDs 111, 222, and 333, highlighting major spikes and drops.",
+        "Query Magic AliExpress for laptops in the Ultrabooks category filtered by brand Lenovo and attributes 16GB RAM and 1TB SSD, sorted by best sales."
+      ],
+      "Ali Express Data Service": [
+        "Can you use Ali Express Data Service to fetch the top 100 best-selling products in the smartphone accessories category, including price, rating, and number of orders?",
+        "Please call Ali Express Data Service to pull seller performance metrics for store ID 12345 (feedback score, followers, positive rate) and return them as JSON.",
+        "Using Ali Express Data Service, get historical price and order counts for this product URL over the last 90 days so I can analyze trends.",
+        "With Ali Express Data Service, find products matching \"wireless mechanical keyboard\" under $60, sorted by orders, and include shipping options to the US.",
+        "Leverage Ali Express Data Service to monitor inventory and price changes for these 20 product IDs and alert me when stock drops below 10 or price rises 10%."
+      ],
+      "Jingdong(京东) Data Service": [
+        "Please use Jingdong(京东) Data Service to pull the latest price, stock, and title for JD SKU 100025123456 and return the response JSON.",
+        "Can you query Jingdong(京东) Data Service for the top 50 laptops in the Gaming Laptops category sorted by sales volume, including seller ratings?",
+        "Using Jingdong(京东) Data Service, fetch recent review summaries and average ratings for \"Midea air conditioner KFR-35GW,\" including review counts by star.",
+        "Via Jingdong(京东) Data Service, get a list of sellers offering \"iPhone 15 256GB\" with price, shipping region, and shop credibility badges.",
+        "Please call Jingdong(京东) Data Service to retrieve the 30-day price history for JD SKU 123456789 and flag any drops over 8%."
+      ],
+      "ECart": [
+        "Can you use ECart to connect our Shopify and Amazon stores and sync orders and inventory in real time?",
+        "Using ECart, fetch all Wix orders from the last 7 days and push them into our ERP; show me the API calls you’d use.",
+        "With ECart, set up webhooks so our app is notified when products change on Mercado Libre and provide example payload handling.",
+        "Configure ECart OAuth and pagination to pull our full product catalog from SAP Commerce—how should we implement this?",
+        "Use ECart to bulk update inventory levels across all connected channels and report which updates failed and why."
+      ],
+      "EcartAPI": [
+        "Can you use EcartAPI to connect our Shopify and Wix stores and pull the last 90 days of orders?",
+        "Using EcartAPI, set up OAuth and fetch the full product catalog from Amazon and Mercado Libre into our app.",
+        "Please call EcartAPI to create a webhook that notifies us about inventory changes across SAP Commerce and Unicommerce.",
+        "With EcartAPI, generate a daily CSV report of abandoned carts from all connected platforms and email it to our team.",
+        "Use EcartAPI to create and update product listings in Shopify, then verify and sync fulfillment statuses for new orders."
+      ],
+      "salesngine": [
+        "Use salesngine to fetch the current price, title, and Prime eligibility for this Amazon product.",
+        "With salesngine, pull the price, sizes, and stock status for a specific Zara item and notify me if it drops below $50.",
+        "Can you use salesngine to get the price, seller name, and shipping fee for a Jumia phone listing?",
+        "Please run salesngine to compare prices and availability for the same hoodie on Asos, Farfetch, and H&M.",
+        "Using salesngine, retrieve metadata (title, images) and the best offer price for a Shein dress and a Fashion Nova alternative."
+      ],
+      "International Bridge Blue Sandbox": [
+        "Can you create test USPS and UPS shipping labels in the International Bridge Blue Sandbox and return the label PDFs?",
+        "Using the International Bridge Blue Sandbox, calculate shipping prices for this package across all available carriers and show the cheapest option.",
+        "Please manifest today’s test shipments in the International Bridge Blue Sandbox and provide the manifest ID and file.",
+        "Schedule a carrier pickup for my staged test labels in the International Bridge Blue Sandbox and confirm the pickup window.",
+        "I need to validate eVS/ePostage flows—use the International Bridge Blue Sandbox to generate an eVS-compliant label and verify tracking events."
+      ],
+      "Cryptocurrency APIs": [
+        "Please use Cryptocurrency APIs to create a new wallet for each customer and return the deposit address at checkout.",
+        "Can you integrate Cryptocurrency APIs to generate unique payment addresses and automatically mark orders paid once the transaction confirms?",
+        "Use Cryptocurrency APIs to search past transaction data for a given address so we can reconcile refunds from the last 30 days.",
+        "Set up webhooks with Cryptocurrency APIs to notify our app of incoming payments and failed transactions in real time.",
+        "With Cryptocurrency APIs, build an endpoint to create and track outgoing payouts, including fee estimation and transaction status updates."
+      ]
+    },
+    "Entertainment": {
+      "Book Discovery by ReadsOmnia": [
+        "Please use Book Discovery by ReadsOmnia to pull today's top-of-the-charts bestsellers across fiction and nonfiction, with brief blurbs.",
+        "Using Book Discovery by ReadsOmnia, find new and trending sci-fi releases from the past month and rank them by buzz or popularity.",
+        "Use Book Discovery by ReadsOmnia to recommend critically acclaimed, award-winning debut novels from the last five years, prioritizing diverse authors.",
+        "With Book Discovery by ReadsOmnia, get Top Reader suggestions for cozy mysteries similar to Richard Osman, and include why each pick fits.",
+        "Please query Book Discovery by ReadsOmnia for nonfiction titles trending with entrepreneurs this week, focusing on leadership and startup strategy."
+      ],
+      "Quotel - Quotes": [
+        "Using Quotel - Quotes, fetch today's Quote of the Day and include the author's name.",
+        "Please use Quotel - Quotes to get a random inspirational quote and show the author.",
+        "Search Quotel - Quotes for three Albert Einstein quotes about wisdom.",
+        "Use Quotel - Quotes to find five short quotes on love (ideally under 120 characters).",
+        "From Quotel - Quotes, run a full-text search for \"climate change\" and return five quotes with authors."
+      ],
+      "Imgur": [
+        "Use Imgur to upload these images and return their direct URLs and deletehashes.",
+        "Please create an Imgur album called \"Team Demos\", add these five images, and set the album cover to the third one.",
+        "With the Imgur API, find the most viral \"sunset\" images today and give me their titles, views, and link URLs.",
+        "Authenticate with Imgur (OAuth2) and list my last 20 account images with their IDs, timestamps, and view counts.",
+        "On Imgur, update the title and description of image ID abc123 and add the tags \"portfolio\" and \"2026\"."
+      ],
+      "Euro Millions": [
+        "Use Euro Millions to fetch the latest draw result and show the winning numbers and stars.",
+        "Use Euro Millions to check my bet 5, 12, 19, 33, 41 with stars 3 and 9 against the most recent draw.",
+        "Use Euro Millions to pull the results for the 2021-09-03 draw and include the prize breakdown.",
+        "Use Euro Millions to list the top 10 most frequently drawn numbers and stars since 2004.",
+        "Use Euro Millions to see if my lucky numbers 7, 11, 23, 36, 44 with stars 2 and 7 have ever come up and on which dates."
+      ],
+      "Riddlie ": [
+        "Use Riddlie to fetch a random riddle for kids and reveal the answer after 10 seconds.",
+        "With Riddlie please get the riddle of the day and show its difficulty and ID.",
+        "Call Riddlie to pull three easy riddles with the keyword \"animals.",
+        "Ask Riddlie for the riddle with ID 4821 and include its current upvote count.",
+        "Use Riddlie to upvote riddle ID 4821, or flag it if the answer seems incorrect."
+      ],
+      "Web - Novel API": [
+        "Use Web - Novel API to find the top-rated Korean web novels this week and return titles, ratings, and brief descriptions.",
+        "Can you query Web - Novel API for \"Omniscient Reader's Viewpoint\" and fetch its metadata plus the first 5 English-translated chapters?",
+        "With Web - Novel API, search for Chinese cultivation novels tagged \"xianxia\" and sort by rating, then give me the top 10.",
+        "Please use Web - Novel API to list newly updated Japanese web novels from the last 24 hours, including title, author, and latest chapter number.",
+        "Pull from Web - Novel API all romance web novels with at least 4.5 stars and 1,000+ chapters, and include their synopsis URLs."
+      ],
+      "Movies and Serials Torrent": [
+        "Use Movies and Serials Torrent to search for \"Dune\" and show me all available torrents with quality, size, and seed counts.",
+        "With Movies and Serials Torrent, list the latest trending serials this week and include season and episode availability.",
+        "In Movies and Serials Torrent, find 4K sci-fi movies released after 2022 and sort them by IMDb rating.",
+        "Ask Movies and Serials Torrent for details on \"Breaking Bad\" and provide torrents for season 3 episodes.",
+        "Through Movies and Serials Torrent, find family-friendly animated films under 2 hours and show the top download options."
+      ],
+      "Hummingbird APIv1": [
+        "Using Hummingbird APIv1, fetch my anime watchlist (Watching and Plan to Watch) and export it to a CSV file.",
+        "Please retrieve full details for “Fullmetal Alchemist: Brotherhood” via Hummingbird APIv1, including synopsis, episode count, and average rating.",
+        "Implement user authentication and pull my profile stats with Hummingbird APIv1, then show my top 10 most-watched genres.",
+        "Set up a daily job that queries upcoming episodes from Hummingbird APIv1 and emails me a morning summary.",
+        "Migrate our app’s anime search to Hummingbird APIv1 and add filters for year, status, and minimum score."
+      ],
+      "Humor-Jokes-and-Memes": [
+        "Use Humor-Jokes-and-Memes to find five clean knock-knock jokes about coffee.",
+        "With Humor-Jokes-and-Memes, show me trending memes about remote work from this week.",
+        "Please query Humor-Jokes-and-Memes for three family-friendly Chuck Norris jokes.",
+        "Can Humor-Jokes-and-Memes pull a few Yo Mama jokes and GIFs that are safe for work?",
+        "Using Humor-Jokes-and-Memes, get me the funniest Halloween memes and one-liner jokes."
+      ],
+      "humm": [
+        "Can you integrate humm into my app to search and stream legal tracks by genre and mood?",
+        "Using humm, build a playlist generator that pulls licensed songs for workout sessions and updates daily.",
+        "Please show me how to authenticate with humm and fetch metadata and lyrics for a given artist.",
+        "Create a music discovery chatbot that queries humm for similar artists when I input a song.",
+        "I want a web widget that uses humm to preview tracks and let users save favorites; can you scaffold it?"
+      ]
+    },
+    "Artificial Intelligence Machine Learning": {
+      "Stock, Ticker, Security and Company Search database": [
+        "Using the Stock, Ticker, Security and Company Search database, find the active ticker(s) for \"Alphabet Inc\" with fuzzy matching and include the primary exchange.",
+        "Please use the Stock, Ticker, Security and Company Search database to return the official security name for the ticker \"TSLA\".",
+        "With the Stock, Ticker, Security and Company Search database, list all S&P 500 companies.",
+        "Use the Stock, Ticker, Security and Company Search database to fetch daily historical price and volume for \"AAPL\" for the last 3 years.",
+        "Leverage the Stock, Ticker, Security and Company Search database to analyze this article and return sentiment for each company mentioned: https://example.com/article."
+      ],
+      "Vision API": [
+        "Can you use Vision API to analyze this living room photo and give me a breakdown of windows, doors, walls, ceiling, and floor?",
+        "Please run Vision API on my kitchen image to extract detailed measurements and materials for each surface.",
+        "Use Vision API to provide a holistic overview of this bedroom interior, including counts and positions of windows and doors.",
+        "With Vision API, identify the wall types and floor finish in this hallway and flag any damaged areas you detect.",
+        "Call Vision API on these interior photos and return per-surface metadata plus a summary of the whole room."
+      ],
+      "LemurBot": [
+        "Use LemurBot to create a custom study buddy for calculus that I can chat with; can it train on my PDF notes?",
+        "Have LemurBot build a language-learning bot that quizzes me daily and tracks my progress from a CSV word list.",
+        "Can LemurBot integrate with ChatGPT to role-play a career coach and run mock interviews for software engineering?",
+        "Please use LemurBot to spin up two bots, one for JS coding tips and one for world history, and let me switch between them in one chat.",
+        "Use LemurBot to clone my writing style from these blog posts and chat as my ghostwriter for drafting a newsletter."
+      ],
+      "OPEN AI ": [
+        "Please use OPEN AI to summarize the attached report into 5 bullet points and generate a concise, punchy headline.",
+        "With OPEN AI, classify these customer reviews for sentiment (positive/neutral/negative) and flag any that look like spam, adding a one-line rationale for each.",
+        "Use OPEN AI to extract named entities (people, organizations, locations) and generate embeddings for each paragraph to power semantic search.",
+        "Using OPEN AI, create an image with DALL-E from this brief and return an MP3 via TTS that narrates a one-sentence caption.",
+        "Leverage OPEN AI to answer these domain-specific questions and then complete the final paragraph by predicting the next two sentences in our brand voice."
+      ],
+      "AI 1001FX Functions": [
+        "Please use AI 1001FX Functions to detect the mood of these customer reviews and summarize the main points.",
+        "Run AI 1001FX Functions on this product photo to recognize the objects and extract any text via OCR.",
+        "Using AI 1001FX Functions, translate this paragraph to Spanish and identify the named entities mentioned.",
+        "With AI 1001FX Functions, generate an image from this prompt and check that the content complies with policy.",
+        "Apply AI 1001FX Functions to this email thread to detect the language, extract contact information, and produce a brief summary."
+      ],
+      "Mad GPT Api": [
+        "Please integrate Mad GPT Api into my app to generate summaries with built-in caching and rate limiting.",
+        "Use Mad GPT Api to translate this product catalog into Spanish and include analytics on detected languages.",
+        "Configure Mad GPT Api to preprocess user input (remove PII) and handle errors gracefully with retries.",
+        "Leverage Mad GPT Api to build a chat endpoint with custom system prompts and log insightful outputs for dashboards.",
+        "Can you set up Mad GPT Api to classify support tickets and tune the customization options for better accuracy?"
+      ],
+      "OpenNLP API": [
+        "Using the OpenNLP API, can you detect the language of this text and return the confidence scores?",
+        "Please use the OpenNLP API to split this paragraph into sentences and tokenize each sentence.",
+        "With the OpenNLP API, find named entities (persons, locations, organizations) in this English article and highlight them.",
+        "Can you run part-of-speech tagging and chunking on this German sentence using the OpenNLP API and provide the results?",
+        "Parse this Dutch sentence with the OpenNLP API and output the constituency parse along with any detected head words."
+      ],
+      "AI-writer": [
+        "Use AI-writer to draft a 600-word blog post on sustainable travel tips for young professionals, with an upbeat tone and SEO-friendly headings.",
+        "With AI-writer, translate this product description from English to Spanish and German, preserving brand voice and localizing measurements and idioms.",
+        "Have AI-writer revise my cover letter for a software engineer role to be clearer, more concise, and under 300 words while keeping my voice.",
+        "Using AI-writer, create a weekly newsletter outline for our coffee subscription brand, including three subject lines, preview text, and section blurbs.",
+        "Ask AI-writer to find 15 high-intent keywords and matching hashtags for \"budget home gym equipment\" and generate a QR code linking to our landing page."
+      ],
+      "MaskMaker": [
+        "Use MaskMaker to create a precise mask around the person in this photo, leaving the background transparent for editing.",
+        "Can MaskMaker generate a hair-only mask for this portrait so I can recolor it in DALL·E 2?",
+        "Please run MaskMaker to isolate the product and its shadow, excluding the table, for a clean composite.",
+        "With MaskMaker, make a mask that keeps the sky and removes everything else so I can swap in a sunset.",
+        "Ask MaskMaker to produce a soft-edge mask around the car, but exclude windows and reflections for accurate edits."
+      ],
+      "LokingAI-Text": [
+        "Please use LokingAI-Text to classify these support tickets by topic and urgency.",
+        "Can LokingAI-Text analyze the sentiment of these customer reviews and summarize the main themes?",
+        "Using LokingAI-Text, answer the following questions based on the attached policy document.",
+        "Run LokingAI-Text to label each sentence in this dataset with named entities and categories.",
+        "Use LokingAI-Text to fill the masked tokens in these sentences and return the top five suggestions for each."
+      ]
+    },
+    "Sports": {
+      "BaseballApi": [
+        "Use BaseballApi to show today’s MLB live scores and moneyline odds, highlighting any games in extra innings.",
+        "Can you query BaseballApi for the New York Yankees’ current game status and key pitching stats?",
+        "Pull tonight’s LMB matchups from BaseballApi and sort them by the highest over/under odds.",
+        "From BaseballApi, get NPB (Pro Yakyu) live scores and indicate which games are in the 7th inning or later.",
+        "Using BaseballApi, alert me to any MLB games with a run differential of 1 or less and include live win probabilities."
+      ],
+      "Metrx Factory": [
+        "Use Metrx Factory to pull expected scores and statistically fair odds for this weekend’s Premier League matches, and flag any mispriced markets.",
+        "With Metrx Factory, analyze Barcelona’s last three seasons by comparing expected results to final scores and summarize trends via the Metrx Index.",
+        "Can you call Metrx Factory to project tonight’s Champions League quarterfinal expected scores and compare them to current bookmaker lines?",
+        "Use Metrx Factory to compute the Metrx Index for all MLS teams this season and rank teams by form, highlighting over- and underperformers.",
+        "Using Metrx Factory, backtest fair odds versus closing prices for Serie A 2023–24 and report the biggest model–market discrepancies."
+      ],
+      "MotorsportApi": [
+        "Using MotorsportApi, get the live MotoGP race leaderboard and refresh it every minute.",
+        "Please use MotorsportApi to fetch today’s NASCAR Cup Series schedule and TV broadcast details.",
+        "With MotorsportApi, pull the latest World Rally Championship stage results for Rally Finland.",
+        "Using MotorsportApi, show the current DTM driver standings and the most recent podium finishers.",
+        "Please query MotorsportApi for Superbike qualifying times and highlight the top five riders."
+      ],
+      "Divanscore": [
+        "Can you build a real-time football scores widget for my site using Divanscore, with team logos and a live match clock?",
+        "I need a backend service that pulls NBA live scores and player stats from Divanscore; can you set up the API calls and caching?",
+        "Create a cross-sport results page (soccer, tennis, cricket) powered by Divanscore and make it filterable by league and date.",
+        "Set up push notifications in my mobile app using Divanscore so users get goal alerts, red cards, and full-time summaries.",
+        "Can you integrate Divanscore to track major esports tournaments and display live brackets, schedules, and match stats?"
+      ],
+      "TransferMarkt DB": [
+        "Using TransferMarkt DB, get Lionel Messi's full transfer history with fees and dates.",
+        "From TransferMarkt DB, list the top 10 most valuable U21 midfielders in the Bundesliga with their current market values.",
+        "Please use TransferMarkt DB to find all Premier League players whose contracts expire in 2025 and include their clubs.",
+        "With TransferMarkt DB, compare Erling Haaland and Kylian Mbappe's 2023/24 season stats across all competitions.",
+        "Query TransferMarkt DB for all Serie A transfers since 2024-07-01 with fees above EUR 20m, sorted by fee."
+      ],
+      "MMAAPI": [
+        "Using MMAAPI, fetch live scores and round-by-round stats for tonight’s UFC main card.",
+        "Please use MMAAPI to list all upcoming Bellator events this month with dates and venues.",
+        "Use MMAAPI to retrieve the full results and methods of victory from last weekend’s PFL event.",
+        "With MMAAPI, pull recent fight history and key statistics for current KSW champions.",
+        "Query MMAAPI for all fights scheduled this week across UFC, Bellator, KSW, and PFL, grouped by organization."
+      ],
+      "ViperScore": [
+        "Using ViperScore, fetch live Premier League scores, scorers, and minute-by-minute updates for today’s matches.",
+        "Can you integrate ViperScore to display NBA fixtures for this week along with team standings and recent form?",
+        "Please use ViperScore to get upcoming UFC events with fighter records and bout start times.",
+        "With ViperScore, pull MLB game results from yesterday and include pitching stats and final box scores.",
+        "Use ViperScore to monitor live ATP Masters tennis matches and notify me of set changes and break points."
+      ],
+      "AllSportsApi": [
+        "Use AllSportsApi to fetch live Premier League scores today, including goal scorers and red cards for each match.",
+        "Can AllSportsApi pull the current NBA standings and the last five game results for the Los Angeles Lakers?",
+        "With AllSportsApi, get the next 24 hours of CS:GO fixtures plus any available video highlight links.",
+        "Use AllSportsApi to retrieve last weekend’s F1 Grand Prix results, including fastest lap and pit stop counts.",
+        "Please query AllSportsApi for today’s IPL cricket scoreboards and top run scorers, including any super over details."
+      ],
+      "Soccerway Feed": [
+        "Use Soccerway Feed to fetch today’s live Premier League scores and match timelines.",
+        "From Soccerway Feed, pull the Serie A table, last 5 form, and upcoming fixtures.",
+        "Query Soccerway Feed for head-to-head history and goal stats between Barcelona and Real Madrid since 2010.",
+        "Using Soccerway Feed, get starting lineups, substitutions, and cards for the PSG vs Marseille match.",
+        "Via Soccerway Feed, export historical results and player scoring stats for the Brazilian Série A in the 2023 season."
+      ],
+      "CricketAPI2": [
+        "Using CricketAPI2, show me the live score and ball-by-ball for the current IPL match.",
+        "Please fetch today's international fixtures and start times from CricketAPI2.",
+        "With CricketAPI2, get the standings table for the ICC World Cup including net run rates.",
+        "Use CricketAPI2 to pull the fall-of-wicket and partnership details for the India vs Australia match.",
+        "From CricketAPI2, retrieve player scorecards and the top wicket-takers for ongoing matches."
+      ]
+    },
+    "Social": {
+      "Linkedin Company Data": [
+        "Use Linkedin Company Data to pull a full company profile from this website URL, including funding, size, and industry.",
+        "Can you call Linkedin Company Data with this LinkedIn company page to get recent posts and a few employee profiles?",
+        "Fetch Crunchbase funding details and HQ info for this firm using Linkedin Company Data; I have their homepage link.",
+        "Using Linkedin Company Data, retrieve 25+ fields about the company from this LinkedIn URL and summarize key metrics.",
+        "Please use Linkedin Company Data to get leadership/employee snippets and the latest LinkedIn posts for this company domain."
+      ],
+      "RocketAPI for Instagram": [
+        "Can you use RocketAPI for Instagram to pull profile details (bio, follower/following, external URL) for @nike and a few competitor accounts?",
+        "Please integrate RocketAPI for Instagram to fetch the latest 50 media posts for a given username and return captions, timestamps, and like counts.",
+        "Using RocketAPI for Instagram, set up a job to download all active stories from our shortlist of creators every hour and store the media URLs.",
+        "With RocketAPI for Instagram, scrape the most recent 200 comments on each post from @example and flag those containing our tracked keywords.",
+        "Could you wire up RocketAPI for Instagram to monitor new posts from a list of accounts and send a webhook with basic engagement metrics within 5 minutes?"
+      ],
+      "Repustate Sentiment and Text Analytics": [
+        "Use Repustate Sentiment and Text Analytics to analyze our brand mentions on Twitter and return sentiment scores and top keywords in English and Spanish.",
+        "Can you set up Repustate Sentiment and Text Analytics to monitor our product hashtags and deliver weekly sentiment summaries in French and German?",
+        "Run our latest Instagram comments through Repustate Sentiment and Text Analytics to extract key phrases and classify sentiment by language (English and Arabic).",
+        "Integrate Repustate Sentiment and Text Analytics into our dashboard to fetch real-time sentiment and keyword trends for a given list of social profiles.",
+        "Using Repustate Sentiment and Text Analytics, pull posts from our Facebook page and generate a report of sentiment distribution and most frequent topics."
+      ],
+      "TikTok Video No Watermark_v2": [
+        "Please use TikTok Video No Watermark_v2 to download this TikTok video without the watermark and give me the direct MP4 link.",
+        "With TikTok Video No Watermark_v2, can you fetch the highest resolution no-watermark version of this TikTok and return the download URL?",
+        "Can you run TikTok Video No Watermark_v2 on this TikTok and provide the clean video link (no watermark) along with the file size if available?",
+        "Please process this TikTok URL through TikTok Video No Watermark_v2 and download the watermark-free video to my device.",
+        "Using TikTok Video No Watermark_v2, retrieve the no-watermark download link and include any available metadata like title and duration."
+      ],
+      "Easy Instagram Automation Service": [
+        "Can you help me automate Instagram tasks (posting, insights, limited DM workflows) using the official Instagram Graph API in Python, ensuring everything stays within Meta’s policies?",
+        "Please set up a Node.js service that schedules posts, handles webhooks for comments/mentions, and pulls analytics through the Instagram Graph API while respecting rate limits.",
+        "I want a Go-based workflow to queue reels, publish at optimal times, and log results to a database using Meta-approved APIs—can you design it?",
+        "Build a compliant automation pipeline in Java that uses the Graph API and Instagram Webhooks to moderate comments and respond with saved replies where permitted.",
+        "Help me integrate a policy-compliant third party like Buffer or Hootsuite from a Ruby app to schedule posts and gather performance reports for my business account."
+      ],
+      "Scoreoid": [
+        "Please integrate Scoreoid into our iOS and Android game to handle leaderboards, achievements, and player profiles.",
+        "Use Scoreoid Live to launch a real-time retention campaign that sends targeted offers to lapsed players.",
+        "Set up Scoreoid as our cross-platform backend to sync player progress and inventory across web, iOS, and Android.",
+        "Configure Scoreoid to track monetization events and A/B test rewards, and show me the dashboards we can use.",
+        "Migrate our existing backend to Scoreoid and implement real-time notifications for tournaments and sales."
+      ],
+      "YouTube Private": [
+        "Use YouTube Private to pull detailed analytics for my channel over the last 90 days and export them to a CSV.",
+        "Can you integrate YouTube Private into my app so I can fetch real-time comments on my videos and auto-flag likely spam?",
+        "With YouTube Private, schedule uploads for my next 10 videos and set thumbnails, tags, and descriptions programmatically.",
+        "Leverage YouTube Private to generate personalized video recommendations for users based on their watch history.",
+        "Using YouTube Private, build a dashboard that tracks competitor channels’ trending videos and audience demographics."
+      ],
+      "TokApi - mobile version": [
+        "Please use TokApi - mobile version to pull the top trending TikTok videos in the US today, including captions, like counts, and share counts.",
+        "With TokApi - mobile version, fetch comments and commenter profiles for the specified video ID, limited to the latest 200 comments.",
+        "Using TokApi - mobile version, search for creators matching \"skincare\" and return verified status, follower count, and bio links.",
+        "Use TokApi - mobile version to get a user's feed for @username, including video URLs, music info, and thumbnail images.",
+        "Via TokApi - mobile version, track hashtag analytics for #AI over the past 7 days and export results as JSON."
+      ],
+      "TwttrAPI": [
+        "Using TwttrAPI, fetch the latest 200 tweets from @NASA (including retweets and replies) and export them as JSON.",
+        "Please use TwttrAPI to log in with 2FA and post a tweet with an image and alt text to my account.",
+        "Use TwttrAPI to search for tweets mentioning \"OpenAI API\" from the past 7 days and return the top results with like and retweet counts.",
+        "With TwttrAPI, retrieve my direct messages from the last 30 days and mark them as read.",
+        "Use TwttrAPI to follow these usernames and like their most recent tweet for each: @user1, @user2, @user3."
+      ],
+      "Pinterest Downloader - Download Pinterest image Video and reels": [
+        "Please use Pinterest Downloader - Download Pinterest image Video and reels to download the highest‑resolution image and return its title and description from this pin URL: [paste link].",
+        "Use Pinterest Downloader - Download Pinterest image Video and reels to grab the video MP4 and thumbnail from this Pinterest pin: [paste link].",
+        "Can you use Pinterest Downloader - Download Pinterest image Video and reels to fetch the reel (with audio) and its metadata for this pin: [paste link]?",
+        "Please use Pinterest Downloader - Download Pinterest image Video and reels to get the GIF file and the pin details for this URL: [paste link].",
+        "Using Pinterest Downloader - Download Pinterest image Video and reels, download the media for these pins and summarize their titles: [link 1], [link 2], [link 3]."
+      ]
+    }
+  }
+}

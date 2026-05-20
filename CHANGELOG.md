@@ -4,6 +4,50 @@ All notable changes to the Tool-Call-Bandit project are documented here.
 
 ---
 
+## 2026-05-20 — Appendix Figures, Paper Drafts, and Layout-Tuned Test-Accuracy Plot
+
+### New Publication-Quality Figures
+- `scripts/plot_evenness_sweep.py`: 1x3 panel for the Dirichlet
+  concentration ablation (cumulative regret, test-set accuracy,
+  Spearman rank correlation) across {one-hot, $\alpha\!=\!0.1$,
+  $\alpha\!=\!0.3$, $\alpha\!=\!1.0$}, 9 agents per panel with
+  per-agent marker/colour and a stable shared legend
+- `scripts/plot_explicit_query_acc.py`: single-bar variant of
+  `plot_test_accuracy.py` that shows only the Explicit Query
+  Accuracy, for a more compact figure slot
+- `scripts/plot_appendix_regret.py`: 2x3 cumulative-regret curves
+  with 95% CI bands for all six main experiments
+- `scripts/plot_appendix_rolling_acc.py`: 2x3 rolling-accuracy
+  curves with an Oracle ceiling reference per panel
+- `scripts/plot_appendix_per_domain.py`: 2x3 per-domain accuracy
+  heatmaps (9 agents x 10 ToolBench-60 domains)
+- `scripts/plot_appendix_preference_recovery.py`: 3x3 grid of
+  cosine / KL / Spearman bars for the soft preference regime only
+
+All appendix scripts use the canonical paper agent ordering and
+camera-ready display names (Bandit-as-Override, Freq-as-Override,
+Bandit-as-Context); the family-grouped palette is consistent with
+`plot_test_accuracy.py`.
+
+### Layout Improvements
+- `plot_test_accuracy.py`: switched the secondary metric from a
+  hatched overlay to a same-hue lighter shade; numeric labels on
+  by default; legend moved above the axes to avoid colliding with
+  tall bars
+
+### Paper Drafts
+- `method_3_2_3_3.tex`: drafts of \S3.2 (the two statistical-prior
+  instantiations) and \S3.3 (the end-to-end Local Harness method)
+- `appendix_prompts.tex`: appendix on query templates and prompts,
+  with tcolorbox-formatted boxes for the four LLM prompts used at
+  generation and inference time
+
+### Benchmark Asset
+- Added `benchmark_data/toolbench_100.json`, an alternative
+  10-domain x 10-tool variant of the ToolBench-derived inventory.
+
+---
+
 ## 2026-05-16 — Repo Restructure and Publication-Quality Test-Accuracy Figure
 
 ### Repo Restructure

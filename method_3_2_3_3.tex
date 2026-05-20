@@ -1,0 +1,189 @@
+% =====================================================================
+% Section 3.2 (continued) — Two instantiations of the statistical prior
+% and Section 3.3 — Personalized Tool Selection via Statistical Priors
+% =====================================================================
+% This file assumes the preamble already loads: amsmath, amssymb, algorithm,
+% algpseudocode (or algorithm2e), and that the notation introduced in §3.1
+% is in scope.
+% =====================================================================
+
+
+% ---------------------------------------------------------------------
+% §3.2 continued — the two priors
+% ---------------------------------------------------------------------
+
+\paragraph{Frequency Prior.}
+The simplest realisation of the local harness is a per-user empirical
+success-rate table. For every triple $(u, d, t)$ comprising a user, a
+domain, and a candidate tool, the harness maintains two scalars: the
+number of attempts $N_{u,d,t}$ and the number of successes
+$S_{u,d,t}\!=\!\sum_{\tau\le t}\mathbb{1}\{a_\tau\!=\!t\wedge r_\tau\!=\!1\}$.
+Its preference distribution over the inferred domain's
+candidate set $\mathcal{T}_{\hat d(q_t)}$ is the normalised success rate
+\begin{equation}
+\hat p^{\mathrm{freq}}_{u,d}(t) \;=\;
+\frac{S_{u,d,t} / \max(N_{u,d,t},\,1)}
+     {\sum_{t'\in\mathcal{T}_d} S_{u,d,t'} / \max(N_{u,d,t'},\,1)},
+\label{eq:freq_prior}
+\end{equation}
+and its default action is the corresponding $\arg\max$. Because the
+estimator is a pure sufficient statistic on the binary reward stream,
+the update is $O(1)$ in time and memory, and the harness has no learnable
+parameters beyond the counts themselves. The frequency prior makes no
+use of the query text and performs no explicit exploration: untried
+tools are visited only through an initial round-robin sweep over
+$\mathcal{T}_d$. It therefore characterises the \emph{weakest possible}
+local statistical primitive, and serves as a controlled point of
+comparison for richer harnesses that account for context or
+uncertainty.
+
+\paragraph{Bandit Prior.}
+A more principled realisation casts each $(u, d, t)$ as a separate
+contextual-bandit arm. We instantiate this with
+\textsc{LinUCB}~\citep{li2010linucb}: every arm maintains a $D$-dimensional
+parameter $\boldsymbol{\theta}_{u,d,t}$ together with a regularised
+Gram matrix $\mathbf{A}_{u,d,t}\in\mathbb{R}^{D\times D}$ and a moment
+vector $\mathbf{b}_{u,d,t}\in\mathbb{R}^{D}$, updated online as
+\begin{equation}
+\mathbf{A} \leftarrow \mathbf{A} + \boldsymbol{\phi}(q,t,d)\boldsymbol{\phi}(q,t,d)^\top,
+\quad
+\mathbf{b} \leftarrow \mathbf{b} + r\,\boldsymbol{\phi}(q,t,d),
+\quad
+\boldsymbol{\theta} = \mathbf{A}^{-1}\mathbf{b}.
+\label{eq:linucb_update}
+\end{equation}
+The context vector $\boldsymbol{\phi}(q,t,d)\in\mathbb{R}^{D}$ is
+constructed by feature-hashing the query, the tool name, and the inferred
+domain, producing a deterministic, vocabulary-free representation that
+generalises across queries with related surface forms. At decision time
+the harness computes an upper-confidence-bound score
+\begin{equation}
+s_{u,d,t}(q) \;=\;
+\boldsymbol{\theta}_{u,d,t}^{\top}\boldsymbol{\phi}(q,t,d)
+\;+\;
+\alpha_{\mathrm{ucb}}\,
+\sqrt{\boldsymbol{\phi}(q,t,d)^\top \mathbf{A}_{u,d,t}^{-1} \boldsymbol{\phi}(q,t,d)},
+\label{eq:ucb_score}
+\end{equation}
+and exposes them either as a default action $\arg\max_t s_{u,d,t}(q)$ or
+as a tempered-softmax preference distribution
+$\hat p^{\mathrm{bandit}}_{u,d}(t)\propto\exp(\beta s_{u,d,t}(q))$.
+The exploration coefficient $\alpha_{\mathrm{ucb}}$ controls the balance
+between exploiting the current point estimate and probing under-sampled
+arms. Compared with the frequency prior, the bandit prior is sensitive to
+query context (through $\boldsymbol{\phi}$), and, more importantly,
+maintains \emph{calibrated uncertainty}: the second term of
+Equation~\eqref{eq:ucb_score} grows with epistemic uncertainty and shrinks
+as data accumulate. Both properties become consequential when the user's
+underlying preference distribution $\pi_u(d)$ is stochastic rather than
+deterministic.
+
+We emphasise that neither of these two priors is itself a contribution
+of this work. Both are well-established estimators, and many alternative
+local-statistical components (e.g.\ Thompson sampling, kernel bandits,
+or a small neural recommender) are equally compatible with the
+architecture. Our claim is that \emph{any} such local harness, when
+combined with the override channel described next, is sufficient for
+the personalised-tool-selection problem; the goal of comparing two
+instantiations is to characterise how the strength of the local
+statistical primitive interacts with the rest of the system, not to
+identify a single optimal one.
+
+
+% ---------------------------------------------------------------------
+% §3.3 — overall method
+% ---------------------------------------------------------------------
+
+\subsection{Personalized Tool Selection via Statistical Priors}
+\label{sec:method:overall}
+
+We now describe the end-to-end decision procedure that the
+\textsc{Local Harness} architecture induces, given a chosen statistical
+prior $h\in\{\mathrm{freq},\mathrm{bandit}\}$. The procedure separates
+each round of personalised tool selection into three sequential steps,
+two of which are deterministic and local, and only one of which
+optionally consults the remote language model.
+
+\paragraph{Step~1: Shared domain classification.}
+Upon receiving a query $q_t$, the system performs a single LLM call to
+infer the target domain $\hat d(q_t)\in\mathcal{D}$. This call is
+amortised across the entire agent stack rather than executed
+per-component, so the per-round LLM cost does not scale with the
+number of personalised hypotheses being evaluated. The resulting label
+$\hat d(q_t)$ restricts the candidate set to
+$\mathcal{T}_{\hat d(q_t)}\subset\mathcal{T}$ for all downstream
+operations.
+
+\paragraph{Step~2: Local statistical default.}
+The local harness consumes the inferred domain together with the
+user's accumulated state and returns a candidate action
+\begin{equation}
+\tilde a_t \;=\; \arg\max_{t\in\mathcal{T}_{\hat d(q_t)}}
+\hat p^{\,h}_{u,\hat d(q_t)}(t),
+\label{eq:harness_default}
+\end{equation}
+where $\hat p^{\,h}$ is either the success-rate distribution of
+Equation~\eqref{eq:freq_prior} or the bandit-derived posterior implied
+by Equation~\eqref{eq:ucb_score}. This step is fully local, deterministic
+conditional on the user state, and incurs no LLM latency.
+
+\paragraph{Step~3: Semantic override probe.}
+The remote LLM is engaged only to check whether the user's query
+contains an explicit lexical instruction that supersedes the user's
+habitual preference. We issue a single binary probe (Appendix~G)
+\begin{equation}
+o_t,\,\tau_t \;=\; \mathrm{LLM}_{\text{override}}\!\left(q_t,\,
+\mathcal{T}_{\hat d(q_t)}\right),
+\label{eq:override_probe}
+\end{equation}
+where $o_t\in\{0,1\}$ indicates whether the query explicitly names a
+specific tool and $\tau_t\in\mathcal{T}_{\hat d(q_t)}$ is the named
+tool when $o_t=1$. The probe is deliberately narrow: it lists only the
+tool \emph{names} (no descriptions, no statistical priors, no
+chain-of-thought elicitation), reducing the language model's task to
+lexical recognition rather than open-ended selection.
+
+\paragraph{Action and update.}
+The action executed at round $t$ is then
+\begin{equation}
+a_t \;=\;
+\begin{cases}
+\tau_t & \text{if } o_t = 1,\\[2pt]
+\tilde a_t & \text{otherwise.}
+\end{cases}
+\label{eq:final_action}
+\end{equation}
+The environment returns the binary reward
+$r_t=\mathbb{1}\{a_t=a^*_t\}$, after which the local harness alone is
+updated with the tuple $(q_t,\hat d(q_t),a_t,r_t)$; the LLM is
+stateless across rounds, by design. Compactly, given a choice of
+prior $h\!\in\!\{\mathrm{freq},\mathrm{bandit}\}$ initialised with zero
+state for every $(u,d,t)$, each round executes the pipeline
+$q_t\!\to\!\hat d\!=\!\mathrm{LLM}_{\text{domain}}(q_t)
+\!\to\!\tilde a\!=\!\arg\max_{t\in\mathcal{T}_{\hat d}}\hat p^{\,h}_{u,\hat d}(t)
+\!\to\!(o,\tau)\!=\!\mathrm{LLM}_{\text{override}}(q_t,\mathcal{T}_{\hat d})
+\!\to\! a_t\!=\!\tau\text{ if }o\!=\!1\text{ else }\tilde a
+\!\to\! r_t\!=\!\mathbb{1}\{a_t\!=\!a^*_t\}
+\!\to\!\text{Update}(h)$.
+
+Several design properties of the procedure are worth making explicit.
+First, the only path that involves the remote LLM in the regular
+critical path of an interaction is the binary probe in
+Equation~\eqref{eq:override_probe}, whose prompt is a fixed-length
+template independent of the user's history. The number of remote-model
+calls per round is therefore constant in both the size of the candidate
+set and the amount of accumulated user state, sidestepping the
+``lost-in-the-middle'' and quadratic-attention pathologies that
+afflict memory-augmented baselines as the history grows. Second, the
+local harness is the \emph{only} component whose state evolves across
+rounds; the LLM is reset between calls. This separation of stateful
+local learning from stateless remote reasoning is exactly what we
+denote by ``decoupling'' and is the principal architectural claim of
+this paper. Third, the choice of $h$ is entirely orthogonal to the
+override mechanism: any local estimator that produces a probability
+vector over $\mathcal{T}_d$ from the user's history can be substituted
+into Step~2 without altering Steps~1 or~3. The two instantiations
+introduced in \S\ref{sec:method:harness} are therefore not separate
+methods, but two ways of populating the same architectural slot, and
+serve in \S\ref{sec:exp} as controlled probes of how the strength of
+the local statistical primitive affects overall performance.

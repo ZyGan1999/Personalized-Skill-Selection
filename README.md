@@ -139,13 +139,32 @@ conda run -n tool-call python scripts/compute_test_acc.py --csv all_results.csv
 ```
 
 `plot_test_accuracy.py` produces a publication-quality grouped-bar chart of
-held-out test-set accuracy (Overall vs Explicit-Query) for a single
+held-out test-set accuracy (Overall vs Explicit Query) for a single
 experiment, ready to paste into LaTeX:
 
 ```bash
 conda run -n tool-call python scripts/plot_test_accuracy.py \
     --dir paper-exp/main-soft0.3-qwen3-30b-a3b-instruct-2507
 # → <dir>/images/test_accuracy_pub.{pdf,png}
+```
+
+For other publication-ready figures referenced in the paper:
+
+```bash
+# Concentration sweep (1x3 panel: regret / acc / Spearman)
+conda run -n tool-call python scripts/plot_evenness_sweep.py
+# → figures/evenness_sweep_<model>.{pdf,png}
+
+# Compact Explicit-Query-only bar chart
+conda run -n tool-call python scripts/plot_explicit_query_acc.py --dir <exp>
+# → <dir>/images/explicit_query_acc.{pdf,png}
+
+# Appendix: 2x3 grid figures across the six main experiments
+conda run -n tool-call python scripts/plot_appendix_regret.py
+conda run -n tool-call python scripts/plot_appendix_rolling_acc.py
+conda run -n tool-call python scripts/plot_appendix_per_domain.py
+conda run -n tool-call python scripts/plot_appendix_preference_recovery.py
+# → figures/appendix_*.{pdf,png}
 ```
 
 ## CLI Reference
