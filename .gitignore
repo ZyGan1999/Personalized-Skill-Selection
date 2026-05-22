@@ -3,3 +3,23 @@ __pycache__/
 *.pyc
 *.pyo
 .env
+
+# paper-internal materials (kept locally, not published)
+figures/
+original_code/
+scripts/
+CHANGELOG.md
+CLAUDE.md
+EXPERIMENTS.md
+PAPER_OUTLINE.md
+appendix_prompts.tex
+method_3_2_3_3.tex
+
+# experiment outputs / artifacts
+paper-exp/
+progress-results/
+wandb/
+tools/
+tools.zip
+*.pdf
+

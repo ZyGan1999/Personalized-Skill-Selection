@@ -1,75 +1,71 @@
 # Tool-Call-Bandit
 
-A benchmark for **personalized tool selection** combining contextual bandits with LLM reasoning. The system learns which tools work best for each user through online interaction, using LinUCB to build statistical priors and LLM chain-of-thought to make context-aware decisions.
+A benchmark for **personalized tool selection** in LLM agents, built around a **Local Harness** design: a lightweight, locally-running statistical policy makes the decision on every query, and the remote LLM is reserved as an exception handler for out-of-distribution (OOD) queries that explicitly name a tool. This separation gives bandit-level accuracy on standard traffic *and* LLM-level robustness on OOD traffic, while keeping LLM call cost low.
 
 ## Motivation
 
-When an LLM-based assistant needs to choose among multiple tools (e.g., which food delivery app to use), the optimal choice depends on **user-specific preferences** that aren't observable from the query alone. This benchmark studies how to combine:
+When an LLM agent must choose among multiple tools (e.g., which food-delivery app to call), the optimal choice depends on **user-specific preferences** that are not observable from the query text alone. Pure LLM policies are stateless and cannot personalize; pure bandit policies converge slowly and cannot read explicit user requests in the query. We study how to combine them so each handles what it is best at:
 
-- **Bandit learning**: accumulate personalized preference signals from user feedback
-- **LLM reasoning**: leverage semantic understanding of queries and tool capabilities
-
-Neither alone is sufficient — bandits are slow to converge in limited rounds, and LLMs lack personalization without historical context.
+- **Local statistical prior** — accumulates personalized preference signals from feedback (frequency tables or LinUCB).
+- **Remote LLM reasoning** — provides semantic understanding for queries that the prior cannot handle (OOD overrides).
 
 ## Architecture
 
 ```
-data_gen.py  →  env.py  →  agents.py  →  metrics.py
-                  ↑              ↑
-             UserPersona    bandits.py
+data_gen.py  ->  env.py  ->  agents.py  ->  metrics.py
+                   ^             ^
+              UserPersona   bandits.py
 ```
 
 ### Agents
 
-| Agent | Description |
-|-------|-------------|
-Agents are grouped by category (each category uses a distinct color family in plots):
+Nine agents are evaluated, grouped into four families:
 
-**No learning** (gray)
-- **RandomAgent** — Uniform random selection (lower bound)
+**No learning**
+- **Random** — Uniform random selection (lower bound).
 
-**Statistical only** (blues)
-- **Freq-Greedy** — Pure frequency counting, no LLM, no exploration
-- **Pure-Bandit** — LinUCB only, no LLM at test time
+**LLM only**
+- **ZeroShot-LLM** — Pure LLM, no personalization.
+- **InContext-Memory** — LLM with last-K successful selections in the prompt.
+- **Profile-Memory** — LLM with structured success-rate profiles (simulates a real AI-agent memory module).
 
-**LLM only** (oranges/reds)
-- **ZeroShot-LLM** — Pure LLM, no personalization
-- **InContext-Memory** — LLM with last-K successful selections in prompt
-- **Profile-Memory** — LLM with structured success-rate profiles (simulates real AI agent memory)
+**Statistical only**
+- **Freq-Greedy** — Pure frequency counting, no LLM, no exploration.
+- **Pure-Bandit** — LinUCB only, no LLM at decision time.
 
-**Statistical + LLM hybrid** (greens/purples)
-- **Bandit+CoT** — LinUCB prior injected into LLM CoT prompt
-- **Freq+Override** — Frequency greedy + LLM OOD override (ablation of Bandit+Override)
-- **Bandit+Override** (**proposed**) — LinUCB selects by default; LLM only overrides for OOD queries
+**Local Harness hybrids (statistical + LLM)**
+- **Bandit-as-Context** — LinUCB prior injected into the LLM CoT prompt; LLM produces the final choice.
+- **Freq-as-Override** — Frequency-greedy by default; LLM only overrides for OOD queries (ablation against Bandit-as-Override).
+- **Bandit-as-Override** (**proposed**) — LinUCB selects by default; LLM only overrides for OOD queries.
 
-### Bandit+Override: Design
+### Bandit-as-Override: design
 
-1. **Domain Classification** (shared): one LLM call per query, result shared by all agents
-2. **Tool Selection**: LinUCB bandit selects the tool with highest UCB score (same as Pure-Bandit)
-3. **OOD Override**: LLM checks if the query explicitly names a tool; if yes, overrides bandit's choice
+1. **Domain classification** (shared): one LLM call per query, result cached and shared across LLM-using agents.
+2. **Tool selection**: LinUCB chooses the tool with the highest UCB score (same as Pure-Bandit).
+3. **OOD override**: a second LLM call checks whether the query explicitly names a tool; if yes, the bandit choice is overridden.
 
-This achieves Pure-Bandit-level accuracy on standard queries while retaining OOD robustness via LLM override detection. The key insight: LLM reasoning introduces noise on standard queries, so it should only be invoked when needed (OOD detection), not for every selection.
+This matches Pure-Bandit accuracy on standard queries while retaining OOD robustness via LLM override detection. The key insight: LLM reasoning introduces noise on standard queries, so it should only be invoked when needed (OOD detection), not for every selection.
 
-### Parallel LLM Calls
+### Parallel LLM calls
 
-Within each round, the LLM-using agents (up to 6) call the API concurrently via a thread pool, while non-LLM agents (Random, Pure-Bandit, Freq-Greedy) stay sequential to preserve global RNG order. Records and `update()` calls happen in original agent order after all selections — bit-identical results to sequential execution but ~3-4× wall-clock speedup at `temperature=0.0`.
+Within each round, the LLM-using agents call the API concurrently via a thread pool, while non-LLM agents (Random, Pure-Bandit, Freq-Greedy) stay sequential to preserve global RNG order. Records and `update()` calls happen in original agent order after all selections — bit-identical results to sequential execution but ~3-4x wall-clock speedup at `temperature=0.0`.
 
 ### Data
 
-- **Built-in**: 5 domains × 4 tools = 20 tools (Chinese market apps)
-- **ToolBench**: 10 domains × 6 tools = 60 real APIs from RapidAPI (via `--benchmark`)
-- **Per-user preferences**: one-hot (fixed preferred tool) or soft (Dirichlet-sampled distribution)
-- **OOD queries**: explicitly name a non-preferred tool, testing override ability
+- **Built-in**: 5 domains x 4 tools = 20 tools (Chinese-market apps).
+- **ToolBench-60**: 10 domains x 6 tools = 60 real APIs from RapidAPI (via `--benchmark benchmark_data/toolbench_60.json`).
+- **Per-user preferences**: one-hot (single preferred tool per domain) or soft (Dirichlet-sampled distribution, concentration alpha).
+- **OOD queries**: explicitly name a non-preferred tool, testing override ability.
 
 ## Quick Start
 
-### Install Dependencies
+### Install dependencies
 
 ```bash
 pip install numpy matplotlib openai litellm tqdm scipy
 ```
 
-### Run Benchmark
+### Run the benchmark
 
 ```bash
 # Set API key
@@ -81,14 +77,14 @@ python main.py
 # Custom model and configuration
 python main.py --model gpt-4o-mini --users 20 --rounds 50 --verbose
 
-# Quick debug (no LLM calls, Random + PureBandit only)
+# Quick debug (no LLM calls, Random + Pure-Bandit only)
 python main.py --dry-run --users 5 --rounds 20
 
-# With checkpoint/resume (recovers from API failures)
-python main.py --model gpt-5.2 --output-dir gpt-5.2 --resume
+# With checkpoint / resume (recovers from API failures)
+python main.py --model gpt-4o-mini --output-dir gpt-4o-mini --resume
 ```
 
-### Soft Preference Experiments
+### Soft-preference experiments
 
 ```bash
 # Dirichlet-sampled preferences (concentration controls peakedness)
@@ -100,71 +96,13 @@ python main.py --ood-ratio 0.20 --output-dir ood20
 python main.py --ood-ratio 0.50 --output-dir ood50
 ```
 
-### Paper Experiments (Multi-Model)
+### Module-level tests
 
 ```bash
-export OPENAI_API_KEY=sk-...
-export OPENAI_API_BASE=https://www.packyapi.com/v1
-bash run_main_experiments.sh
-```
-
-Runs all models × (one-hot + soft c=0.3) × 3 seeds with results in `paper-exp/`.
-
-### Module-Level Tests
-
-```bash
-python data_gen.py      # prints sample users with query pool stats
-python bandits.py       # shows LinUCB prior shift after updates
-python agents.py        # runs one select_tool call per agent (requires API key)
-python env.py           # smoke test with a random dummy agent
-python test_packy.py    # check connectivity to packyapi.com models
-```
-
-### Aggregating Results for the Paper
-
-`compute_test_acc.py` scans completed experiment directories under
-`paper-exp/` and prints mean ± std tables (test accuracy, online OOD,
-cumulative regret, and preference-recovery metrics) in a LaTeX-friendly form:
-
-```bash
-# Scan everything in paper-exp/
-conda run -n tool-call python scripts/compute_test_acc.py
-
-# A single experiment, with per-seed breakdown
-conda run -n tool-call python scripts/compute_test_acc.py \
-    --dir paper-exp/main-soft0.3-qwen3-30b-a3b-instruct-2507 --per-seed
-
-# Dump everything to CSV
-conda run -n tool-call python scripts/compute_test_acc.py --csv all_results.csv
-```
-
-`plot_test_accuracy.py` produces a publication-quality grouped-bar chart of
-held-out test-set accuracy (Overall vs Explicit Query) for a single
-experiment, ready to paste into LaTeX:
-
-```bash
-conda run -n tool-call python scripts/plot_test_accuracy.py \
-    --dir paper-exp/main-soft0.3-qwen3-30b-a3b-instruct-2507
-# → <dir>/images/test_accuracy_pub.{pdf,png}
-```
-
-For other publication-ready figures referenced in the paper:
-
-```bash
-# Concentration sweep (1x3 panel: regret / acc / Spearman)
-conda run -n tool-call python scripts/plot_evenness_sweep.py
-# → figures/evenness_sweep_<model>.{pdf,png}
-
-# Compact Explicit-Query-only bar chart
-conda run -n tool-call python scripts/plot_explicit_query_acc.py --dir <exp>
-# → <dir>/images/explicit_query_acc.{pdf,png}
-
-# Appendix: 2x3 grid figures across the six main experiments
-conda run -n tool-call python scripts/plot_appendix_regret.py
-conda run -n tool-call python scripts/plot_appendix_rolling_acc.py
-conda run -n tool-call python scripts/plot_appendix_per_domain.py
-conda run -n tool-call python scripts/plot_appendix_preference_recovery.py
-# → figures/appendix_*.{pdf,png}
+python data_gen.py     # prints sample users with query-pool stats
+python bandits.py      # shows LinUCB prior shift after updates
+python agents.py       # runs one select_tool call per agent (requires API key)
+python env.py          # smoke test with a random dummy agent
 ```
 
 ## CLI Reference
@@ -178,13 +116,13 @@ conda run -n tool-call python scripts/plot_appendix_preference_recovery.py
 | `--ood-ratio` | 0.10 | Fraction of OOD queries |
 | `--pool-size` | 200 | Queries per user pool |
 | `--soft-preferences` | off | Use Dirichlet soft preferences |
-| `--concentration` | 2.0 | Dirichlet concentration (lower = more peaked, closer to one-hot) |
+| `--concentration` | 2.0 | Dirichlet concentration (lower = more peaked) |
 | `--temperature` | 3.0 | Softmax temperature for bandit prior (higher = sharper) |
 | `--benchmark` | none | Path to benchmark config JSON (e.g., `benchmark_data/toolbench_60.json`) |
 | `--test-pool-size` | 50 | Held-out test queries per user (0 to disable) |
 | `--wandb-project` | none | W&B project name (enables wandb logging) |
 | `--wandb-run-name` | output-dir name | Base name for wandb runs (appended with `-seed{N}`) |
-| `--resume` | off | Enable checkpoint/resume |
+| `--resume` | off | Enable checkpoint / resume |
 | `--output-dir` | {model}/ | Results directory |
 | `--dry-run` | off | Skip LLM agents for fast debugging |
 | `--export-csv` | off | Export raw records to CSV |
@@ -209,29 +147,29 @@ Results are saved to `{output-dir}/`:
   checkpoints/                      # Resume checkpoints (if --resume)
 ```
 
-In soft preference mode, additional heatmaps are generated:
-- `preference_alignment_kl.pdf` — KL divergence between learned and true distributions
-- `preference_alignment_spearman.pdf` — Spearman rank correlation
+In soft-preference mode, additional heatmaps are generated:
+- `preference_alignment_kl.pdf` — KL divergence between learned and true distributions.
+- `preference_alignment_spearman.pdf` — Spearman rank correlation.
 
 ## Key Results
 
-### One-Hot Preferences (GPT-5.2, 20 users, 50 rounds)
+### One-hot preferences (20 users, 50 rounds)
 
-- **Bandit+CoT** achieves the lowest cumulative regret and highest accuracy
-- **OOD robustness**: Bandit+CoT and LLM-based agents achieve ~100% OOD accuracy (can detect explicit tool requests); Pure-Bandit fails (~25%)
-- **Convergence**: Bandit+CoT converges fastest due to LLM reasoning accelerating cold-start
+- **Bandit-as-Override** matches Pure-Bandit on standard queries and reaches ~100% OOD accuracy, achieving the best overall test accuracy.
+- **OOD robustness**: Bandit-as-Override, Freq-as-Override, and LLM-only agents reach ~100% OOD accuracy; Pure-Bandit fails (~25%).
+- **Convergence**: Bandit-as-Override inherits LinUCB's fast convergence on the standard slice while LLM override handles the OOD tail.
 
-### Soft Preferences
+### Soft preferences (alpha = 0.3)
 
-- With soft (stochastic) preferences, accuracy ceiling drops significantly (e.g., ~35% for concentration=2.0)
-- **Spearman rank correlation** is the most discriminative metric (cosine similarity saturates at ~90%)
-- Interesting finding: Pure-Bandit has better Spearman (cleaner learning signal) but worse accuracy than Bandit+CoT (LLM reasoning compensates)
+- With soft (stochastic) preferences the accuracy ceiling drops (Oracle ~ max-probability mode).
+- **Spearman rank correlation** is the most discriminative recovery metric (cosine similarity saturates near 1).
+- Pure-Bandit has slightly cleaner Spearman recovery, but Bandit-as-Override wins on accuracy because the LLM compensates on OOD.
 
 ## Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `OPENAI_API_KEY` | API key for OpenAI models |
+| `OPENAI_API_KEY` | API key for OpenAI-compatible endpoint |
 | `OPENAI_API_BASE` | Custom API base URL (for proxies) |
 | `OPENAI_CHAT_URL` | Complete endpoint URL (takes priority over `OPENAI_API_BASE`); auto-detects Responses format when ending with `/responses` |
 | `OPENAI_API_FORMAT` | `chat` (default) or `responses` — selects between `/v1/chat/completions` and `/v1/responses` payload formats |
