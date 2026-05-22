@@ -1,13 +1,12 @@
-# Tool-Call-Bandit
+# Decouple Skill Selection as Local Harness for Personal Agents Under Implicit Preference
 
-A benchmark for **personalized tool selection** in LLM agents, built around a **Local Harness** design: a lightweight, locally-running statistical policy makes the decision on every query, and the remote LLM is reserved as an exception handler for out-of-distribution (OOD) queries that explicitly name a tool. This separation gives bandit-level accuracy on standard traffic *and* LLM-level robustness on OOD traffic, while keeping LLM call cost low.
-
+A sandbox for **personalized skill selection** in LLM personal agents, built around a **Local Harness** design: a lightweight, locally-running statistical policy makes the decision on every query, and the remote LLM is reserved as an exception handler for queries that explicitly name a tool. 
 ## Motivation
 
-When an LLM agent must choose among multiple tools (e.g., which food-delivery app to call), the optimal choice depends on **user-specific preferences** that are not observable from the query text alone. Pure LLM policies are stateless and cannot personalize; pure bandit policies converge slowly and cannot read explicit user requests in the query. We study how to combine them so each handles what it is best at:
+When an LLM agent must choose among multiple skills (e.g., which food-delivery app to call), the optimal choice depends on **user-specific preferences** that are not observable from the query text alone. Pure LLM policies are stateless and cannot personalize; pure statistical policies converge slowly and cannot read explicit user requests in the query. We study how to combine them so each handles what it is best at:
 
-- **Local statistical prior** — accumulates personalized preference signals from feedback (frequency tables or LinUCB).
-- **Remote LLM reasoning** — provides semantic understanding for queries that the prior cannot handle (OOD overrides).
+- **Local statistical prior** — accumulates personalized preference signals from feedback (frequency tables or bandit).
+- **Remote LLM reasoning** — provides semantic understanding for queries that the prior cannot handle.
 
 ## Architecture
 
@@ -22,10 +21,11 @@ data_gen.py  ->  env.py  ->  agents.py  ->  metrics.py
 Nine agents are evaluated, grouped into four families:
 
 **No learning**
-- **Random** — Uniform random selection (lower bound).
+- **Random** — Uniform random selection (lower bound). 
+- **ZeroShot-LLM** — Pure LLM, no personalization.
 
 **LLM only**
-- **ZeroShot-LLM** — Pure LLM, no personalization.
+
 - **InContext-Memory** — LLM with last-K successful selections in the prompt.
 - **Profile-Memory** — LLM with structured success-rate profiles (simulates a real AI-agent memory module).
 
@@ -35,27 +35,19 @@ Nine agents are evaluated, grouped into four families:
 
 **Local Harness hybrids (statistical + LLM)**
 - **Bandit-as-Context** — LinUCB prior injected into the LLM CoT prompt; LLM produces the final choice.
-- **Freq-as-Override** — Frequency-greedy by default; LLM only overrides for OOD queries (ablation against Bandit-as-Override).
-- **Bandit-as-Override** (**proposed**) — LinUCB selects by default; LLM only overrides for OOD queries.
+- **Freq-as-Override** — Frequency-greedy by default; LLM only overrides for explicit queries.
+- **Bandit-as-Override** (**proposed**) — LinUCB selects by default; LLM only overrides for explicit queries.
 
-### Bandit-as-Override: design
+### Design
 
 1. **Domain classification** (shared): one LLM call per query, result cached and shared across LLM-using agents.
-2. **Tool selection**: LinUCB chooses the tool with the highest UCB score (same as Pure-Bandit).
-3. **OOD override**: a second LLM call checks whether the query explicitly names a tool; if yes, the bandit choice is overridden.
-
-This matches Pure-Bandit accuracy on standard queries while retaining OOD robustness via LLM override detection. The key insight: LLM reasoning introduces noise on standard queries, so it should only be invoked when needed (OOD detection), not for every selection.
-
-### Parallel LLM calls
-
-Within each round, the LLM-using agents call the API concurrently via a thread pool, while non-LLM agents (Random, Pure-Bandit, Freq-Greedy) stay sequential to preserve global RNG order. Records and `update()` calls happen in original agent order after all selections — bit-identical results to sequential execution but ~3-4x wall-clock speedup at `temperature=0.0`.
+2. **Skill selection**: Statistical priors chooses the skill with the highest score.
+3. **LLM override**: a second LLM call checks whether the query explicitly names a skill; if yes, the bandit choice is overridden.
 
 ### Data
-
-- **Built-in**: 5 domains x 4 tools = 20 tools (Chinese-market apps).
-- **ToolBench-60**: 10 domains x 6 tools = 60 real APIs from RapidAPI (via `--benchmark benchmark_data/toolbench_60.json`).
-- **Per-user preferences**: one-hot (single preferred tool per domain) or soft (Dirichlet-sampled distribution, concentration alpha).
-- **OOD queries**: explicitly name a non-preferred tool, testing override ability.
+- **ToolBench-60**: 10 domains x 6 skills = 60 real APIs from ToolBench (via `--benchmark benchmark_data/toolbench_60.json`).
+- **Per-user preferences**: one-hot (single preferred skill per domain) or soft (Dirichlet-sampled distribution, concentration alpha).
+- **OOD queries**: explicitly name a non-preferred skill, testing override ability.
 
 ## Quick Start
 
@@ -113,7 +105,7 @@ python env.py          # smoke test with a random dummy agent
 | `--users` | 20 | Synthetic users per seed |
 | `--rounds` | 50 | Interaction rounds per user |
 | `--seeds` | 0 1 2 3 4 | Random seeds for independent trials |
-| `--ood-ratio` | 0.10 | Fraction of OOD queries |
+| `--ood-ratio` | 0.10 | Fraction of explicit queries |
 | `--pool-size` | 200 | Queries per user pool |
 | `--soft-preferences` | off | Use Dirichlet soft preferences |
 | `--concentration` | 2.0 | Dirichlet concentration (lower = more peaked) |
@@ -151,19 +143,6 @@ In soft-preference mode, additional heatmaps are generated:
 - `preference_alignment_kl.pdf` — KL divergence between learned and true distributions.
 - `preference_alignment_spearman.pdf` — Spearman rank correlation.
 
-## Key Results
-
-### One-hot preferences (20 users, 50 rounds)
-
-- **Bandit-as-Override** matches Pure-Bandit on standard queries and reaches ~100% OOD accuracy, achieving the best overall test accuracy.
-- **OOD robustness**: Bandit-as-Override, Freq-as-Override, and LLM-only agents reach ~100% OOD accuracy; Pure-Bandit fails (~25%).
-- **Convergence**: Bandit-as-Override inherits LinUCB's fast convergence on the standard slice while LLM override handles the OOD tail.
-
-### Soft preferences (alpha = 0.3)
-
-- With soft (stochastic) preferences the accuracy ceiling drops (Oracle ~ max-probability mode).
-- **Spearman rank correlation** is the most discriminative recovery metric (cosine similarity saturates near 1).
-- Pure-Bandit has slightly cleaner Spearman recovery, but Bandit-as-Override wins on accuracy because the LLM compensates on OOD.
 
 ## Environment Variables
 
